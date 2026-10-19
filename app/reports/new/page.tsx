@@ -1,0 +1,2 @@
+import {PageTitle} from '@/components/ui';import {ReportForm} from '@/components/forms';import {requireViewer} from '@/lib/backend';
+export default async function NewReport(){await requireViewer();return <div className="container page"><PageTitle eyebrow="BUAT LAPORAN" title="Ada yang perlu diperbaiki?" description="Kirim bukti dan lokasi. Kami bantu meneruskannya ke operator."/><ReportForm/></div>;}

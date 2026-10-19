@@ -1,0 +1,3 @@
+import Link from 'next/link';import {Plus} from 'lucide-react';import {PageTitle,Empty} from '@/components/ui';import {ReportExplorer} from '@/components/widgets';import {reports} from '@/lib/backend';
+export const dynamic='force-dynamic';
+export default async function Reports(){const list=await reports();return <div className="container page"><PageTitle eyebrow="TRANSPARANSI PENANGANAN" title="Suara warga, terlihat di sini." description="Jelajahi laporan dan pantau langkah perbaikannya." action={<Link className="button" href="/reports/new"><Plus size={18}/>Buat laporan</Link>}/>{list.length?<ReportExplorer reports={list}/>:<Empty/>}</div>;}
