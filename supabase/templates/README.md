@@ -1,11 +1,11 @@
 # Email konfirmasi pendaftaran
 
-Subject: `Konfirmasi email Anda — LaporinKUY`
+Subject: `Konfirmasi email Anda — LaporKUY`
 
-Tempel isi `confirmation.html` pada Authentication → Emails → Confirm sign up di dashboard Supabase, lalu simpan. Template memakai `TokenHash` Supabase dan membuka halaman LaporinKUY terlebih dahulu. Pengguna menekan tombol konfirmasi di halaman tersebut agar pemindai tautan email tidak otomatis menghabiskan token. Jangan mengganti variabel template dengan token nyata.
+Tempel isi `confirmation.html` pada Authentication → Emails → Confirm sign up di dashboard Supabase, lalu simpan. Template memakai `TokenHash` Supabase dan membuka halaman LaporKUY terlebih dahulu. Pengguna menekan tombol konfirmasi di halaman tersebut agar pemindai tautan email tidak otomatis menghabiskan token. Jangan mengganti variabel template dengan token nyata.
 
 URL Auth yang diperlukan:
 - Site URL: `https://laporkuy.online`
 - Redirect URL: `https://laporkuy.online/auth/confirm`
 
-Status: domain laporkuy.online aktif di Vercel dan terverifikasi di Resend. Pengguna telah menyimpan SMTP Resend. Template dan URL Auth domain baru masih perlu diterapkan melalui dashboard Supabase. Tidak ada email uji yang dikirim otomatis.
+Status: domain laporkuy.online aktif di Vercel dan terverifikasi di Resend. Pengguna telah menyimpan SMTP Resend. Template dan URL Auth domain baru sudah diterapkan melalui dashboard Supabase. Tidak ada email uji yang dikirim otomatis.
