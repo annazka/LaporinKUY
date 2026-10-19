@@ -7,7 +7,7 @@ insert into storage.objects(bucket_id,name,owner_id)values
  ('report-photos','10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg','10000000-0000-4000-8000-000000000001'),
  ('report-photos','10000000-0000-4000-8000-000000000002/10000000-0000-4000-8000-000000000002.jpg','10000000-0000-4000-8000-000000000002');
 do $$
-declare rid uuid; result jsonb; denied boolean:=false; redeemed_code text; balance bigint; today date:=(now() at time zone 'Asia/Jakarta')::date;
+declare rid uuid; result jsonb; denied boolean:=false; redeemed_code text; balance bigint; i integer; today date:=(now() at time zone 'Asia/Jakarta')::date;
 begin
  if has_table_privilege('authenticated','public.reports','INSERT')then raise exception 'Direct INSERT exposed';end if;
  if has_function_privilege('anon','public.operator_update(uuid,text,text,integer,date,date,text,text)','EXECUTE')then raise exception 'Anonymous RPC exposed';end if;
@@ -17,6 +17,13 @@ begin
  rid:=(result->>'id')::uuid;
  perform public.submit_report('Fixture jalan berlubang','Kondisi jalan berlubang untuk pengujian integrasi.','Jalan berlubang','Fixture Jakarta untuk pengujian',-6.21,106.84,'10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg');
  if (select support_count from public.reports where id=rid)<>0 then raise exception 'Same user gained upvote';end if;
+ for i in 1..9 loop
+ perform public.submit_report('Fixture kuota laporan','Kondisi jalan untuk pengujian batas sepuluh laporan.','Jalan berlubang','Fixture Jakarta untuk pengujian',-6.21-i*0.001,106.84,'10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg');
+ end loop;
+ denied:=false;begin perform public.submit_report('Fixture melebihi kuota','Kondisi jalan untuk pengujian batas sepuluh laporan.','Jalan berlubang','Fixture Jakarta untuk pengujian',-6.24,106.84,'10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg');exception when others then denied:=true;end;
+ if not denied then raise exception 'Active report quota bypassed';end if;
+ perform public.submit_report('Fixture pembaruan bukti','Memperbarui bukti kasus lama walaupun kuota sudah penuh.','Jalan berlubang','Fixture Jakarta untuk pengujian',-6.21,106.84,'10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg');
+ denied:=false;
  begin perform public.operator_update(rid,'verify','Pengujian tanpa akses operator',0,today,today+3,'medium',null);exception when others then denied:=true;end;
  if not denied then raise exception 'User obtained operator access';end if;
  perform set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000002","role":"authenticated","app_metadata":{}}',true);
@@ -46,5 +53,12 @@ begin
  redeemed_code:=public.redeem_voucher((select id from public.vouchers order by cost limit 1));
  if redeemed_code is null or not exists(select 1 from public.redemptions where redemptions.code=redeemed_code)then raise exception 'Redemption failed';end if;
 end;$$;
+set local role authenticated;
+do $$begin
+ if exists(select 1 from public.submissions where user_id<>auth.uid())then raise exception 'RLS exposed another user submission';end if;
+ if exists(select 1 from public.point_ledger where user_id<>auth.uid())then raise exception 'RLS exposed another user points';end if;
+ if exists(select 1 from public.redemptions where user_id<>auth.uid())then raise exception 'RLS exposed another user voucher';end if;
+end;$$;
+reset role;
 rollback;
 select 'PASS: private photos, RPC permissions, deduplication, role restrictions, schedule history, evidence, confirmation, rewards and redemption' as integration_result;
