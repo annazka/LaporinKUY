@@ -2,7 +2,7 @@
 
 Subject: `Konfirmasi email Anda — LaporKUY`
 
-Tempel isi `confirmation.html` pada Authentication → Emails → Confirm sign up di dashboard Supabase, lalu simpan. Template memakai `TokenHash` Supabase dan membuka halaman LaporKUY terlebih dahulu. Pengguna menekan tombol konfirmasi di halaman tersebut agar pemindai tautan email tidak otomatis menghabiskan token. Jangan mengganti variabel template dengan token nyata.
+Tempel isi `confirmation.html` pada Authentication → Emails → Confirm sign up di dashboard Supabase, lalu simpan. Template memakai `TokenHash` Supabase dan membuka halaman LaporKUY terlebih dahulu. Halaman otomatis memverifikasi token saat dibuka dari email, lalu menampilkan “Email sudah dikonfirmasi” hanya setelah Supabase menyatakan verifikasi berhasil. Tidak ada tombol konfirmasi kedua. Jangan mengganti variabel template dengan token nyata.
 
 URL Auth yang diperlukan:
 - Site URL: `https://laporkuy.online`
