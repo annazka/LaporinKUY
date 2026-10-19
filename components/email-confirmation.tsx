@@ -36,7 +36,7 @@ export function EmailConfirmation(){
   <div className={`confirmation-symbol ${success?'confirmed':error?'failed':''}`}>
    {state==='loading'?<LoaderCircle className="confirmation-spinner" size={35}/>:success?<Check size={39}/>:error?<Link2Off size={34}/>:<MailCheck size={36}/>}
   </div>
-  <h1>{state==='loading'?'Memeriksa konfirmasi email.':success?'Email sudah dikonfirmasi.':error?'Konfirmasi belum berhasil.':'Konfirmasi email kamu.'}</h1>
+  <h1>{state==='loading'?'Memeriksa konfirmasi email.':success?'Email terkonfirmasi.':error?'Konfirmasi belum berhasil.':'Konfirmasi email kamu.'}</h1>
   <p>{state==='loading'?'Tunggu sebentar, kami sedang memeriksa status emailmu.':success?'Akunmu siap digunakan. Terima kasih sudah ikut menjaga Jakarta. Masuk untuk mulai mengirim laporan dan memantau perbaikannya.':error?message:'Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporKUY.'}</p>
   {state!=='loading'&&<Link href="/login" className="button full">{success?'Masuk ke LaporKUY':'Coba masuk ke akun'}<ArrowUpRight size={17}/></Link>}
   {state!=='loading'&&<Link href="/" className="confirmation-back"><ArrowLeft size={14}/>Kembali ke beranda</Link>}
