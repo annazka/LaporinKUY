@@ -1,0 +1,9 @@
+'use client';
+import {useState} from 'react';
+import {Sparkles} from 'lucide-react';
+type Analysis={relevant:boolean;category:string;severity:string;priority:string;summary:string;reason:string;model:string};
+export function PhotoAnalysis({file}:{file:File|null}){
+ const [result,setResult]=useState<Analysis|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ async function analyze(){if(!file)return;setBusy(true);setError('');setResult(null);try{const form=new FormData();form.set('file',file);const r=await fetch('/api/analyze',{method:'POST',body:form});const d=await r.json();if(!r.ok)throw Error(d.error);setResult(d);}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ return <div className="form-stack"><button type="button" className="button secondary full" onClick={analyze} disabled={!file||busy}><Sparkles size={17}/>{busy?'Gemini sedang menganalisis...':'Analisis foto dengan AI'}</button><p className="help-text">Foto dikirim ke Google Gemini untuk dianalisis. Hasil hanya berupa saran dan tidak otomatis menentukan keputusan operator. Analisis ini tidak menyimpan foto atau hasil sebagai laporan.</p>{error&&<div className="form-error" role="alert">{error}</div>}{result&&<div className="notice" role="status"><div><strong>{result.relevant?'Kerusakan terdeteksi':'Foto belum sesuai sebagai bukti kerusakan'}</strong><p style={{marginTop:10}}>{result.summary}</p><div className="facts"><div><span>Kategori</span><b>{result.category}</b></div><div><span>Perkiraan tingkat kerusakan</span><b>{result.severity.replaceAll('_',' ')}</b></div><div><span>Rekomendasi prioritas</span><b>{({low:'Rendah',medium:'Sedang',high:'Tinggi',urgent:'Darurat',unknown:'Belum dapat ditentukan'} as Record<string,string>)[result.priority]}</b></div></div><p style={{marginTop:12}}>{result.reason}</p><small className="help-text">Model {result.model}. Lokasi dan estimasi durasi tetap diverifikasi operator.</small></div></div>}</div>;
+}

@@ -1,0 +1,2 @@
+import {requireViewer} from '@/lib/backend';import {PageTitle} from '@/components/ui';import {AiTest} from '@/components/ai-test';
+export default async function AiTestPage(){await requireViewer();return <div className="container page"><PageTitle eyebrow="PENGUJIAN GEMINI" title="Coba analisis foto kerusakan." description="Pilih foto jalan berlubang atau foto pembanding untuk memeriksa hasil Gemini."/><AiTest/></div>;}

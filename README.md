@@ -60,7 +60,10 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 
 ## Batas versi awal
 
-- Gemini dan pemeriksaan semantik foto belum terhubung. UI menyatakannya secara eksplisit. Sistem tidak mengklaim hasil AI.
+- Gemini tersedia pada tombol Analisis foto dengan AI dan halaman /ai-test setelah login. Foto dikirim ke Google melalui server, tanpa membuka API key. Hasil menampilkan kategori, tingkat kerusakan, prioritas, alasan, dan model. Analisis opsional ini belum disimpan ke laporan dan tidak otomatis mengubah keputusan operator.
+- Atur GEMINI_API_KEY pada environment server. GEMINI_MODEL opsional, jika kosong sistem memilih model Flash stabil tertinggi dari models.list. Preview memerlukan key tersendiri jika ingin menguji analisis di Preview.
+- scripts/gemini-smoke.mjs merupakan perintah pengujian nyata sekali jalan, bukan bagian build default. Memakai foto instrumen publik dari dokumentasi Google sebagai kasus negatif, serta gagal jika foto tersebut dianggap kerusakan infrastruktur. Perintah ini memerlukan akses internet dan API key pada environment.
+- Pembatasan burst AI hanya per instance server. Kuota lintas instance perlu ditambahkan sebelum peluncuran luas.
 - Pengelompokan radius 25 meter masih perlu peninjauan operator. Belum ada pemisahan atau penggabungan ulang lewat dashboard.
 - Peta memakai embed OpenStreetMap untuk satu laporan terpilih, bukan layer multi-marker Leaflet.
 - Konfirmasi akhir saat ini oleh pelapor utama. Mekanisme verifikator pengganti setelah 3 hari belum diaktifkan.
