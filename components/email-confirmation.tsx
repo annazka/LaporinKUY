@@ -34,13 +34,13 @@ export function EmailConfirmation(){
  async function confirm(){if(!pending.current)return;setState('loading');setMessage('');try{await verify(pending.current);pending.current=null;setState('success');}catch(e){setState('error');setMessage((e as Error).message);}}
  const success=state==='success',error=state==='error';
  return <div className="confirmation-wrap container"><div className="confirmation-ambient" aria-hidden="true"/><section className="confirmation-card panel" aria-live="polite" aria-busy={state==='loading'}>
-  <div className="confirmation-label"><span/> VERIFIKASI AKUN LAPORINKUY</div>
+  <div className="confirmation-label"><span/> VERIFIKASI AKUN LAPORKUY</div>
   <div className={`confirmation-symbol ${success?'confirmed':error?'failed':''}`}>
    {state==='loading'?<LoaderCircle className="confirmation-spinner" size={35}/>:success?<Check size={39}/>:error?<Link2Off size={34}/>:<MailCheck size={36}/>}
   </div>
   <h1>{state==='loading'?'Memeriksa konfirmasi email.':success?'Email terkonfirmasi.':error?'Konfirmasi belum berhasil.':state==='pending'?'Satu langkah lagi.':'Konfirmasi email kamu.'}</h1>
-  <p>{state==='loading'?'Tunggu sebentar, kami sedang memeriksa status emailmu.':success?'Akunmu siap digunakan. Terima kasih sudah ikut menjaga Jakarta. Masuk untuk mulai mengirim laporan dan memantau perbaikannya.':error?message:state==='pending'?'Klik tombol di bawah untuk menyelesaikan verifikasi email dan mengaktifkan akunmu.':'Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporinKUY.'}</p>
-  {state==='pending'?<button className="button full" onClick={confirm}>Konfirmasi email saya <ArrowUpRight size={17}/></button>:state!=='loading'&&<Link href="/login" className="button full">{success?'Masuk ke LaporinKUY':'Coba masuk ke akun'}<ArrowUpRight size={17}/></Link>}
+  <p>{state==='loading'?'Tunggu sebentar, kami sedang memeriksa status emailmu.':success?'Akunmu siap digunakan. Terima kasih sudah ikut menjaga Jakarta. Masuk untuk mulai mengirim laporan dan memantau perbaikannya.':error?message:state==='pending'?'Klik tombol di bawah untuk menyelesaikan verifikasi email dan mengaktifkan akunmu.':'Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporKUY.'}</p>
+  {state==='pending'?<button className="button full" onClick={confirm}>Konfirmasi email saya <ArrowUpRight size={17}/></button>:state!=='loading'&&<Link href="/login" className="button full">{success?'Masuk ke LaporKUY':'Coba masuk ke akun'}<ArrowUpRight size={17}/></Link>}
   {state!=='loading'&&<Link href="/" className="confirmation-back"><ArrowLeft size={14}/>Kembali ke beranda</Link>}
   <div className="confirmation-footer"><ShieldCheck size={14}/> Identitasmu tetap terlindungi.</div>
  </section><span className="confirmation-bottom">SUARA WARGA. AKSI NYATA.</span></div>;
