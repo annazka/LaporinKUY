@@ -1,0 +1,12 @@
+.photo-preview{margin:0;overflow:hidden;border:1px solid var(--time-border);border-radius:12px;background:var(--time-surface-0)}
+.photo-preview img{display:block;width:100%;height:260px;object-fit:contain}
+.photo-preview figcaption{padding:9px 12px;color:var(--time-muted);font-size:11px;overflow-wrap:anywhere;border-top:1px solid color-mix(in oklch,var(--time-border) 35%,transparent)}
+.analysis-heading,.analysis-progress{display:flex;align-items:center;gap:9px;color:var(--time-accent)}
+.analysis-heading{font-size:13px}
+.analysis-progress{padding:13px 15px;border:1px solid color-mix(in oklch,var(--time-accent) 25%,transparent);border-radius:10px;background:color-mix(in oklch,var(--time-accent) 5%,transparent);font-size:13px}
+.analysis-spinner{flex-shrink:0;animation:analysis-spin 1s linear infinite}
+.photo-analysis .form-error p{color:inherit;font-size:13px}
+.photo-analysis .form-error .button{margin-top:12px}
+@keyframes analysis-spin{to{transform:rotate(360deg)}}
+@media(max-width:480px){.photo-preview img{height:210px}}
+@media(prefers-reduced-motion:reduce){.analysis-spinner{animation:none}}

@@ -1,24 +1,25 @@
 import {NextResponse} from 'next/server';
 import {authorize} from '@/lib/http';
-import {analyzeImage,GeminiError} from '@/lib/gemini.mjs';
+import {GeminiError} from '@/lib/gemini.mjs';
+import {createAnalysisService} from '@/lib/analysis-service.mjs';
 export const runtime='nodejs';
 export const maxDuration=60;
-// A per-instance burst guard, additional to Google provider quotas and sign-in.
-const requests=new Map<string,number>();
+const analysis=createAnalysisService();
 export async function POST(request:Request){
+ const signal=AbortSignal.any([request.signal,AbortSignal.timeout(55000)]);
  try {
   const user=await authorize(request);
-  const now=Date.now(),last=requests.get(user.id)||0;
-  if(now-last<10000)return NextResponse.json({error:'Tunggu 10 detik sebelum analisis berikutnya.'},{status:429});
+  signal.throwIfAborted();
   if(Number(request.headers.get('content-length')||0)>4300000)return NextResponse.json({error:'Foto maksimal 4 MB.'},{status:413});
   const form=await request.formData();const file=form.get('file');
   if(!(file instanceof File))return NextResponse.json({error:'Pilih foto untuk dianalisis.'},{status:400});
-  requests.set(user.id,now);
-  if(requests.size>1000)for(const [id,time]of requests)if(now-time>60000)requests.delete(id);
-  const result=await analyzeImage(new Uint8Array(await file.arrayBuffer()),file.type);
+  const result=await analysis.run(user.id,new Uint8Array(await file.arrayBuffer()),file.type,{signal});
   return NextResponse.json(result,{headers:{'Cache-Control':'no-store'}});
  }catch(e){
-  if(e instanceof GeminiError)return NextResponse.json({error:e.message,code:e.code},{status:e.status});
-  return NextResponse.json({error:e instanceof Error?e.message:'Analisis gagal.'},{status:400});
+  if(e instanceof GeminiError)return NextResponse.json({error:e.message,code:e.code,retryAfter:e.retryAfter},{status:e.status,headers:{'Cache-Control':'no-store',...(e.retryAfter?{'Retry-After':String(e.retryAfter)}:{})}});
+  if(signal.aborted)return NextResponse.json({error:signal.reason?.name==='TimeoutError'?'Analisis melewati batas waktu. Foto tetap tersedia; silakan coba lagi.':'Analisis dibatalkan.',code:signal.reason?.name==='TimeoutError'?'TIMEOUT':'CANCELLED'},{status:signal.reason?.name==='TimeoutError'?504:499});
+  if(e instanceof Error&&e.message==='Silakan masuk terlebih dahulu.')return NextResponse.json({error:'Sesi masuk berakhir. Silakan masuk kembali sebelum mencoba analisis.',code:'AUTH_REQUIRED'},{status:401});
+  if(e instanceof Error&&e.message==='Asal permintaan tidak valid.')return NextResponse.json({error:'Permintaan tidak valid. Muat ulang halaman lalu coba lagi.',code:'INVALID_ORIGIN'},{status:403});
+  return NextResponse.json({error:'Analisis belum berhasil. Foto tetap tersedia; silakan coba lagi.',code:'ANALYSIS_FAILED'},{status:400});
  }
 }

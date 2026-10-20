@@ -29,3 +29,46 @@ test('quota failures are actionable without exposing provider error body',async(
  try{await assert.rejects(()=>analyzeImage(new Uint8Array([137,80,78,71,13,10,26,10]),'image/png'),e=>e.status===429&&!e.message.includes('fixture-private')&&e.code==='HTTP_429');}
  finally{globalThis.fetch=original;oldKey===undefined?delete process.env.GEMINI_API_KEY:process.env.GEMINI_API_KEY=oldKey;oldModel===undefined?delete process.env.GEMINI_MODEL:process.env.GEMINI_MODEL=oldModel;}
 });
+
+async function withProvider(mock,run){
+ const original=globalThis.fetch,oldKey=process.env.GEMINI_API_KEY,oldModel=process.env.GEMINI_MODEL;
+ process.env.GEMINI_API_KEY='fixture-private';process.env.GEMINI_MODEL='gemini-3.6-flash';globalThis.fetch=mock;
+ try{await run();}finally{globalThis.fetch=original;oldKey===undefined?delete process.env.GEMINI_API_KEY:process.env.GEMINI_API_KEY=oldKey;oldModel===undefined?delete process.env.GEMINI_MODEL:process.env.GEMINI_MODEL=oldModel;}
+}
+const png=new Uint8Array([137,80,78,71,13,10,26,10]);
+test('a transient 503 is retried once within the same shared deadline',async()=>{
+ let calls=0,firstSignal;
+ await withProvider(async(_url,init)=>{
+  calls++;if(calls===1){firstSignal=init.signal;return Response.json({error:{message:'fixture-private',status:'UNAVAILABLE'}},{status:503});}
+  assert.equal(firstSignal.aborted,false);
+  return Response.json({candidates:[{content:{parts:[{text:JSON.stringify(result)}]}}]});
+ },async()=>{assert.equal((await analyzeImage(png,'image/png')).model,'gemini-3.6-flash');assert.equal(calls,2);});
+});
+test('persistent provider failures stop after two attempts rather than looping',async()=>{
+ let calls=0;
+ await withProvider(async()=>{calls++;return Response.json({error:{message:'fixture-private'}},{status:503});},async()=>{
+  await assert.rejects(analyzeImage(png,'image/png'),error=>error.code==='HTTP_503'&&!error.message.includes('fixture-private'));assert.equal(calls,2);
+ });
+});
+test('quota errors carry Retry-After and are never retried automatically',async()=>{
+ let calls=0;
+ await withProvider(async()=>{calls++;return Response.json({error:{details:[{retryDelay:'12s'}]}},{status:429});},async()=>{
+  await assert.rejects(analyzeImage(png,'image/png'),error=>error.status===429&&error.retryAfter===12);assert.equal(calls,1);
+ });
+});
+test('caller cancellation and an expired deadline do not invoke the provider',async()=>{
+ let calls=0;
+ await withProvider(async()=>{calls++;throw Error('should not run');},async()=>{
+  const cancelled=new AbortController();cancelled.abort();
+  await assert.rejects(analyzeImage(png,'image/png',{signal:cancelled.signal}),error=>error.name==='AbortError');
+  const timeout=new AbortController();timeout.abort(new DOMException('Timed out','TimeoutError'));
+  await assert.rejects(analyzeImage(png,'image/png',{signal:timeout.signal}),error=>error.code==='TIMEOUT'&&error.status===504);assert.equal(calls,0);
+ });
+});
+test('configuration errors, malformed responses, and truncated model output never become successful analyses',async()=>{
+ for(const [response,code]of [
+  [()=>Response.json({error:{details:[{reason:'API_KEY_INVALID'}]}},{status:400}),'API_KEY_INVALID'],
+  [()=>new Response('<html>broken upstream</html>'),'INVALID_RESPONSE'],
+  [()=>Response.json({candidates:[{finishReason:'MAX_TOKENS',content:{parts:[]}}]}),'INCOMPLETE_RESULT'],
+ ])await withProvider(async()=>response(),async()=>{await assert.rejects(analyzeImage(png,'image/png'),error=>error.code===code);});
+});

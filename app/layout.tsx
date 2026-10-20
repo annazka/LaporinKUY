@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';import './globals.css';import './night-theme.css';import './refresh.css';import './landing-header.css';import './auth-modal.css';import {AuthProvider} from '@/components/auth-modal';import {Header,Footer} from '@/components/ui';import {SessionRefresh} from '@/components/widgets';import {VisualEffects} from '@/components/visual-effects';
 import './time-palette.css';
+import './photo-analysis.css';
 import {getTheme,timePaletteBootstrap} from '@/lib/time-palette.mjs';
 import type {CSSProperties} from 'react';
 export const metadata:Metadata={title:{default:'LaporKUY. Suara warga, aksi nyata.',template:'%s | LaporKUY'},description:'Laporkan kerusakan infrastruktur Jakarta, pantau progres perbaikan, dan kumpulkan poin dari laporan yang tuntas.'};
