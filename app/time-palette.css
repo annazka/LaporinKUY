@@ -12,13 +12,8 @@ body{
  background-attachment:fixed;
  color:var(--time-text);
 }
-.film-shade{
- background:linear-gradient(155deg,var(--time-canvas),var(--time-surface-0) 55%,var(--time-canvas-end));
-}
-.landing-film::after{
- content:'';position:absolute;inset:0;pointer-events:none;
- background:linear-gradient(155deg,color-mix(in oklch,var(--time-primary-0) 12%,transparent),color-mix(in oklch,var(--time-primary-1) 18%,transparent) 55%,color-mix(in oklch,var(--time-primary-2) 8%,transparent));
-}
+/* Keep the video neutral and dark; only interface colors follow WIB. */
+.film-shade{background:#080808}
 .header:not(.landing-header){background:color-mix(in oklch,var(--time-surface-0) 94%,transparent)}
 .landing-header.is-floating .nav-wrap,.landing-header.menu-open nav{
  background:color-mix(in oklch,var(--time-surface-1) 94%,transparent);
