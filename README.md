@@ -69,4 +69,12 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 - Konfirmasi akhir saat ini oleh pelapor utama. Mekanisme verifikator pengganti setelah 3 hari belum diaktifkan.
 - Belum ada notifikasi email/push harian, SLA per jenis kerusakan, moderasi multiakun, atau pencairan voucher nyata.
 - Kode voucher saat ini hanya merupakan bukti penukaran simulasi. Belum ada pemindaian dan penandaan voucher terpakai oleh mitra.
-- Pemeriksaan build, TypeScript, aturan tanggal, database, dan advisory keamanan tersedia. Pemeriksaan visual browser belum dijalankan pada lingkungan pembuatan.
+- Pemeriksaan build, TypeScript, aturan tanggal, database, dan advisory keamanan tersedia.
+
+## Latar Bundaran HI dan waktu WIB
+
+`public/media/bundaran-hi-wib.mp4` adalah video lampiran 10 detik (1280×720, 24 fps), tanpa audio. Antarmuka memakai token monokrom tetap; perubahan suasana hanya berasal dari video.
+
+`lib/video-clock.mjs` memetakan waktu aktual Asia/Jakarta ke posisi video dengan smoothstep: 00.00→0s, 04.00→2s, 05.00→2s, 09.00→6s, 10.00→6s, 15.00→9s, 16.00→9s, 23.59→10s. Jeda dengan timestamp yang sama mempertahankan frame dengan sambungan halus. Menit terakhir berbaur ke gambar frame pertama agar pergantian hari tersambung. Posisi akhir dibatasi ke frame terakhir yang bisa didekode.
+
+Video selalu dijeda dan dicari posisinya berdasarkan jam aktual, termasuk detik, saat metadata tersedia, setiap detik, dan ketika tab kembali aktif. Tidak ada autoplay atau loop normal. Tombol Bekukan latar menghentikan sinkronisasi; Ikuti waktu WIB langsung menyelaraskannya kembali. Gerakan kendaraan ikut diperlambat oleh pemetaan 24 jam ini. Gerakan normal memerlukan klip terpisah per fase dengan framing yang sama.
