@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import {ArrowUpRight,ArrowRight,MapPin,ShieldCheck,Check,ScanLine,CalendarClock,Layers,Ticket,ChevronDown,MoveDown,Activity} from 'lucide-react';
 import {Eyebrow,ReportCard,Empty} from '@/components/ui';
-import {CityScene} from '@/components/city-scene';
+import {LandingVideo} from '@/components/landing-video';
+import {viewer,configured} from '@/lib/backend';
+import {redirect} from 'next/navigation';
 import {ReportJourney} from '@/components/report-journey';
 import {reports} from '@/lib/backend';
 
@@ -15,17 +17,18 @@ const faqs=[
  ['Apakah voucher sudah bisa dipakai di tempat wisata?','Belum. Poin dan voucher pada tahap prototipe merupakan simulasi. Belum ada kerja sama penukaran tiket dengan penyedia fasilitas atau tempat wisata.'],
 ];
 export default async function Home(){
- let list:Awaited<ReturnType<typeof reports>>=[];let loadFailed=false;
+ const user=await viewer();if(user)redirect('/dashboard');
+ let list:Awaited<ReturnType<typeof reports>>=[];let loadFailed=!configured();
  try{list=await reports();}catch{loadFailed=true;}
  const completed=list.filter(r=>r.status==='completed').length;
- return <div className="landing">
- <section className="night-hero"><div className="hero-halo" aria-hidden="true"/><div className="container hero-intro">
+ return <div className="landing video-landing"><LandingVideo/>
+ <section className="night-hero"><div className="container hero-intro">
  <div className="beta-pill"><span className="live-dot"/> WARGA BERGERAK, JAKARTA MEMBAIK <span className="beta-tag">BETA</span></div>
  <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
- <p>Temukan kerusakan. Laporin. Pantau sampai tuntas.<br className="desktop-break"/>Satu langkah kecilmu, berarti untuk perjalanan banyak orang.</p>
- <div className="hero-actions"><Link className="button" href="/reports/new">Buat laporan <ArrowUpRight size={18}/></Link><Link className="button secondary" href="/reports">Pantau laporan <ArrowRight size={17}/></Link></div>
+ <p>LaporKUY. Laporkan kerusakan infrastruktur. Pantau sampai tuntas.<br className="desktop-break"/>Satu langkah kecilmu, berarti untuk perjalanan banyak orang.</p>
+ <div className="hero-actions"><Link className="button" href="/login?next=%2Freports%2Fnew">Buat laporan <ArrowUpRight size={18}/></Link><Link className="button secondary" href="/login">Masuk <ArrowRight size={17}/></Link></div>
  <div className="hero-trust"><span><ShieldCheck size={14}/> Identitas pelapor terlindungi</span><span><Check size={14}/> Progres bisa kamu pantau</span></div></div>
- <div className="container scene-wrap"><CityScene/></div><a className="scroll-cue" href="#cara-kerja">KENALI LAPORKUY <MoveDown size={14}/></a></section>
+ <div className="hero-location"><MapPin size={14}/> BUNDARAN HI, JAKARTA <span>SUARA WARGA. AKSI NYATA.</span></div><a className="scroll-cue" href="#cara-kerja">KENALI LAPORKUY <MoveDown size={14}/></a></section>
  <div className="values-strip"><div className="container"><span className="values-label">DARI LAPORAN KE AKSI</span><div className="values-list">{values.map(v=><span key={v.label}><v.icon size={16}/>{v.label}</span>)}</div></div></div>
  <section id="cara-kerja" className="container section journey-section reveal"><div className="section-heading"><div><Eyebrow>SETIAP KONTRIBUSI PUNYA PERJALANAN</Eyebrow><h2>Bersuara itu mudah.<br/><span>Melihat hasilnya juga.</span></h2></div><p>Laporanmu punya tujuan yang jelas.<br/>Dari bukti pertama sampai perbaikan terakhir.</p></div><ReportJourney/></section>
  <section className="container section feature-section reveal"><div className="center-heading"><Eyebrow>DIBUAT UNTUK WARGA YANG PEDULI</Eyebrow><h2>Biar setiap laporan<br/>punya <span>arah dan kabar.</span></h2><p>Informasi yang kamu butuhkan, dari satu tempat.</p></div>
@@ -36,6 +39,6 @@ export default async function Home(){
  <section className="community-section reveal"><div className="container"><div className="section-heading"><div><Eyebrow>ANGKA DARI KONTRIBUSI NYATA</Eyebrow><h2>Setiap laporan,<br/><span>satu langkah maju.</span></h2></div><div className="community-label"><Activity size={16}/>{loadFailed?'Data belum dapat dimuat':'Data laporan saat ini'}</div></div>{loadFailed?<p>Data sedang belum tersedia. Silakan buka daftar laporan untuk mencoba kembali.</p>:<div className="community-stats"><div><strong>{list.length.toLocaleString('id-ID')}<span>↗</span></strong><p>Laporan masuk</p></div><div><strong>{completed.toLocaleString('id-ID')}<span>↗</span></strong><p>Perbaikan terkonfirmasi</p></div><div><strong>{list.reduce((a,r)=>a+r.support_count+1,0).toLocaleString('id-ID')}<span>↗</span></strong><p>Kontribusi pelapor</p></div></div>}<small>Angka mengikuti data laporan yang dimuat. Cakupan awal Jakarta.</small></div></section>
  <section className="container section latest reveal"><div className="section-heading"><div><Eyebrow>SUARA DARI SEKITAR KITA</Eyebrow><h2>Kotamu punya cerita.<br/><span>Ini yang perlu dibenahi.</span></h2></div><Link className="text-button" href="/reports">Jelajahi semua laporan <ArrowUpRight size={17}/></Link></div>{loadFailed?<Empty title="Laporan belum dapat dimuat." text="Coba kembali lewat halaman daftar laporan." action={false}/>:list.length?<div className="report-grid">{list.slice(0,3).map(r=><ReportCard key={r.id} report={r}/>)}</div>:<Empty title="Mulai perubahan pertama." text="Belum ada laporan masuk. Temukan kerusakan di sekitarmu dan bantu operator mengetahui lokasinya."/>}</section>
  <section className="container section faq-section reveal"><div><Eyebrow>SEBELUM MULAI MELAPOR</Eyebrow><h2>Masih ada<br/><span>yang ingin ditanyakan?</span></h2><p>Kenali cara LaporKUY bekerja.</p></div><div className="faq-list">{faqs.map(([q,a])=><details key={q}><summary>{q}<ChevronDown size={17}/></summary><p>{a}</p></details>)}</div></section>
- <section className="container join-banner reveal"><div className="cta-orbit" aria-hidden="true"/><div><Eyebrow>JAKARTA LEBIH BAIK, MULAI DARI KITA</Eyebrow><h2>Lihat yang perlu diperbaiki?<br/><span>Lapor<span className="cta-kuy">KUY.</span></span></h2><p>Suaramu hari ini bisa membuat perjalanan besok lebih nyaman.</p></div><Link className="button" href="/reports/new">Ambil bagian sekarang <ArrowUpRight size={19}/></Link></section>
+ <section className="container join-banner reveal"><div className="cta-orbit" aria-hidden="true"/><div><Eyebrow>JAKARTA LEBIH BAIK, MULAI DARI KITA</Eyebrow><h2>Lihat yang perlu diperbaiki?<br/><span>Lapor<span className="cta-kuy">KUY.</span></span></h2><p>Suaramu hari ini bisa membuat perjalanan besok lebih nyaman.</p></div><Link className="button" href="/login?next=%2Freports%2Fnew">Ambil bagian sekarang <ArrowUpRight size={19}/></Link></section>
  </div>;
 }
