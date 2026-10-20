@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {AuthLink} from './auth-modal';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowUpRight,ArrowLeft,Check,MailCheck,LoaderCircle,Link2Off,ShieldCheck} from 'lucide-react';
 import {callbackInput} from '@/lib/email-confirmation.mjs';
@@ -38,7 +39,7 @@ export function EmailConfirmation(){
   </div>
   <h1>{state==='loading'?'Memeriksa konfirmasi email.':success?'Email terkonfirmasi.':error?'Konfirmasi belum berhasil.':'Konfirmasi email kamu.'}</h1>
   <p>{state==='loading'?'Tunggu sebentar, kami sedang memeriksa status emailmu.':success?'Akunmu siap digunakan. Terima kasih sudah ikut menjaga Jakarta. Masuk untuk mulai mengirim laporan dan memantau perbaikannya.':error?message:'Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporKUY.'}</p>
-  {state!=='loading'&&<Link href="/login" className="button full">{success?'Masuk ke LaporKUY':'Coba masuk ke akun'}<ArrowUpRight size={17}/></Link>}
+  {state!=='loading'&&<AuthLink className="button full">{success?'Masuk ke LaporKUY':'Coba masuk ke akun'}<ArrowUpRight size={17}/></AuthLink>}
   {state!=='loading'&&<Link href="/" className="confirmation-back"><ArrowLeft size={14}/>Kembali ke beranda</Link>}
   <div className="confirmation-footer"><ShieldCheck size={14}/> Identitasmu tetap terlindungi.</div>
  </section><span className="confirmation-bottom">SUARA WARGA. AKSI NYATA.</span></div>;

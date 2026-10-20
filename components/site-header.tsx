@@ -31,7 +31,7 @@ export function SiteHeader({brand,actions,children}:{brand:ReactNode;actions:Rea
  return <header ref={header} className={`header${landing?` landing-header${floating?' is-floating':''}${open?' menu-open':''}`:''}`}>
   <div className="nav-wrap">{brand}
    {landing?<nav id="landing-navigation" aria-label="Informasi LaporKUY">{sections.map(({id,label,icon:Icon})=><a key={id} href={`#${id}`} onClick={()=>setOpen(false)}><Icon size={15}/>{label}</a>)}</nav>:children}
-   <div className="nav-actions">{actions}</div>
+   <div className="nav-actions" onClick={()=>setOpen(false)}>{actions}</div>
    {landing&&<button className="landing-menu-toggle" type="button" aria-label={open?'Tutup menu':'Buka menu'} aria-expanded={open} aria-controls="landing-navigation" onClick={()=>setOpen(!open)}>{open?<X size={21}/>:<Menu size={21}/>}</button>}
   </div>
  </header>;

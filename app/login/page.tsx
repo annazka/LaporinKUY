@@ -1,3 +1,8 @@
+import {viewer} from '@/lib/backend';
+import {redirect} from 'next/navigation';
 import {safeNext} from '@/lib/rules.mjs';
-import {AuthForm} from '@/components/forms';import {Eyebrow} from '@/components/ui';import {requireViewer,viewer} from '@/lib/backend';import {redirect} from 'next/navigation';
-export default async function Login({searchParams}:{searchParams:Promise<{next?:string}>}){const next=safeNext((await searchParams).next);const u=await viewer();if(u)redirect(next);return <div className="container auth-layout"><div className="auth-copy"><Eyebrow>SELAMAT DATANG KEMBALI</Eyebrow><h1>Satu akun.<br/>Banyak perubahan.</h1><p>Masuk untuk melapor, memantau progres, dan melihat kontribusimu untuk Jakarta.</p><div className="auth-quote">“Lingkungan yang lebih baik dimulai dari warga yang peduli.”</div></div><div className="panel auth-panel"><h2>Masuk ke LaporKUY</h2><p>User dan operator menggunakan halaman masuk yang sama.</p><AuthForm next={next}/></div></div>;}
+export default async function Login({searchParams}:{searchParams:Promise<{next?:string}>}){
+ const next=safeNext((await searchParams).next);
+ if(await viewer())redirect(next);
+ redirect(`/?auth=login&next=${encodeURIComponent(next)}`);
+}
