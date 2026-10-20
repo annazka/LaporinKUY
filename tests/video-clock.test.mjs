@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {phaseClock, phases, secondsInJakarta} from '../lib/video-clock.mjs';
 const at = seconds => new Date(Date.parse('2026-10-20T00:00:00+07:00') + seconds * 1000);
 const weights = state => {
@@ -53,5 +54,21 @@ test('interface stays monochrome while phase videos change', () => {
  for (const [color] of css.matchAll(/#[a-f\d]{3,8}\b|oklch\([^)]+\)/gi)) {
   if (color.startsWith('#')) assert.match(color, /^#(?:([a-f\d])\1\1|([a-f\d]{2})\2\2)$/i);
   else assert.match(color, /^oklch\([\d.]+% 0 0\)$/);
+ }
+});
+
+// Measurements are produced by decoding every generated loop, not by guessing
+// that a crossfade is seamless. Hashes bind those measurements to these assets.
+test('loop boundary motion matches adjacent source frames, within codec tolerance', () => {
+ const fixture = JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json', import.meta.url), 'utf8'));
+ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+ assert.equal(fixture.sourceSha256, hash(readFileSync(new URL('../public/media/bundaran-hi-wib.mp4', import.meta.url))));
+ for (const [phase, asset] of Object.entries(phases)) {
+  const metrics = fixture.phases[phase];
+  assert.equal(metrics.sha256, hash(readFileSync(new URL(`../public${asset.src}`, import.meta.url))));
+  assert.ok(metrics.seam <= metrics.referenceSeam * 1.25 + .15, `${phase}: seam exceeds normal motion`);
+  assert.equal(metrics.fps, 24);
+  assert.ok(metrics.duration >= 8, `${phase}: avoid frequent decoder wraps`);
+  assert.equal(metrics.frames % metrics.cycleFrames, 0);
  }
 });

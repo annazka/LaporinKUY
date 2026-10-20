@@ -7,7 +7,7 @@ type Status = {ready: boolean; failed: boolean; blocked: boolean};
 type Report = (phase: Phase, update: Partial<Status>) => void;
 
 function PhaseVideo({phase, opacity, paused, attempt, report}: {
- phase: Phase; opacity: number; paused: boolean; attempt: number; report: Report;
+ phase: Phase; opacity: number | string; paused: boolean; attempt: number; report: Report;
 }) {
  const video = useRef<HTMLVideoElement>(null);
  const [ready, setReady] = useState(false);
@@ -79,8 +79,27 @@ export function LandingVideo() {
  }, []);
 
  useEffect(() => {
-  let frame = 0;
-  const update = () => { if (!document.hidden) setClock(phaseClock(new Date())); };
+  let frame = 0, clockFrame = 0, lastTick = -Infinity, pair = '';
+  const update = () => {
+   if (document.hidden) return;
+   const next = phaseClock(new Date());
+   // Sample actual WIB at display cadence. Only change React's layer set when
+   // the phase pair changes, so the playing decoders keep their current frame.
+   layer.current?.style.setProperty('--phase-mix', String(next.amount));
+   const nextPair = `${next.from}:${next.to}`;
+   if (nextPair !== pair) { pair = nextPair; setClock(next); }
+  };
+  const tick = (timestamp: number) => {
+   clockFrame = 0;
+   if (document.hidden) return;
+   if (timestamp - lastTick >= 1000 / 30) { update(); lastTick = timestamp; }
+   clockFrame = requestAnimationFrame(tick);
+  };
+  const resume = () => {
+   if (document.hidden) { cancelAnimationFrame(clockFrame); clockFrame = 0; return; }
+   update();
+   if (!clockFrame) clockFrame = requestAnimationFrame(tick);
+  };
   const scroll = () => {
    if (frame) return;
    frame = requestAnimationFrame(() => {
@@ -92,19 +111,18 @@ export function LandingVideo() {
   };
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const reduce = () => { if (motion.matches) setPaused(true); };
-  reduce(); update(); scroll();
-  const timer = window.setInterval(update, 1000);
+  reduce(); resume(); scroll();
   motion.addEventListener('change', reduce);
-  document.addEventListener('visibilitychange', update);
-  window.addEventListener('focus', update);
-  window.addEventListener('pageshow', update);
+  document.addEventListener('visibilitychange', resume);
+  window.addEventListener('focus', resume);
+  window.addEventListener('pageshow', resume);
   window.addEventListener('scroll', scroll, {passive: true});
   return () => {
-   window.clearInterval(timer); cancelAnimationFrame(frame);
+   cancelAnimationFrame(clockFrame); cancelAnimationFrame(frame);
    motion.removeEventListener('change', reduce);
-   document.removeEventListener('visibilitychange', update);
-   window.removeEventListener('focus', update);
-   window.removeEventListener('pageshow', update);
+   document.removeEventListener('visibilitychange', resume);
+   window.removeEventListener('focus', resume);
+   window.removeEventListener('pageshow', resume);
    window.removeEventListener('scroll', scroll);
   };
  }, []);
@@ -120,7 +138,7 @@ export function LandingVideo() {
  return <>
   <div ref={layer} className="landing-film" aria-hidden="true">
    {active.map((phase, index) => <PhaseVideo key={phase} phase={phase}
-    opacity={index === 0 ? 1 : clock!.amount} paused={paused} attempt={attempt} report={report}/>)}
+    opacity={index === 0 ? 1 : 'var(--phase-mix,0)'} paused={paused} attempt={attempt} report={report}/>)}
    <div className="film-shade"/>
   </div>
   <button type="button" className="film-control" onClick={toggle} disabled={failed || !ready} aria-pressed={paused}>
