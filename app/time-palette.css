@@ -1,0 +1,39 @@
+/* Every role is sampled from the same WIB palette. Gradient geometry is fixed. */
+:root{
+ --ink:var(--time-text);--muted:var(--time-muted);--mint:var(--time-accent);
+ --green:var(--time-accent);--line:var(--time-border);--paper:var(--time-canvas);--white:var(--time-text);
+ color-scheme:dark;
+}
+body{
+ background:
+  radial-gradient(ellipse at 85% 0%,color-mix(in oklch,var(--time-primary-1) 38%,transparent),transparent 65%),
+  radial-gradient(ellipse at 10% 100%,color-mix(in oklch,var(--time-primary-2) 16%,transparent),transparent 60%),
+  linear-gradient(155deg,var(--time-canvas),var(--time-surface-0) 55%,var(--time-canvas-end));
+ background-attachment:fixed;
+ color:var(--time-text);
+}
+.film-shade{
+ background:linear-gradient(155deg,var(--time-canvas),var(--time-surface-0) 55%,var(--time-canvas-end));
+}
+.landing-film::after{
+ content:'';position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(155deg,color-mix(in oklch,var(--time-primary-0) 12%,transparent),color-mix(in oklch,var(--time-primary-1) 18%,transparent) 55%,color-mix(in oklch,var(--time-primary-2) 8%,transparent));
+}
+.header:not(.landing-header){background:color-mix(in oklch,var(--time-surface-0) 94%,transparent)}
+.landing-header.is-floating .nav-wrap,.landing-header.menu-open nav{
+ background:color-mix(in oklch,var(--time-surface-1) 94%,transparent);
+}
+.button,.button.light{background:var(--time-accent);border-color:var(--time-accent);color:var(--time-on-accent)}
+.button:hover{background:var(--time-accent-hover);border-color:var(--time-accent-hover);color:var(--time-on-accent)}
+.button.secondary,.button.secondary:hover{color:var(--time-text)}
+.button.secondary{background:color-mix(in oklch,var(--time-surface-0) 35%,transparent);border-color:var(--time-border)}
+.button.secondary:hover{background:var(--time-surface-1)}
+.brand-symbol,.auth-dialog-symbol{background:var(--time-accent);color:var(--time-on-accent)}
+.hero-intro h1>span{background-image:linear-gradient(110deg,var(--time-accent-hover),var(--time-accent))}
+.auth-dialog{background:linear-gradient(145deg,var(--time-surface-2),var(--time-surface-0));color:var(--time-text)}
+.auth-mode-switch button[aria-pressed=true]{background:var(--time-surface-accent);color:var(--time-accent)}
+.progress-track>span{background:linear-gradient(90deg,var(--time-primary-1),var(--time-accent))}
+.film-control{background:color-mix(in oklch,var(--time-surface-0) 90%,transparent);color:var(--time-text)}
+.feature-ticket{background:linear-gradient(140deg,var(--time-accent-hover),var(--time-accent));color:var(--time-on-accent)}
+.feature-ticket>span{color:var(--time-on-accent)}
+html[data-time-sync] *,html[data-time-sync] *::before,html[data-time-sync] *::after{transition:none!important}
