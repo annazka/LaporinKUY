@@ -67,8 +67,19 @@ test('loop boundary motion matches adjacent source frames, within codec toleranc
   const metrics = fixture.phases[phase];
   assert.equal(metrics.sha256, hash(readFileSync(new URL(`../public${asset.src}`, import.meta.url))));
   assert.ok(metrics.seam <= metrics.referenceSeam * 1.25 + .15, `${phase}: seam exceeds normal motion`);
-  assert.equal(metrics.fps, 24);
+  assert.equal(metrics.fps, phase === 'night' ? 30 : 24);
+  if (metrics.sourcePath) assert.equal(metrics.sourceSha256, hash(readFileSync(new URL(`../public${metrics.sourcePath}`, import.meta.url))));
   assert.ok(metrics.duration >= 8, `${phase}: avoid frequent decoder wraps`);
   assert.equal(metrics.frames % metrics.cycleFrames, 0);
  }
+});
+
+test('night retains a continuous long section instead of repeating subsecond snippets', () => {
+ const {night} = JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json', import.meta.url), 'utf8')).phases;
+ assert.equal(night.repetitions, 1);
+ assert.equal(night.cycleFrames, night.frames);
+ assert.ok(night.cycleFrames / night.fps >= 19);
+ assert.equal(night.sourcePath, '/media/sources/bundaran-hi-night-original.mp4');
+ assert.ok(night.oneSecondDifference > 1, 'decoded pictures must not return to the same frame every second');
+ assert.ok((night.sourceEndFrame - night.sourceStartFrame) / night.fps >= 20);
 });

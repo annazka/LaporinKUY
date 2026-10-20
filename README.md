@@ -73,7 +73,13 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 
 ## Latar Bundaran HI dan waktu WIB
 
-Antarmuka tetap monokrom. Empat klip terpisah di `public/media/phases` bergerak otomatis dengan kecepatan asli (1x), tanpa audio. Klip diambil dari video lampiran `bundaran-hi-wib.mp4` dengan framing yang sama. Jalankan `python scripts/generate-phase-loops.py` dengan ffmpeg untuk membangunnya kembali. Sambungan loop memakai overlap smoothstep dengan bobot awal/akhir tepat 0 dan 1, tanpa gerakan mundur. Beberapa siklus disatukan dalam video berdurasi minimal 8 detik agar decoder tidak perlu mengulang file setiap detik. Pola gerakan tetap berasal dari potongan pendek yang sama. Rekaman asal hanya 10 detik: siklus gerakan tiap fase sekitar 0,7–2 detik, sehingga pola kendaraan akan berulang. Ini bukan siaran kamera langsung.
+Antarmuka tetap monokrom. Gerakan video mengikuti kecepatan asli; fase dipilih berdasarkan WIB.
+
+Fase malam memakai satu bagian 22 detik dari rekaman asli proyek, disimpan di `public/media/sources/bundaran-hi-night-original.mp4`. File sumber 88,2 detik itu sendiri sudah mengulang bagian sekitar 22 detik. Overlap akhir–awal 3 detik menghasilkan satu loop 19 detik pada 30 fps. Gerakan tidak kembali ke awal setiap satu detik. Tidak ada penggandaan potongan pendek untuk memperpanjang durasi malam.
+
+Pagi, siang, dan sore masih bersumber dari video AI 10 detik: gerakan uniknya hanya sekitar 0,7–2 detik per fase. File hasil 8 detik berisi pengulangan potongan tersebut, sehingga ketiga fase ini **masih membutuhkan rekaman yang lebih panjang** untuk menghilangkan pengulangan cepat. Menggandakan durasi file atau menambah crossfade tidak menambah gerakan unik.
+
+Jalankan `python scripts/generate-phase-loops.py --phase night` untuk membangun ulang malam saja, atau hilangkan `--phase` untuk semua fase. Generator mempertahankan frame rate sumber dan memakai overlap smoothstep, tanpa memperlambat atau membalik gerakan. Output diperiksa sebelum menggantikan video aktif.
 
 `lib/video-clock.mjs` memilih perpaduan klip berdasarkan waktu aktual Asia/Jakarta: malam 18.00–05.00, pagi 05.00–10.00, siang 10.00–15.00, sore 15.00–18.00. Peralihan memakai smoothstep selama satu jam sebelum sampai satu jam setelah batas fase (04.00–06.00, 09.00–11.00, 14.00–16.00, 17.00–19.00). Pergantian hari tetap pada klip malam yang sama tanpa reset. Perpaduan diperbarui pada frame tampilan (hingga 30 kali/detik) dari waktu aktual, serta langsung saat tab aktif kembali; gerakan video tidak mengikuti pemetaan 10 detik menjadi 24 jam.
 

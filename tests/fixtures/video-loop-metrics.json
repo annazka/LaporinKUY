@@ -2,15 +2,21 @@
   "sourceSha256": "4155ef77dced6f5c993d82fbc4db834d481f238d5d10cc2015c16b96a96b632a",
   "phases": {
     "night": {
-      "frames": 192,
-      "seam": 1.3797222222222223,
-      "median": 0.8224305555555556,
-      "seamRatio": 1.6776154690534495,
-      "referenceSeam": 1.2849305555555555,
-      "fps": 24,
-      "cycleFrames": 24,
-      "duration": 8.0,
-      "sha256": "7ab7802a28feca63c7efb51f0d1e7c48040d16238986fde1be772cd2034f8937"
+      "frames": 570,
+      "seam": 4.056180555555556,
+      "median": 0.47965277777777776,
+      "seamRatio": 8.456493412480093,
+      "oneSecondDifference": 7.192430555555555,
+      "referenceSeam": 3.42,
+      "sourcePath": "/media/sources/bundaran-hi-night-original.mp4",
+      "sourceSha256": "0c7b64b40890e8f9eab7b393bbcad245af39e96a137caea8465821786fa160d0",
+      "repetitions": 1,
+      "sourceStartFrame": 0,
+      "sourceEndFrame": 660,
+      "fps": 30,
+      "cycleFrames": 570,
+      "duration": 19.0,
+      "sha256": "42c7211dfa87d2e3d5401f8c25646e8a6507e777e11f5fe625b67f4a4ba90fd6"
     },
     "morning": {
       "frames": 192,
