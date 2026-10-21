@@ -22,7 +22,7 @@ function ReportSlide({report:r,duplicate=false}:{report:Report;duplicate?:boolea
  </Link>;
 }
 
-const orbitSlots=8;
+const orbitSlots=12;
 const reportIndex=(logical:number,count:number)=>((logical%count)+count)%count;
 const orbitIndices=(phase:number)=>Array.from({length:orbitSlots},(_,slot)=>slot+orbitSlots*Math.floor((phase-slot+orbitSlots/2)/orbitSlots));
 const orbitStyle=(logical:number,phase:number):CSSProperties=>{
@@ -46,7 +46,7 @@ function ReportOrbit({reports}:{reports:Report[]}){
    const accessible=new Map<number,number>();
    next.forEach((value,index)=>{
     const distance=Math.abs(value-phase.current),id=reportIndex(value,reports.length);
-    if(distance<1.8&&(!accessible.has(id)||distance<Math.abs(next[accessible.get(id)!]-phase.current)))accessible.set(id,index);
+    if(distance<orbitSlots*.225&&(!accessible.has(id)||distance<Math.abs(next[accessible.get(id)!]-phase.current)))accessible.set(id,index);
    });
    slots.forEach((slot,index)=>{
     const angle=(next[index]-phase.current)*2*Math.PI/orbitSlots,front=Math.cos(angle);
