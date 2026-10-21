@@ -50,11 +50,23 @@
     },
     "evening": {
       "frames": 204,
-      "seam": 0.924375,
-      "median": 0.759375,
-      "seamRatio": 1.217283950617284,
-      "oneSecondDifference": 4.170381944444445,
-      "referenceSeam": 0.7459027777777778,
+      "seam": 1.081388888888889,
+      "median": 0.34631944444444446,
+      "seamRatio": 3.122518548225386,
+      "oneSecondDifference": 2.4631944444444445,
+      "referenceSeam": 0.9924305555555556,
+      "stabilization": {
+        "method": "static-background-homography",
+        "referenceFrame": 120,
+        "minimumInliers": 501,
+        "maxRegistrationErrorPixels": 0.5754401087760925,
+        "fixedCrop": [
+          130,
+          73,
+          1020,
+          574
+        ]
+      },
       "stabilized": true,
       "referenceStage": "stabilized",
       "sourcePath": "/media/sources/bundaran-hi-evening-original.mp4",
@@ -65,7 +77,13 @@
       "fps": 24,
       "cycleFrames": 204,
       "duration": 8.5,
-      "sha256": "7aeaa00905fac5390c7e5e9d25dd5d4cbd65b08d44b6755906b1e9f8aa5793c3"
+      "sha256": "69d06e0a8f01c294a6e7a5c1563fcaeaa116b2c1549680f2dd157f63b99194cb",
+      "backgroundContinuity": {
+        "checkedFrames": 204,
+        "minimumMatches": 505,
+        "maxMedianDisplacementPixels": 0.4653034806251526,
+        "worstFrame": 23
+      }
     }
   }
 }

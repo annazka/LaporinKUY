@@ -101,3 +101,10 @@ test('new morning and evening uploads keep their assigned phase and a full conti
   assert.equal(metrics.stabilized, true);
  }
 });
+
+test('evening background remains aligned throughout the exported dissolve', () => {
+ const { evening } = JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json', import.meta.url), 'utf8')).phases;
+ assert.equal(evening.backgroundContinuity.checkedFrames, evening.frames, 'inspect every decoded frame, including the overlap');
+ assert.ok(evening.backgroundContinuity.minimumMatches >= 80);
+ assert.ok(evening.backgroundContinuity.maxMedianDisplacementPixels <= 2, 'background must not tilt or jump during the dissolve');
+});

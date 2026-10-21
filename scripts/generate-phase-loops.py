@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import statistics
 import subprocess
+import sys
 import tempfile
 
 source = Path('public/media/bundaran-hi-wib.mp4')
@@ -57,7 +58,14 @@ with tempfile.TemporaryDirectory(prefix='.phase-build-', dir=output) as temporar
             continue
         processing_source = clip_source
         stabilized = phase in {'morning', 'evening'}
-        if stabilized:
+        stabilization = None
+        if phase == 'evening':
+            processing_source = Path(temporary) / f'{phase}-stable.mp4'
+            registration = Path(temporary) / f'{phase}-registration.json'
+            subprocess.run([sys.executable, 'scripts/stabilize-video.py', str(clip_source),
+                            str(processing_source), str(registration)], check=True)
+            stabilization = json.loads(registration.read_text())
+        elif stabilized:
             # These uploads pan vertically. A fixed virtual tripod avoids a
             # city-wide jump when the loop joins, while vehicles keep moving.
             transforms = Path(temporary).resolve() / f'{phase}.trf'
@@ -116,6 +124,12 @@ with tempfile.TemporaryDirectory(prefix='.phase-build-', dir=output) as temporar
         if metrics['seam'] > reference * 1.25 + .15:
             raise RuntimeError(f'{phase}: excess discontinuity: {metrics}, reference={reference}')
         metrics['referenceSeam'] = reference
+        if stabilization:
+            # Checking just the cyclic last/first seam misses bad registration
+            # inside the tail/head dissolve. Inspect every exported frame.
+            checked = subprocess.check_output([sys.executable, 'scripts/check-video-background.py', str(video)], text=True)
+            metrics['backgroundContinuity'] = json.loads(checked)
+            metrics['stabilization'] = stabilization
         metrics['stabilized'] = stabilized
         metrics['referenceStage'] = 'stabilized' if stabilized else 'original'
         metrics['sourcePath'] = '/' + str(clip_source.relative_to('public'))
