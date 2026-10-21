@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import statistics
 import subprocess
@@ -20,16 +21,16 @@ output.mkdir(exist_ok=True)
 # recording (the 88.2-second file already repeats this section); a repeated short snippet cannot replace that footage.
 night_source = Path('public/media/sources/bundaran-hi-night-original.mp4')
 clips = {'night': (night_source, 30, 0, 660, 90),
-         'morning': (source, 24, 54, 78, 8),
+         'morning': (Path('public/media/sources/bundaran-hi-morning-original.mp4'), 24, 0, 240, 36),
          'day': (source, 24, 84, 156, 24),
-         'evening': (source, 24, 162, 189, 9)}
+         'evening': (Path('public/media/sources/bundaran-hi-evening-original.mp4'), 24, 0, 240, 36)}
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--phase', choices=clips, help='Rebuild only this phase')
 selected = parser.parse_args().phase
 
 def run(*args):
     subprocess.run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error',
-                    *map(str, args)], check=True)
+                    *map(str, args)], check=True, env={**os.environ, 'OMP_NUM_THREADS': '2'})
 
 def continuity(video, fps):
     # Downsampled luma difference: the boundary should look like an ordinary
@@ -54,7 +55,21 @@ with tempfile.TemporaryDirectory(prefix='.phase-build-', dir=output) as temporar
     for phase, (clip_source, FPS, start, end, fade) in clips.items():
         if selected and phase != selected:
             continue
-        source_raw = subprocess.check_output(['ffmpeg', '-v', 'error', '-i', str(clip_source),
+        processing_source = clip_source
+        stabilized = phase in {'morning', 'evening'}
+        if stabilized:
+            # These uploads pan vertically. A fixed virtual tripod avoids a
+            # city-wide jump when the loop joins, while vehicles keep moving.
+            transforms = Path(temporary).resolve() / f'{phase}.trf'
+            processing_source = Path(temporary) / f'{phase}-stable.mp4'
+            run('-i', clip_source, '-vf',
+                f'vidstabdetect=tripod=1:accuracy=15:result={transforms}',
+                '-an', '-f', 'null', '-')
+            run('-i', clip_source, '-vf',
+                f'vidstabtransform=input={transforms}:tripod=1:optzoom=1:interpol=bicubic:crop=black',
+                '-an', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', 0,
+                processing_source)
+        source_raw = subprocess.check_output(['ffmpeg', '-v', 'error', '-i', str(processing_source),
             '-vf', 'scale=160:90', '-f', 'rawvideo', '-pix_fmt', 'gray', '-'])
         source_frames = [source_raw[i:i+160*90] for i in range(0, len(source_raw), 160*90)]
         count = end - start
@@ -75,15 +90,16 @@ with tempfile.TemporaryDirectory(prefix='.phase-build-', dir=output) as temporar
         repetitions = math.ceil(8 * FPS / cycle_frames)
         video = Path(temporary) / f'{phase}-final.mp4'
         if repetitions == 1:
+            encoding = ['-crf', '18', '-maxrate', '6000k', '-bufsize', '12000k'] if stabilized else ['-b:v', '1800k', '-maxrate', '2200k', '-bufsize', '3600k']
             # Real continuous footage, not an extended file of repeated snippets.
-            run('-i', clip_source, '-filter_complex_threads', 1, '-filter_complex', graph,
+            run('-i', processing_source, '-filter_complex_threads', 1, '-filter_complex', graph,
                 '-map', '[out]', '-an', '-c:v', 'libx264', '-preset', 'medium',
-                '-b:v', '1800k', '-maxrate', '2200k', '-bufsize', '3600k',
+                *encoding,
                 '-g', FPS * 2, '-keyint_min', FPS * 2, '-sc_threshold', 0,
                 '-movflags', '+faststart', video)
         else:
             cycle = Path(temporary) / f'{phase}.mp4'
-            run('-i', clip_source, '-filter_complex_threads', 1, '-filter_complex', graph,
+            run('-i', processing_source, '-filter_complex_threads', 1, '-filter_complex', graph,
                 '-map', '[out]', '-an', '-c:v', 'libx264', '-preset', 'medium',
                 '-crf', 0, '-g', FPS, '-sc_threshold', 0, cycle)
             run('-stream_loop', repetitions - 1, '-i', cycle, '-an',
@@ -100,6 +116,8 @@ with tempfile.TemporaryDirectory(prefix='.phase-build-', dir=output) as temporar
         if metrics['seam'] > reference * 1.25 + .15:
             raise RuntimeError(f'{phase}: excess discontinuity: {metrics}, reference={reference}')
         metrics['referenceSeam'] = reference
+        metrics['stabilized'] = stabilized
+        metrics['referenceStage'] = 'stabilized' if stabilized else 'original'
         metrics['sourcePath'] = '/' + str(clip_source.relative_to('public'))
         metrics['sourceSha256'] = hashlib.sha256(clip_source.read_bytes()).hexdigest()
         metrics['repetitions'] = repetitions

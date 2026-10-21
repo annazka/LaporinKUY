@@ -19,15 +19,23 @@
       "sha256": "42c7211dfa87d2e3d5401f8c25646e8a6507e777e11f5fe625b67f4a4ba90fd6"
     },
     "morning": {
-      "frames": 192,
-      "seam": 1.1456944444444443,
-      "median": 1.6685416666666666,
-      "seamRatio": 0.6866441919507221,
-      "referenceSeam": 0.8272222222222222,
+      "frames": 204,
+      "seam": 0.7772222222222223,
+      "median": 0.40770833333333334,
+      "seamRatio": 1.9063191960483734,
+      "oneSecondDifference": 2.4676388888888887,
+      "referenceSeam": 0.5917361111111111,
+      "stabilized": true,
+      "referenceStage": "stabilized",
+      "sourcePath": "/media/sources/bundaran-hi-morning-original.mp4",
+      "sourceSha256": "3f8228e8da06f87a41ba9f97361dad4a32f760b2bee04f117cbcefde8fc2db86",
+      "repetitions": 1,
+      "sourceStartFrame": 0,
+      "sourceEndFrame": 240,
       "fps": 24,
-      "cycleFrames": 16,
-      "duration": 8.0,
-      "sha256": "c6eaf7d660d5edaec4d9c9f00e6160882e6fff7df77bdfbd3f39cf17aa6ae9ce"
+      "cycleFrames": 204,
+      "duration": 8.5,
+      "sha256": "193e58c0c9eafd72a0a5e037ee114f5b225b6d423b557f8613f5519f707c54c9"
     },
     "day": {
       "frames": 192,
@@ -41,15 +49,23 @@
       "sha256": "5e7d35211250a5f96a3e0d9905a9142c4ac89f8b95338fd4702fb7e4b5b10e90"
     },
     "evening": {
-      "frames": 198,
-      "seam": 0.98375,
-      "median": 0.8158333333333333,
-      "seamRatio": 1.2058222676200205,
-      "referenceSeam": 0.7384027777777777,
+      "frames": 204,
+      "seam": 0.924375,
+      "median": 0.759375,
+      "seamRatio": 1.217283950617284,
+      "oneSecondDifference": 4.170381944444445,
+      "referenceSeam": 0.7459027777777778,
+      "stabilized": true,
+      "referenceStage": "stabilized",
+      "sourcePath": "/media/sources/bundaran-hi-evening-original.mp4",
+      "sourceSha256": "d7ac124afd0ab58da6df4c0685c7873dbdeb19862268a8b68355185e684ba610",
+      "repetitions": 1,
+      "sourceStartFrame": 0,
+      "sourceEndFrame": 240,
       "fps": 24,
-      "cycleFrames": 18,
-      "duration": 8.25,
-      "sha256": "a51efb5e380924dcd1f8eb3acab80da9696328bfae95423c172415d364876d3b"
+      "cycleFrames": 204,
+      "duration": 8.5,
+      "sha256": "7aeaa00905fac5390c7e5e9d25dd5d4cbd65b08d44b6755906b1e9f8aa5793c3"
     }
   }
 }

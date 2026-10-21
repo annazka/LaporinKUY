@@ -83,3 +83,21 @@ test('night retains a continuous long section instead of repeating subsecond sni
  assert.ok(night.oneSecondDifference > 1, 'decoded pictures must not return to the same frame every second');
  assert.ok((night.sourceEndFrame - night.sourceStartFrame) / night.fps >= 20);
 });
+
+test('new morning and evening uploads keep their assigned phase and a full continuous cycle', () => {
+ const fixture = JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json', import.meta.url), 'utf8'));
+ const uploads = {
+  morning: '3f8228e8da06f87a41ba9f97361dad4a32f760b2bee04f117cbcefde8fc2db86',
+  evening: 'd7ac124afd0ab58da6df4c0685c7873dbdeb19862268a8b68355185e684ba610',
+ };
+ for (const [phase, hash] of Object.entries(uploads)) {
+  const metrics = fixture.phases[phase];
+  assert.equal(metrics.sourceSha256, hash, `${phase}: wrong uploaded source`);
+  assert.equal(metrics.repetitions, 1);
+  assert.equal(metrics.cycleFrames, metrics.frames);
+  assert.equal(metrics.duration, 8.5);
+  assert.equal(metrics.sourceStartFrame, 0);
+  assert.equal(metrics.sourceEndFrame, 240);
+  assert.equal(metrics.stabilized, true);
+ }
+});
