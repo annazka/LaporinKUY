@@ -4,8 +4,8 @@ Website pelaporan jalan berlubang Jakarta, dengan akun warga dan operator. Diban
 
 ## Fitur versi awal
 
-- Beranda, pendaftaran, login, dashboard warga, daftar dan pencarian laporan, peta lokasi, detail dan riwayat progres.
-- Foto bukti privat, alamat, koordinat GPS atau manual. Cakupan awal Jakarta daratan.
+- Beranda dengan slider foto laporan, pencarian dan filter status, pendaftaran, login, dashboard warga, detail dan riwayat progres. Halaman daftar laporan dipusatkan di `/#laporan`; halaman peta dan katalog rewards ditunda.
+- Pratinjau foto awal laporan publik, foto bukti tambahan privat, alamat, koordinat GPS atau manual. Cakupan awal Jakarta daratan.
 - Penggabungan otomatis sementara berdasarkan kategori dan radius 25 meter, tanpa AI. Laporan tambahan dari akun berbeda menjadi upvote. Akun yang sama memperbarui bukti tanpa tambahan upvote.
 - Maksimal 10 laporan aktif per akun. Tidak menerapkan pembagian 7 diproses dan 3 pending.
 - Operator memverifikasi laporan, menentukan prioritas, tanggal mulai, dan target selesai.
@@ -54,7 +54,7 @@ Setelan Authentication URL pada Supabase harus mengarah ke domain Vercel yang di
 
 ## Hak akses
 
-Data laporan dan riwayat dapat dibaca publik. Identitas pelapor tidak ada pada tabel laporan publik. Submission, saldo poin, dan kode voucher hanya dapat dibaca pemiliknya. Bucket foto privat. Foto laporan dan pembaruan yang sudah terkait laporan dapat dilihat pengguna login melalui endpoint yang memeriksa RLS. Foto unggahan yang belum terkait hanya dapat diakses pemiliknya. Hindari unggahan data pribadi.
+Data laporan dan riwayat dapat dibaca publik. Identitas pelapor tidak ada pada tabel laporan publik. Submission, saldo poin, dan kode voucher hanya dapat dibaca pemiliknya. Bucket foto tetap privat. Kebijakan `public_report_preview` mengizinkan pengunjung membaca hanya foto awal yang sudah direferensikan laporan publik. Endpoint `/api/report-preview/[id]` menyelesaikan path dari ID laporan, memvalidasi path dan jenis gambar, lalu membaca Storage dengan key publik dan RLS; tanpa service role. Foto pembaruan tetap memerlukan login melalui endpoint privat yang memeriksa RLS. Foto unggahan yang belum terkait hanya dapat diakses pemiliknya. Hindari unggahan data pribadi.
 
 Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemeriksaan identitas. Fungsi berhak khusus ada pada schema `private`, bukan schema API. Tabel tidak mengizinkan pengguna melakukan insert, update, atau delete langsung. Session memakai cookie HttpOnly dan pemeriksaan pengguna pada Supabase. Form mutasi memeriksa Origin.
 
@@ -76,3 +76,13 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 Landing page untuk sementara memakai latar polos gelap monokrom (#080808). Seluruh file MP4 background, termasuk loop setiap fase dan video sumber, telah dihapus dari aset aplikasi. Halaman tidak memasang pemutar, kontrol, ataupun sinkronisasi video sehingga tidak mengunduh video.
 
 Kode pengolahan video dan poster tetap disimpan untuk membantu pemasangan video pengganti nanti. Generator belum dapat dijalankan sampai file sumber baru tersedia; hasil pengukuran lama di fixture merupakan arsip, bukan validasi aset aktif. Video baru belum diaktifkan.
+
+## Laporan di landing page
+
+`/#laporan` menampilkan seluruh laporan yang dimuat (batas pengambilan yang ada: 200), pencarian judul/alamat, dan filter status. Kartu menggunakan foto asli melalui endpoint pratinjau. Tidak ada gambar atau laporan contoh yang ditambahkan saat foto gagal dimuat; kartu menampilkan “Foto belum tersedia”.
+
+Slider bergerak kontinu 25 piksel/detik dengan dua grup berukuran sama. Salinan visual memenuhi viewport dan diberi `aria-hidden` serta dikeluarkan dari urutan tab; jumlah laporan tetap menghitung data unik. Gerakan berhenti saat hover, fokus, sentuhan, tab tersembunyi, atau slider di luar layar. Tombol jeda dan tampilan semua laporan tersedia. Preferensi reduced motion memakai daftar statis. Pengguna login tetap dapat membuka landing page; masuk dan pembuatan laporan tetap mengikuti alur akun.
+
+`/reports` mengarahkan ke `/#laporan`; `/map` dan `/rewards` mengarahkan ke `/`. Detail `/reports/[id]`, pembuatan laporan, API dan data poin tetap tersedia. Tidak ada pengganti peta atau rewards baru.
+
+Jalankan migrasi `202610210001_landing_report_previews.sql` untuk akses foto awal publik. `tests/landing-previews.sql` memeriksa bahwa foto awal dapat dibaca anonim sementara foto pembaruan dan unggahan yang belum dikirim tetap privat; pengujian berakhir dengan rollback dan hanya boleh dijalankan pada database pengembangan yang diizinkan.
