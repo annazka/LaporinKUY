@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import {ArrowUpRight,ArrowRight,MapPin,ShieldCheck,Check,ScanLine,CalendarClock,Layers,Ticket,ChevronDown,MoveDown,Activity} from 'lucide-react';
 import {Eyebrow,ReportCard,Empty} from '@/components/ui';
-import {LandingVideo} from '@/components/landing-video';
 import {AuthLink,AuthEntry} from '@/components/auth-modal';
 import {safeNext} from '@/lib/rules.mjs';
 import {viewer,configured} from '@/lib/backend';
@@ -24,14 +23,14 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  let list:Awaited<ReturnType<typeof reports>>=[];let loadFailed=!configured();
  try{list=await reports();}catch{loadFailed=true;}
  const completed=list.filter(r=>r.status==='completed').length;
- return <div className="landing video-landing"><LandingVideo/>{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
+ return <div className="landing plain-landing">{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
  <div className="beta-pill"><span className="live-dot"/> WARGA BERGERAK, JAKARTA MEMBAIK <span className="beta-tag">BETA</span></div>
  <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
  <p>LaporKUY. Laporkan kerusakan infrastruktur. Pantau sampai tuntas.<br className="desktop-break"/>Satu langkah kecilmu, berarti untuk perjalanan banyak orang.</p>
  <div className="hero-actions"><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={18}/></AuthLink><AuthLink className="button secondary">Masuk <ArrowRight size={17}/></AuthLink></div>
  <div className="hero-trust"><span><ShieldCheck size={14}/> Identitas pelapor terlindungi</span><span><Check size={14}/> Progres bisa kamu pantau</span></div></div>
- <div className="hero-location"><MapPin size={14}/> BUNDARAN HI, JAKARTA <span>SUARA WARGA. AKSI NYATA.</span></div><a className="scroll-cue" href="#cara-kerja">KENALI LAPORKUY <MoveDown size={14}/></a></section>
+ <div className="hero-location"><MapPin size={14}/> JAKARTA, INDONESIA <span>SUARA WARGA. AKSI NYATA.</span></div><a className="scroll-cue" href="#cara-kerja">KENALI LAPORKUY <MoveDown size={14}/></a></section>
  <div className="values-strip"><div className="container"><span className="values-label">DARI LAPORAN KE AKSI</span><div className="values-list">{values.map(v=><span key={v.label}><v.icon size={16}/>{v.label}</span>)}</div></div></div>
  <section id="cara-kerja" className="container section journey-section reveal"><div className="section-heading"><div><Eyebrow>SETIAP KONTRIBUSI PUNYA PERJALANAN</Eyebrow><h2>Bersuara itu mudah.<br/><span>Melihat hasilnya juga.</span></h2></div><p>Laporanmu punya tujuan yang jelas.<br/>Dari bukti pertama sampai perbaikan terakhir.</p></div><ReportJourney/></section>
  <section id="fitur" className="container section feature-section reveal"><div className="center-heading"><Eyebrow>DIBUAT UNTUK WARGA YANG PEDULI</Eyebrow><h2>Biar setiap laporan<br/>punya <span>arah dan kabar.</span></h2><p>Informasi yang kamu butuhkan, dari satu tempat.</p></div>

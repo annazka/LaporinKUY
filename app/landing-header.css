@@ -23,7 +23,7 @@
 .landing-header .nav-actions{margin-left:0;flex-shrink:0}
 .landing-header .button.small{border-radius:999px}
 .landing-header a:focus-visible,.landing-menu-toggle:focus-visible{outline:2px solid var(--mint);outline-offset:5px}
-.video-landing:is(#fitur,#cara-kerja,#dampak,#faq){scroll-margin-top:12px}
+.plain-landing:is(#fitur,#cara-kerja,#dampak,#faq){scroll-margin-top:12px}
 @media(max-width:1100px){
  .landing-header .nav-wrap{padding-inline:22px;gap:18px}
  .landing-header nav{gap:18px}

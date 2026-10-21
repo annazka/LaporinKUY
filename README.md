@@ -71,20 +71,8 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 - Kode voucher saat ini hanya merupakan bukti penukaran simulasi. Belum ada pemindaian dan penandaan voucher terpakai oleh mitra.
 - Pemeriksaan build, TypeScript, aturan tanggal, database, dan advisory keamanan tersedia.
 
-## Latar Bundaran HI dan waktu WIB
+## Latar landing page
 
-Antarmuka tetap monokrom. Gerakan video mengikuti kecepatan asli; fase dipilih berdasarkan WIB.
+Landing page untuk sementara memakai latar polos gelap monokrom (#080808). Seluruh file MP4 background, termasuk loop setiap fase dan video sumber, telah dihapus dari aset aplikasi. Halaman tidak memasang pemutar, kontrol, ataupun sinkronisasi video sehingga tidak mengunduh video.
 
-Fase malam memakai satu bagian 22 detik dari rekaman asli proyek, disimpan di `public/media/sources/bundaran-hi-night-original.mp4`. File sumber 88,2 detik itu sendiri sudah mengulang bagian sekitar 22 detik. Overlap akhir–awal 3 detik menghasilkan satu loop 19 detik pada 30 fps. Gerakan tidak kembali ke awal setiap satu detik. Tidak ada penggandaan potongan pendek untuk memperpanjang durasi malam.
-
-Fase pagi memakai unggahan pertama `gemini_generated_video_866dbb65.mp4`, disimpan sebagai `public/media/sources/bundaran-hi-morning-original.mp4`. Fase sore memakai unggahan kedua `gemini_generated_video_160826ac.mp4`, disimpan sebagai `bundaran-hi-evening-original.mp4` pada direktori yang sama. Keduanya berisi 240 frame pada 24 fps (10 detik). Kamera pagi distabilkan dengan virtual tripod. Kamera sore diselaraskan ke gedung pada frame tengah menggunakan homography dan crop tetap; pencarian gerak yang terbatas sebelumnya gagal mengikuti pan pada frame akhir sehingga dissolve menimbulkan bayangan gedung bergeser. Setiap frame hasil sore, termasuk seluruh dissolve, diperiksa agar median pergeseran fitur gedung tidak melebihi 2 piksel. Overlap 1,5 detik menghasilkan satu siklus gerakan 8,5 detik, tanpa menggandakan potongan pendek atau mengubah kecepatan.
-
-Fase siang sementara masih memakai video sebelumnya (siklus gerakan 2 detik yang diulang dalam file 8 detik), sambil menunggu unggahan pengganti dari pengguna.
-
-Jalankan `python scripts/generate-phase-loops.py --phase night` untuk membangun ulang malam saja, atau hilangkan `--phase` untuk semua fase. Pasang dependensi pengolahan video melalui `python -m pip install -r scripts/video-requirements.txt`. Generator memerlukan ffmpeg dengan libvidstab untuk pagi, serta OpenCV dan NumPy untuk penyelarasan sore, mempertahankan frame rate sumber dan memakai overlap smoothstep, tanpa memperlambat atau membalik gerakan. Output diperiksa sebelum menggantikan video aktif.
-
-`lib/video-clock.mjs` memilih perpaduan klip berdasarkan waktu aktual Asia/Jakarta: malam 18.00–05.00, pagi 05.00–10.00, siang 10.00–15.00, sore 15.00–18.00. Peralihan memakai smoothstep selama satu jam sebelum sampai satu jam setelah batas fase (04.00–06.00, 09.00–11.00, 14.00–16.00, 17.00–19.00). Pergantian hari tetap pada klip malam yang sama tanpa reset. Perpaduan diperbarui pada frame tampilan (hingga 30 kali/detik) dari waktu aktual, serta langsung saat tab aktif kembali; gerakan video tidak mengikuti pemetaan 10 detik menjadi 24 jam.
-
-Video dijeda ketika tab tersembunyi, atas pilihan pengguna, atau jika preferensi reduced motion aktif. Tombol Putar video melanjutkan gerakan dan dapat mengaktifkan autoplay yang diblokir browser. Sinkronisasi fase WIB tetap otomatis saat gerakan dijeda. Poster sesuai fase tetap tampil bila video gagal dimuat. Efek blur dan overlay gelap saat scroll dipertahankan.
-
-Generator memeriksa jumlah frame, membandingkan perubahan luminans di sambungan dengan dua frame sumber yang memang bersebelahan, dan menyimpan hasil beserta SHA-256 aset di `tests/fixtures/video-loop-metrics.json`. `npm test` memeriksa batas diskontinuitas serta kecocokan hash. Ini mengukur sambungan, bukan mengklaim rekaman pendek memiliki gerakan unik tanpa pengulangan.
+Kode pengolahan video dan poster tetap disimpan untuk membantu pemasangan video pengganti nanti. Generator belum dapat dijalankan sampai file sumber baru tersedia; hasil pengukuran lama di fixture merupakan arsip, bukan validasi aset aktif. Video baru belum diaktifkan.
