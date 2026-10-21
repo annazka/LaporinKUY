@@ -5,6 +5,7 @@ import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
 import {ArrowUpRight,CameraOff,Clock3,LayoutGrid,MapPin,Search,Rows3} from 'lucide-react';
 import {formatDate,statusLabels,type Report} from '@/lib/types';
 import {isOverdue} from '@/lib/rules.mjs';
+import {orbitSlots,orbitIndices,orbitLayout} from '@/lib/orbit-layout.mjs';
 
 function ReportPreview({report}:{report:Report}){
  const [failed,setFailed]=useState(false);
@@ -22,25 +23,23 @@ function ReportSlide({report:r,duplicate=false}:{report:Report;duplicate?:boolea
  </Link>;
 }
 
-const orbitSlots=12;
 const reportIndex=(logical:number,count:number)=>((logical%count)+count)%count;
-const orbitIndices=(phase:number)=>Array.from({length:orbitSlots},(_,slot)=>slot+orbitSlots*Math.floor((phase-slot+orbitSlots/2)/orbitSlots));
-const orbitStyle=(logical:number,phase:number):CSSProperties=>{
- const angle=(logical-phase)*2*Math.PI/orbitSlots,front=Math.cos(angle);
- return {'--orbit-x':Math.sin(angle),'--orbit-z':front-1,'--orbit-angle':`${angle*180/Math.PI}deg`,opacity:Math.max(0,Math.min(1,(front+.05)/.4))} as CSSProperties;
-};
+const orbitStyle=(card:ReturnType<typeof orbitLayout>[number]):CSSProperties=>({
+ '--orbit-offset-x':`${card.x}px`,'--orbit-z':card.z,'--orbit-angle':`${card.angle}deg`,opacity:card.opacity,
+} as CSSProperties);
 
 function ReportOrbit({reports}:{reports:Report[]}){
  const viewport=useRef<HTMLDivElement>(null),stage=useRef<HTMLDivElement>(null);
  const phase=useRef(.5),logical=useRef(orbitIndices(.5));
  const [entries,setEntries]=useState(()=>orbitIndices(.5));
+ const geometry=useRef({width:300,perspective:1400,depth:495,gap:12,tilt:.78});
  useEffect(()=>{
   const box=viewport.current,ring=stage.current;
   if(!box||!ring)return;
   const slots=Array.from(ring.querySelectorAll<HTMLElement>('.report-orbit-slot'));
   let visible=false,hovered=false,focused=false,pressed=false,previous=0,frame=0;
   const paint=()=>{
-   const next=orbitIndices(phase.current);
+   const layout=orbitLayout(phase.current,geometry.current),next=layout.map(card=>card.logical);
    if(next.some((value,index)=>value!==logical.current[index])){logical.current=next;setEntries(next);}
    // Only the frontmost visible copy of each real report enters the tab order.
    const accessible=new Map<number,number>();
@@ -49,15 +48,21 @@ function ReportOrbit({reports}:{reports:Report[]}){
     if(distance<orbitSlots*.225&&(!accessible.has(id)||distance<Math.abs(next[accessible.get(id)!]-phase.current)))accessible.set(id,index);
    });
    slots.forEach((slot,index)=>{
-    const angle=(next[index]-phase.current)*2*Math.PI/orbitSlots,front=Math.cos(angle);
-    slot.style.setProperty('--orbit-x',Math.sin(angle).toFixed(6));slot.style.setProperty('--orbit-z',(front-1).toFixed(6));slot.style.setProperty('--orbit-angle',`${angle*180/Math.PI}deg`);
-    slot.style.opacity=String(Math.max(0,Math.min(1,(front+.05)/.4)));
-    slot.style.pointerEvents=front>.2?'auto':'none';
+    const card=layout[index];
+    slot.style.setProperty('--orbit-offset-x',`${card.x.toFixed(4)}px`);slot.style.setProperty('--orbit-z',String(card.z));slot.style.setProperty('--orbit-angle',`${card.angle}deg`);
+    slot.style.opacity=String(card.opacity);
+    slot.style.pointerEvents=card.front>.2&&card.opacity>0?'auto':'none';
     const exposed=accessible.get(reportIndex(next[index],reports.length))===index;
     slot.setAttribute('aria-hidden',String(!exposed));
     const link=slot.querySelector<HTMLAnchorElement>('a');if(link)link.tabIndex=exposed?0:-1;
    });
   };
+  const measure=()=>{
+   const css=getComputedStyle(box),width=parseFloat(getComputedStyle(slots[0]).width);
+   geometry.current={width,perspective:parseFloat(css.perspective),depth:width*parseFloat(css.getPropertyValue('--orbit-depth-factor')),gap:parseFloat(css.getPropertyValue('--orbit-gap')),tilt:parseFloat(css.getPropertyValue('--orbit-tilt-factor'))};
+   paint();
+  };
+  const resize=new ResizeObserver(measure);resize.observe(box);measure();
   const cardAt=(target:EventTarget|null)=>target instanceof Element?target.closest('.landing-report-card'):null;
   const over=(event:PointerEvent)=>{if(event.pointerType!=='touch'&&cardAt(event.target))hovered=true;};
   const out=(event:PointerEvent)=>{if(event.pointerType!=='touch')hovered=Boolean(cardAt(event.relatedTarget));};
@@ -80,11 +85,12 @@ function ReportOrbit({reports}:{reports:Report[]}){
    if(visible&&!document.hidden&&!hovered&&!focused&&!pressed){phase.current+=delta/7000;paint();}
    frame=requestAnimationFrame(tick);
   };frame=requestAnimationFrame(tick);
-  return()=>{cancelAnimationFrame(frame);observer.disconnect();box.removeEventListener('pointerover',over);box.removeEventListener('pointerout',out);box.removeEventListener('focusin',focus);box.removeEventListener('focusout',blur);box.removeEventListener('pointerdown',press);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);document.removeEventListener('visibilitychange',visibility);};
+  return()=>{cancelAnimationFrame(frame);observer.disconnect();resize.disconnect();box.removeEventListener('pointerover',over);box.removeEventListener('pointerout',out);box.removeEventListener('focusin',focus);box.removeEventListener('focusout',blur);box.removeEventListener('pointerdown',press);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release);document.removeEventListener('visibilitychange',visibility);};
  },[reports.length]);
+ const initial=orbitLayout(phase.current,geometry.current);
  return <div ref={viewport} className="report-orbit" role="region" aria-label="Karusel 3D laporan warga" aria-roledescription="karusel">
   <div ref={stage} className="report-orbit-stage">
-   {entries.map((value,slot)=><div className="report-orbit-slot" data-slot={slot} key={slot} style={orbitStyle(value,phase.current)}>
+   {entries.map((value,slot)=><div className="report-orbit-slot" data-slot={slot} key={slot} style={orbitStyle(initial[slot])}>
     <ReportSlide report={reports[reportIndex(value,reports.length)]} duplicate/>
    </div>)}
   </div>
