@@ -6,10 +6,10 @@ import {Blocks,Construction,Route,ShieldCheck,CircleHelp,MapPin,Ticket,Menu,X} f
 
 const sections=[
  {id:'fitur',label:'Fitur',icon:Blocks},
+ {id:'cara-kerja',label:'Cara kerja',icon:Route},
  {id:'laporan',label:'Laporan',icon:Construction},
  {id:'peta',label:'Peta',icon:MapPin},
  {id:'voucher',label:'Voucher',icon:Ticket},
- {id:'cara-kerja',label:'Cara kerja',icon:Route},
  {id:'dampak',label:'Dampak',icon:ShieldCheck},
  {id:'faq',label:'FAQ',icon:CircleHelp},
 ];
