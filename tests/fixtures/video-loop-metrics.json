@@ -1,20 +1,20 @@
 {
-  "method": "cyclic 3-second smoothstep overlap; fixed monument and architecture plate with feathered live roads/water",
+  "method": "fixed road/monument plate with instance-segmented vehicles and inner fountain water",
   "phases": {
     "night": {
       "sourceName": "malam.mp4",
       "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
-      "sha256": "d54b62d1936409c1352278a9fd3526086e2cb9e5a52b8396598bd0867d205b45",
+      "sha256": "700f6635e37711b08e510382ea71ec0f621c035447732b3b9605ecfbae1b6951",
       "fps": 30.0,
       "frames": 460,
       "duration": 15.333333333333334,
       "overlapSeconds": 3.0,
-      "seam": 0.3325694501399994,
+      "seam": 0.33020833134651184,
       "referenceSeam": 0.7763194441795349,
-      "medianFrameDifference": 0.22354166209697723,
+      "medianFrameDifference": 0.09680555760860443,
       "backgroundContinuity": {
         "checkedFrames": 460,
-        "minimumMatches": 1114,
+        "minimumMatches": 1179,
         "maxMedianDisplacementPixels": 0.0,
         "worstFrame": 0
       },
@@ -31,8 +31,9 @@
         ]
       },
       "anchorLock": {
-        "method": "fixed reference plate; feathered live traffic and fountain",
+        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
         "inputSha256": "c112f8c8a85b8a93fe26825eb1325b9a51e3549dbce2c42813bdb913c9656c51",
+        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
         "anchorBox": [
           590,
           310,
@@ -40,26 +41,30 @@
           300
         ],
         "checkedFrames": 460,
-        "maxMonumentDisplacementPixels": 0.000217897177208215,
-        "maxMonumentMeanPixelChange": 0.03228282928466797,
-        "medianTrafficFrameDifference": 4.55576753616333,
-        "liveAreaFraction": 0.18266710069444445
+        "maxMonumentDisplacementPixels": 6.463726458605379e-05,
+        "maxMonumentMeanPixelChange": 0.03890909254550934,
+        "maxRoadDisplacementPixels": 8.63167442730628e-05,
+        "maxRoadMeanPixelChange": 0.03156932815909386,
+        "staticRoadPixelCount": 66742,
+        "medianVehiclePixels": 5687.0,
+        "medianTrafficFrameDifference": 14.469490051269531,
+        "liveAreaFraction": 0.006170789930555556
       }
     },
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "5080bcc58fea1f595a47dfddfc351337fb5db61d29195761676b573824eb1489",
+      "sha256": "f904c17a6389b1899b1a769ed6dd3c02b15fe255a9eef07685ca4c752371b203",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.3546527922153473,
+      "seam": 0.26569443941116333,
       "referenceSeam": 0.851527750492096,
-      "medianFrameDifference": 0.2514583468437195,
+      "medianFrameDifference": 0.1470833271741867,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 1041,
+        "minimumMatches": 1101,
         "maxMedianDisplacementPixels": 0.0,
         "worstFrame": 0
       },
@@ -76,8 +81,9 @@
         ]
       },
       "anchorLock": {
-        "method": "fixed reference plate; feathered live traffic and fountain",
+        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
         "inputSha256": "6f9611722f04890584914644032592b35ba380323113f8183f25958c27aad9f5",
+        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
         "anchorBox": [
           605,
           185,
@@ -85,26 +91,30 @@
           255
         ],
         "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.0005645968485623598,
-        "maxMonumentMeanPixelChange": 0.02123921550810337,
-        "medianTrafficFrameDifference": 3.322305679321289,
-        "liveAreaFraction": 0.23401909722222222
+        "maxMonumentDisplacementPixels": 0.00013115297770127654,
+        "maxMonumentMeanPixelChange": 0.031341176480054855,
+        "maxRoadDisplacementPixels": 0.0002244293864350766,
+        "maxRoadMeanPixelChange": 0.02395349182188511,
+        "staticRoadPixelCount": 107166,
+        "medianVehiclePixels": 17494.5,
+        "medianTrafficFrameDifference": 9.111021995544434,
+        "liveAreaFraction": 0.018982747395833333
       }
     },
     "day": {
       "sourceName": "Siang.mp4",
       "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "4f6080f9b69d24be3b310c68e407d6fa0cbdbc1bffbf11e43837cbda54f7fddc",
+      "sha256": "a2bb250c24814fee519dcc803e1d3c84e14434ff9501f5c01f22c6759408ba07",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.3177083432674408,
+      "seam": 0.13909722864627838,
       "referenceSeam": 0.8118749856948853,
-      "medianFrameDifference": 0.26499998569488525,
+      "medianFrameDifference": 0.13249999284744263,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 809,
+        "minimumMatches": 866,
         "maxMedianDisplacementPixels": 0.0,
         "worstFrame": 0
       },
@@ -121,8 +131,9 @@
         ]
       },
       "anchorLock": {
-        "method": "fixed reference plate; feathered live traffic and fountain",
+        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
         "inputSha256": "bf5a8d1940799266fa40ead004beb9c68ea46c489936dd93ce94875099b67f42",
+        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
         "anchorBox": [
           600,
           290,
@@ -130,26 +141,30 @@
           275
         ],
         "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.0002701542107388377,
-        "maxMonumentMeanPixelChange": 0.024027971550822258,
-        "medianTrafficFrameDifference": 4.232254981994629,
-        "liveAreaFraction": 0.18036458333333333
+        "maxMonumentDisplacementPixels": 0.0,
+        "maxMonumentMeanPixelChange": 0.01787412539124489,
+        "maxRoadDisplacementPixels": 0.00016848783707246184,
+        "maxRoadMeanPixelChange": 0.03676356375217438,
+        "staticRoadPixelCount": 64466,
+        "medianVehiclePixels": 11620.5,
+        "medianTrafficFrameDifference": 10.61090087890625,
+        "liveAreaFraction": 0.012609049479166667
       }
     },
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "dcf799f24d3b4a34191c20cb55062a27eccce916cb70c15f2c7fb9741256e59b",
+      "sha256": "db6e63a0027fad735940db9fc402c1fcb79760297851726381d1f3798e22b4e9",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.38409721851348877,
+      "seam": 0.36576390266418457,
       "referenceSeam": 0.9945138692855835,
-      "medianFrameDifference": 0.3638888895511627,
+      "medianFrameDifference": 0.21847222745418549,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 1118,
+        "minimumMatches": 1206,
         "maxMedianDisplacementPixels": 0.0,
         "worstFrame": 0
       },
@@ -166,8 +181,9 @@
         ]
       },
       "anchorLock": {
-        "method": "fixed reference plate; feathered live traffic and fountain",
+        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
         "inputSha256": "a716cf0603e0817bf3dcc28b0ea7a0ef75226e140a4d788b4c411dfb2a81df57",
+        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
         "anchorBox": [
           600,
           225,
@@ -175,10 +191,14 @@
           285
         ],
         "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.00030517578125,
-        "maxMonumentMeanPixelChange": 0.015542560257017612,
-        "medianTrafficFrameDifference": 5.001468181610107,
-        "liveAreaFraction": 0.21037977430555554
+        "maxMonumentDisplacementPixels": 0.0001942089875228703,
+        "maxMonumentMeanPixelChange": 0.032046783715486526,
+        "maxRoadDisplacementPixels": 0.00013647876039613038,
+        "maxRoadMeanPixelChange": 0.03924946486949921,
+        "staticRoadPixelCount": 75466,
+        "medianVehiclePixels": 20130.5,
+        "medianTrafficFrameDifference": 12.276518821716309,
+        "liveAreaFraction": 0.021842990451388888
       }
     }
   }

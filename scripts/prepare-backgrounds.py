@@ -26,7 +26,7 @@ output.mkdir(parents=True, exist_ok=True)
 names = {'morning':'Pagi.mp4','day':'Siang.mp4','evening':'Sore.mp4','night':'malam.mp4'}
 manifest_path = Path('tests/fixtures/video-loop-metrics.json')
 manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-manifest = {'method':'cyclic 3-second smoothstep overlap; fixed monument and architecture plate with feathered live roads/water', 'phases':manifest.get('phases',{})}
+manifest = {'method':'cyclic 3-second smoothstep overlap; fixed road/monument plate with instance-segmented vehicles and inner fountain water', 'phases':manifest.get('phases',{})}
 
 def run(*command):
     subprocess.run(list(map(str,command)), check=True)

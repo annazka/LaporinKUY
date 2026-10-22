@@ -19,7 +19,10 @@ test('active videos match validated exports and keep long normal-speed forward c
   assert.ok(record.anchorLock.maxMonumentDisplacementPixels<=.05,`${phase}: monument shakes`);
   assert.ok(record.anchorLock.maxMonumentMeanPixelChange<=.1,`${phase}: unstable monument plate`);
   assert.ok(record.anchorLock.medianTrafficFrameDifference>.2,`${phase}: traffic was frozen`);
-  assert.ok(record.anchorLock.liveAreaFraction>.15,`${phase}: insufficient live footage`);
+  assert.ok(record.anchorLock.staticRoadPixelCount>=5000,`${phase}: no independent road anchors`);
+  assert.ok(record.anchorLock.maxRoadDisplacementPixels<=.1,`${phase}: roadway shakes`);
+  assert.ok(record.anchorLock.maxRoadMeanPixelChange<=.2,`${phase}: road texture is moving`);
+  assert.ok(record.anchorLock.medianVehiclePixels>=500,`${phase}: moving vehicles missing`);
   assert.ok(record.seam<=record.referenceSeam*1.3+.25,`${phase}: cyclic seam`);
  }
 });
