@@ -3,17 +3,26 @@ import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
 import {MapPin,LocateFixed,ArrowUpRight,X} from 'lucide-react';
 import type {Report} from '@/lib/types';
-import {statusLabels} from '@/lib/types';
+import {statusLabels,formatDate} from '@/lib/types';
+import {relativeTime} from '@/lib/relative-time.mjs';
 import {validCoordinates} from '@/lib/rules.mjs';
 import type {Map as LeafletMap} from 'leaflet';
 
 export function LandingMap({reports,failed}:{reports:Report[];failed:boolean}){
  const [loading,setLoading]=useState(true),[filter,setFilter]=useState('all'),[selected,setSelected]=useState<string|null>(null),[location,setLocation]=useState<[number,number]|null>(null),[locating,setLocating]=useState(false),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
+ const [now,setNow]=useState<number|null>(null);
  const canvas=useRef<HTMLDivElement>(null),map=useRef<LeafletMap|null>(null),request=useRef(0);
- const located=reports.filter(r=>validCoordinates(r.latitude,r.longitude));
+ const located=reports.filter(r=>validCoordinates(r.latitude,r.longitude)).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
  const filtered=located.filter(r=>filter==='completed'?r.status==='completed':filter==='active'?['verified','scheduled','in_progress','awaiting_confirmation'].includes(r.status):filter==='nearby'&&location?Math.hypot((r.latitude-location[0])*111,(r.longitude-location[1])*110)<=5:true);
  const chosen=filtered.find(r=>r.id===selected)||null;
- // Rebuild only when data/filter changes, never as the landing page scrolls.
+ useEffect(()=>{
+  const refresh=()=>setNow(Date.now());
+  refresh();
+  const timer=setInterval(()=>{if(!document.hidden)refresh();},60000);
+  document.addEventListener('visibilitychange',refresh);
+  return()=>{clearInterval(timer);document.removeEventListener('visibilitychange',refresh);};
+ },[]);
+ // Rebuild only when data/filter changes, never for clock ticks or scrolling.
  const signature=JSON.stringify(filtered.map(r=>[r.id,r.latitude,r.longitude,r.title]));
  useEffect(()=>{
   if(!canvas.current)return;
@@ -51,7 +60,7 @@ export function LandingMap({reports,failed}:{reports:Report[];failed:boolean}){
  <div className="map-toolbar" role="group" aria-label="Filter peta laporan">{[['all','Semua laporan'],['active','Dalam penanganan'],['completed','Selesai']].map(([value,label])=><button key={value} type="button" aria-pressed={filter===value} onClick={()=>{setFilter(value);setSelected(null);}}>{label}</button>)}<button type="button" aria-pressed={filter==='nearby'} disabled={locating} onClick={nearby}><LocateFixed size={15}/>{locating?'Mencari lokasi…':'Sekitar saya'}</button></div>
  {error&&<p className="map-error" role="status">{error} <button type="button" onClick={()=>setAttempt(n=>n+1)}>Coba lagi</button></p>}
  <div className="landing-map-panel"><div className="map-viewport" aria-busy={loading}><div ref={canvas} className="report-map-canvas" aria-label="Peta lokasi laporan Jakarta"/>{loading&&<p className="map-loading" role="status">Memuat peta…</p>} {chosen&&<article className="map-detail"><button className="map-detail-close" type="button" aria-label="Tutup detail laporan di peta" onClick={()=>setSelected(null)}><X size={18}/></button><img src={`/api/report-preview/${chosen.id}`} alt={`Foto ${chosen.title}`} onError={e=>{e.currentTarget.style.display='none';}}/><div><small>{statusLabels[chosen.status]||chosen.status}</small><h3>{chosen.title}</h3><p>{chosen.address}</p><progress value={chosen.progress} max={100} aria-label="Progres perbaikan"/><p>{chosen.progress}% progres</p><Link className="text-button" href={`/reports/${chosen.id}`}>Lihat detail laporan <ArrowUpRight size={16}/></Link></div></article>}</div>
- <aside className="map-report-list" aria-label="Daftar laporan pada peta"><div className="map-list-heading"><strong>{filter==='nearby'?'Dalam radius 5 km':'Laporan di peta'}</strong><span>{filtered.length} laporan</span></div>{failed?<p>Data laporan belum dapat dimuat. Muat ulang halaman.</p>:!filtered.length?<p>Belum ada laporan dengan lokasi yang sesuai filter ini.</p>:filtered.map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>setSelected(r.id)}><MapPin size={18}/><span><small>{statusLabels[r.status]||r.status}</small><strong>{r.title}</strong><span>{r.address}</span></span><ArrowUpRight size={16}/></button>)}</aside>
+ <aside className="map-report-list" aria-label="Daftar laporan pada peta"><div className="map-list-heading"><strong>{filter==='nearby'?'Dalam radius 5 km':'Laporan terbaru'}</strong><span>{filtered.length} laporan</span></div>{failed?<p>Data laporan belum dapat dimuat. Muat ulang halaman.</p>:!filtered.length?<p>Belum ada laporan dengan lokasi yang sesuai filter ini.</p>:filtered.map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>setSelected(r.id)}><MapPin size={18}/><span><span className="map-report-meta"><small>{statusLabels[r.status]||r.status}</small><time dateTime={r.created_at} title={formatDate(r.created_at)}>{now===null?'…':relativeTime(r.created_at,now)}</time></span><strong>{r.title}</strong><span>{r.address}</span></span><ArrowUpRight size={16}/></button>)}</aside>
 
  </div><p className="section-footnote">Hanya laporan dengan koordinat valid yang ditampilkan. Lokasi perangkat digunakan saat kamu memilih “Sekitar saya” dan tidak disimpan.</p></section>;
 }
