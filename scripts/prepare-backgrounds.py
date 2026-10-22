@@ -26,7 +26,7 @@ output.mkdir(parents=True, exist_ok=True)
 names = {'morning':'Pagi.mp4','day':'Siang.mp4','evening':'Sore.mp4','night':'malam.mp4'}
 manifest_path = Path('tests/fixtures/video-loop-metrics.json')
 manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-manifest = {'method':'stabilized cyclic tail/head smoothstep overlap', 'phases':manifest.get('phases',{})}
+manifest = {'method':'cyclic 3-second smoothstep overlap; fixed monument and architecture plate with feathered live roads/water', 'phases':manifest.get('phases',{})}
 
 def run(*command):
     subprocess.run(list(map(str,command)), check=True)
@@ -62,6 +62,10 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             f'[middle][bridge]concat=n=2:v=1:a=0,format=yuv420p[out]')
         destination=output/f'{phase}.mp4'
         run('ffmpeg','-y','-v','error','-i',stable,'-filter_complex_threads','1','-filter_complex',graph,'-map','[out]','-an','-c:v','libx264','-threads','2','-preset','medium','-crf','21','-maxrate','4500k','-bufsize','9000k','-r',fps,'-g',round(fps*2),'-keyint_min',round(fps*2),'-sc_threshold','0','-movflags','+faststart',destination)
+        locked=work/f'{phase}-locked.mp4'
+        anchor_metrics=work/f'{phase}-anchor.json'
+        run(sys.executable,'scripts/lock-video-background.py',destination,locked,phase,anchor_metrics)
+        locked.replace(destination)
         decoded=luma(destination)
         original=luma(stable)
         diffs=np.abs(np.diff(decoded,axis=0)).mean(axis=(1,2))
@@ -71,7 +75,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             raise RuntimeError(f'{phase}: unexpected frame count or visible cyclic reset: {seam}, reference {reference}')
         drift=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-background.py',str(destination)],text=True))
         run('ffmpeg','-y','-v','error','-i',destination,'-frames:v','1','-q:v','3',output/f'{phase}.jpg')
-        record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'stabilization':json.loads(registration.read_text())}
+        record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'stabilization':json.loads(registration.read_text()),'anchorLock':json.loads(anchor_metrics.read_text())}
         with open('/tmp/laporkuy-background-manifest.lock','w') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             latest=json.loads(manifest_path.read_text()) if manifest_path.exists() else {}

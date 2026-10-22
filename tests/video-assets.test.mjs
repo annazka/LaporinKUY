@@ -15,6 +15,11 @@ test('active videos match validated exports and keep long normal-speed forward c
   assert.equal(record.overlapSeconds,3);
   assert.equal(record.backgroundContinuity.checkedFrames,record.frames);
   assert.ok(record.backgroundContinuity.maxMedianDisplacementPixels<=3,`${phase}: camera drift`);
+  assert.equal(record.anchorLock.checkedFrames,record.frames);
+  assert.ok(record.anchorLock.maxMonumentDisplacementPixels<=.05,`${phase}: monument shakes`);
+  assert.ok(record.anchorLock.maxMonumentMeanPixelChange<=.1,`${phase}: unstable monument plate`);
+  assert.ok(record.anchorLock.medianTrafficFrameDifference>.2,`${phase}: traffic was frozen`);
+  assert.ok(record.anchorLock.liveAreaFraction>.15,`${phase}: insufficient live footage`);
   assert.ok(record.seam<=record.referenceSeam*1.3+.25,`${phase}: cyclic seam`);
  }
 });

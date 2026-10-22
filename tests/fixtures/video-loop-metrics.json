@@ -1,22 +1,22 @@
 {
-  "method": "stabilized cyclic tail/head smoothstep overlap",
+  "method": "cyclic 3-second smoothstep overlap; fixed monument and architecture plate with feathered live roads/water",
   "phases": {
     "night": {
       "sourceName": "malam.mp4",
       "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
-      "sha256": "c112f8c8a85b8a93fe26825eb1325b9a51e3549dbce2c42813bdb913c9656c51",
+      "sha256": "d54b62d1936409c1352278a9fd3526086e2cb9e5a52b8396598bd0867d205b45",
       "fps": 30.0,
       "frames": 460,
       "duration": 15.333333333333334,
       "overlapSeconds": 3.0,
-      "seam": 1.0286110639572144,
+      "seam": 0.3325694501399994,
       "referenceSeam": 0.7763194441795349,
-      "medianFrameDifference": 0.6894444227218628,
+      "medianFrameDifference": 0.22354166209697723,
       "backgroundContinuity": {
         "checkedFrames": 460,
-        "minimumMatches": 254,
-        "maxMedianDisplacementPixels": 1.5523606538772583,
-        "worstFrame": 382
+        "minimumMatches": 1114,
+        "maxMedianDisplacementPixels": 0.0,
+        "worstFrame": 0
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -29,24 +29,39 @@
           1216,
           684
         ]
+      },
+      "anchorLock": {
+        "method": "fixed reference plate; feathered live traffic and fountain",
+        "inputSha256": "c112f8c8a85b8a93fe26825eb1325b9a51e3549dbce2c42813bdb913c9656c51",
+        "anchorBox": [
+          590,
+          310,
+          165,
+          300
+        ],
+        "checkedFrames": 460,
+        "maxMonumentDisplacementPixels": 0.000217897177208215,
+        "maxMonumentMeanPixelChange": 0.03228282928466797,
+        "medianTrafficFrameDifference": 4.55576753616333,
+        "liveAreaFraction": 0.18266710069444445
       }
     },
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "6f9611722f04890584914644032592b35ba380323113f8183f25958c27aad9f5",
+      "sha256": "5080bcc58fea1f595a47dfddfc351337fb5db61d29195761676b573824eb1489",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.1315972805023193,
+      "seam": 0.3546527922153473,
       "referenceSeam": 0.851527750492096,
-      "medianFrameDifference": 0.8097222447395325,
+      "medianFrameDifference": 0.2514583468437195,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 390,
-        "maxMedianDisplacementPixels": 1.927884578704834,
-        "worstFrame": 153
+        "minimumMatches": 1041,
+        "maxMedianDisplacementPixels": 0.0,
+        "worstFrame": 0
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -59,24 +74,39 @@
           1140,
           641
         ]
+      },
+      "anchorLock": {
+        "method": "fixed reference plate; feathered live traffic and fountain",
+        "inputSha256": "6f9611722f04890584914644032592b35ba380323113f8183f25958c27aad9f5",
+        "anchorBox": [
+          605,
+          185,
+          125,
+          255
+        ],
+        "checkedFrames": 168,
+        "maxMonumentDisplacementPixels": 0.0005645968485623598,
+        "maxMonumentMeanPixelChange": 0.02123921550810337,
+        "medianTrafficFrameDifference": 3.322305679321289,
+        "liveAreaFraction": 0.23401909722222222
       }
     },
     "day": {
       "sourceName": "Siang.mp4",
       "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "bf5a8d1940799266fa40ead004beb9c68ea46c489936dd93ce94875099b67f42",
+      "sha256": "4f6080f9b69d24be3b310c68e407d6fa0cbdbc1bffbf11e43837cbda54f7fddc",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.1634721755981445,
+      "seam": 0.3177083432674408,
       "referenceSeam": 0.8118749856948853,
-      "medianFrameDifference": 0.9221527576446533,
+      "medianFrameDifference": 0.26499998569488525,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 219,
-        "maxMedianDisplacementPixels": 2.0832748413085938,
-        "worstFrame": 4
+        "minimumMatches": 809,
+        "maxMedianDisplacementPixels": 0.0,
+        "worstFrame": 0
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -89,23 +119,38 @@
           1136,
           639
         ]
+      },
+      "anchorLock": {
+        "method": "fixed reference plate; feathered live traffic and fountain",
+        "inputSha256": "bf5a8d1940799266fa40ead004beb9c68ea46c489936dd93ce94875099b67f42",
+        "anchorBox": [
+          600,
+          290,
+          130,
+          275
+        ],
+        "checkedFrames": 168,
+        "maxMonumentDisplacementPixels": 0.0002701542107388377,
+        "maxMonumentMeanPixelChange": 0.024027971550822258,
+        "medianTrafficFrameDifference": 4.232254981994629,
+        "liveAreaFraction": 0.18036458333333333
       }
     },
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "a716cf0603e0817bf3dcc28b0ea7a0ef75226e140a4d788b4c411dfb2a81df57",
+      "sha256": "dcf799f24d3b4a34191c20cb55062a27eccce916cb70c15f2c7fb9741256e59b",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.2393054962158203,
+      "seam": 0.38409721851348877,
       "referenceSeam": 0.9945138692855835,
-      "medianFrameDifference": 1.2156250476837158,
+      "medianFrameDifference": 0.3638888895511627,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 253,
-        "maxMedianDisplacementPixels": 2.117983102798462,
+        "minimumMatches": 1118,
+        "maxMedianDisplacementPixels": 0.0,
         "worstFrame": 0
       },
       "stabilization": {
@@ -119,6 +164,21 @@
           1072,
           603
         ]
+      },
+      "anchorLock": {
+        "method": "fixed reference plate; feathered live traffic and fountain",
+        "inputSha256": "a716cf0603e0817bf3dcc28b0ea7a0ef75226e140a4d788b4c411dfb2a81df57",
+        "anchorBox": [
+          600,
+          225,
+          135,
+          285
+        ],
+        "checkedFrames": 168,
+        "maxMonumentDisplacementPixels": 0.00030517578125,
+        "maxMonumentMeanPixelChange": 0.015542560257017612,
+        "medianTrafficFrameDifference": 5.001468181610107,
+        "liveAreaFraction": 0.21037977430555554
       }
     }
   }
