@@ -1,22 +1,24 @@
 {
-  "method": "fixed road/monument plate with instance-segmented vehicles and inner fountain water",
+  "method": "intact forward footage; whole-frame monument anchoring; cyclic 3-second smoothstep overlap",
   "phases": {
     "night": {
       "sourceName": "malam.mp4",
       "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
-      "sha256": "700f6635e37711b08e510382ea71ec0f621c035447732b3b9605ecfbae1b6951",
+      "sha256": "0b0ce839891d0c16178cde5d5d762252368e986506908f9a3e66b94cd9a42d46",
       "fps": 30.0,
       "frames": 460,
       "duration": 15.333333333333334,
       "overlapSeconds": 3.0,
-      "seam": 0.33020833134651184,
-      "referenceSeam": 0.7763194441795349,
-      "medianFrameDifference": 0.09680555760860443,
+      "seam": 1.1052777767181396,
+      "referenceSeam": 0.785069465637207,
+      "medianFrameDifference": 0.6396527886390686,
       "backgroundContinuity": {
         "checkedFrames": 460,
-        "minimumMatches": 1179,
-        "maxMedianDisplacementPixels": 0.0,
-        "worstFrame": 0
+        "minimumCorrelation": 0.8541618787345729,
+        "maxMonumentDisplacementPixels": 0.3815035820007324,
+        "maximumAdjacentDisplacementPixels": 0.09254223108291626,
+        "loopJoinDisplacementPixels": 0.0308572705835104,
+        "worstFrame": 120
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -30,43 +32,45 @@
           684
         ]
       },
-      "anchorLock": {
-        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
-        "inputSha256": "c112f8c8a85b8a93fe26825eb1325b9a51e3549dbce2c42813bdb913c9656c51",
-        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
-        "anchorBox": [
-          590,
-          310,
-          165,
-          300
+      "monumentAnchor": {
+        "method": "whole-frame-monument-translation",
+        "checkedFrames": 550,
+        "referenceFrame": 275,
+        "minimumCorrelation": 0.8139661171210035,
+        "maximumCorrectionPixels": 1.6753435134887695,
+        "fixedCrop": [
+          8,
+          4,
+          1264,
+          711
         ],
-        "checkedFrames": 460,
-        "maxMonumentDisplacementPixels": 6.463726458605379e-05,
-        "maxMonumentMeanPixelChange": 0.03890909254550934,
-        "maxRoadDisplacementPixels": 8.63167442730628e-05,
-        "maxRoadMeanPixelChange": 0.03156932815909386,
-        "staticRoadPixelCount": 66742,
-        "medianVehiclePixels": 5687.0,
-        "medianTrafficFrameDifference": 14.469490051269531,
-        "liveAreaFraction": 0.006170789930555556
+        "outputAnchorBox": [
+          630,
+          345,
+          66,
+          127
+        ],
+        "preservesWholeFrames": true
       }
     },
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "f904c17a6389b1899b1a769ed6dd3c02b15fe255a9eef07685ca4c752371b203",
+      "sha256": "0271a8d1c0570eccea384fde2d0e3212aab6b11f30557ee252059477d1117c91",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.26569443941116333,
-      "referenceSeam": 0.851527750492096,
-      "medianFrameDifference": 0.1470833271741867,
+      "seam": 1.1162500381469727,
+      "referenceSeam": 0.8514583110809326,
+      "medianFrameDifference": 0.820069432258606,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 1101,
-        "maxMedianDisplacementPixels": 0.0,
-        "worstFrame": 0
+        "minimumCorrelation": 0.9132154822939778,
+        "maxMonumentDisplacementPixels": 0.1359868198633194,
+        "maximumAdjacentDisplacementPixels": 0.10215649008750916,
+        "loopJoinDisplacementPixels": 0.03034706600010395,
+        "worstFrame": 95
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -80,43 +84,45 @@
           641
         ]
       },
-      "anchorLock": {
-        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
-        "inputSha256": "6f9611722f04890584914644032592b35ba380323113f8183f25958c27aad9f5",
-        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
-        "anchorBox": [
-          605,
-          185,
-          125,
-          255
+      "monumentAnchor": {
+        "method": "whole-frame-monument-translation",
+        "checkedFrames": 240,
+        "referenceFrame": 120,
+        "minimumCorrelation": 0.855631570187355,
+        "maximumCorrectionPixels": 1.4924010038375854,
+        "fixedCrop": [
+          7,
+          4,
+          1266,
+          712
         ],
-        "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.00013115297770127654,
-        "maxMonumentMeanPixelChange": 0.031341176480054855,
-        "maxRoadDisplacementPixels": 0.0002244293864350766,
-        "maxRoadMeanPixelChange": 0.02395349182188511,
-        "staticRoadPixelCount": 107166,
-        "medianVehiclePixels": 17494.5,
-        "medianTrafficFrameDifference": 9.111021995544434,
-        "liveAreaFraction": 0.018982747395833333
+        "outputAnchorBox": [
+          636,
+          208,
+          51,
+          111
+        ],
+        "preservesWholeFrames": true
       }
     },
     "day": {
       "sourceName": "Siang.mp4",
       "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "a2bb250c24814fee519dcc803e1d3c84e14434ff9501f5c01f22c6759408ba07",
+      "sha256": "95a1ee09a8fa1e991e59a124d563f45f6dc272f7438a1c50a1d50e9c4ceb5854",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.13909722864627838,
-      "referenceSeam": 0.8118749856948853,
-      "medianFrameDifference": 0.13249999284744263,
+      "seam": 1.1620138883590698,
+      "referenceSeam": 0.8286111354827881,
+      "medianFrameDifference": 0.926319420337677,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 866,
-        "maxMedianDisplacementPixels": 0.0,
-        "worstFrame": 0
+        "minimumCorrelation": 0.9580510737604988,
+        "maxMonumentDisplacementPixels": 0.12747220695018768,
+        "maximumAdjacentDisplacementPixels": 0.0795029029250145,
+        "loopJoinDisplacementPixels": 0.060238976031541824,
+        "worstFrame": 28
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -130,43 +136,45 @@
           639
         ]
       },
-      "anchorLock": {
-        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
-        "inputSha256": "bf5a8d1940799266fa40ead004beb9c68ea46c489936dd93ce94875099b67f42",
-        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
-        "anchorBox": [
-          600,
-          290,
-          130,
-          275
+      "monumentAnchor": {
+        "method": "whole-frame-monument-translation",
+        "checkedFrames": 240,
+        "referenceFrame": 120,
+        "minimumCorrelation": 0.9052661715153636,
+        "maximumCorrectionPixels": 2.506808280944824,
+        "fixedCrop": [
+          8,
+          4,
+          1264,
+          711
         ],
-        "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.0,
-        "maxMonumentMeanPixelChange": 0.01787412539124489,
-        "maxRoadDisplacementPixels": 0.00016848783707246184,
-        "maxRoadMeanPixelChange": 0.03676356375217438,
-        "staticRoadPixelCount": 64466,
-        "medianVehiclePixels": 11620.5,
-        "medianTrafficFrameDifference": 10.61090087890625,
-        "liveAreaFraction": 0.012609049479166667
+        "outputAnchorBox": [
+          628,
+          310,
+          71,
+          127
+        ],
+        "preservesWholeFrames": true
       }
     },
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "db6e63a0027fad735940db9fc402c1fcb79760297851726381d1f3798e22b4e9",
+      "sha256": "180295ad43296277d0f6fcc67237643aa56af2a876fc622e8941cf66de0cf531",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 0.36576390266418457,
-      "referenceSeam": 0.9945138692855835,
-      "medianFrameDifference": 0.21847222745418549,
+      "seam": 1.2384722232818604,
+      "referenceSeam": 0.9699305295944214,
+      "medianFrameDifference": 1.219236135482788,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumMatches": 1206,
-        "maxMedianDisplacementPixels": 0.0,
-        "worstFrame": 0
+        "minimumCorrelation": 0.8729868820240028,
+        "maxMonumentDisplacementPixels": 0.268373042345047,
+        "maximumAdjacentDisplacementPixels": 0.12491697072982788,
+        "loopJoinDisplacementPixels": 0.03015892766416073,
+        "worstFrame": 148
       },
       "stabilization": {
         "method": "static-background-homography",
@@ -180,25 +188,25 @@
           603
         ]
       },
-      "anchorLock": {
-        "method": "fixed road/architecture plate; local instance-segmented vehicles; fountain interior only",
-        "inputSha256": "a716cf0603e0817bf3dcc28b0ea7a0ef75226e140a4d788b4c411dfb2a81df57",
-        "modelSha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
-        "anchorBox": [
-          600,
-          225,
-          135,
-          285
+      "monumentAnchor": {
+        "method": "whole-frame-monument-translation",
+        "checkedFrames": 240,
+        "referenceFrame": 120,
+        "minimumCorrelation": 0.8168682441438874,
+        "maximumCorrectionPixels": 8.178756713867188,
+        "fixedCrop": [
+          20,
+          11,
+          1240,
+          698
         ],
-        "checkedFrames": 168,
-        "maxMonumentDisplacementPixels": 0.0001942089875228703,
-        "maxMonumentMeanPixelChange": 0.032046783715486526,
-        "maxRoadDisplacementPixels": 0.00013647876039613038,
-        "maxRoadMeanPixelChange": 0.03924946486949921,
-        "staticRoadPixelCount": 75466,
-        "medianVehiclePixels": 20130.5,
-        "medianTrafficFrameDifference": 12.276518821716309,
-        "liveAreaFraction": 0.021842990451388888
+        "outputAnchorBox": [
+          642,
+          249,
+          39,
+          64
+        ],
+        "preservesWholeFrames": true
       }
     }
   }

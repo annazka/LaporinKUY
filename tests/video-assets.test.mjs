@@ -14,15 +14,14 @@ test('active videos match validated exports and keep long normal-speed forward c
   assert.equal(record.fps,phase==='night'?30:24);
   assert.equal(record.overlapSeconds,3);
   assert.equal(record.backgroundContinuity.checkedFrames,record.frames);
-  assert.ok(record.backgroundContinuity.maxMedianDisplacementPixels<=3,`${phase}: camera drift`);
-  assert.equal(record.anchorLock.checkedFrames,record.frames);
-  assert.ok(record.anchorLock.maxMonumentDisplacementPixels<=.05,`${phase}: monument shakes`);
-  assert.ok(record.anchorLock.maxMonumentMeanPixelChange<=.1,`${phase}: unstable monument plate`);
-  assert.ok(record.anchorLock.medianTrafficFrameDifference>.2,`${phase}: traffic was frozen`);
-  assert.ok(record.anchorLock.staticRoadPixelCount>=5000,`${phase}: no independent road anchors`);
-  assert.ok(record.anchorLock.maxRoadDisplacementPixels<=.1,`${phase}: roadway shakes`);
-  assert.ok(record.anchorLock.maxRoadMeanPixelChange<=.2,`${phase}: road texture is moving`);
-  assert.ok(record.anchorLock.medianVehiclePixels>=500,`${phase}: moving vehicles missing`);
+  assert.ok(record.backgroundContinuity.minimumCorrelation>=.65,`${phase}: unreliable statue tracking`);
+  assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=1.5,`${phase}: monument drift`);
+  assert.ok(record.backgroundContinuity.maximumAdjacentDisplacementPixels<=1.5,`${phase}: camera jump`);
+  assert.ok(record.backgroundContinuity.loopJoinDisplacementPixels<=1.5,`${phase}: anchor resets at seam`);
+  assert.equal(record.monumentAnchor.preservesWholeFrames,true);
+  assert.equal(record.monumentAnchor.method,'whole-frame-monument-translation');
+  assert.equal(record.monumentAnchor.checkedFrames,record.frames+record.fps*record.overlapSeconds);
+  assert.ok(record.medianFrameDifference>.2,`${phase}: video was frozen`);
   assert.ok(record.seam<=record.referenceSeam*1.3+.25,`${phase}: cyclic seam`);
  }
 });
