@@ -6,7 +6,7 @@ import {isOverdue,missingDailyUpdate} from '@/lib/rules.mjs';
 import {Logout} from './widgets';
 import {SiteHeader} from './site-header';
 import {AuthLink} from './auth-modal';
-export function Brand(){return <Link href="/" className="brand"><span className="brand-symbol"><MapPin size={21} strokeWidth={2.5}/></span>Lapor<span>KUY</span><i/></Link>;}
+export function Brand(){return <a href="/" className="brand"><span className="brand-symbol"><MapPin size={21} strokeWidth={2.5}/></span>Lapor<span>KUY</span><i/></a>;}
 export async function Header(){const u=await viewer();return <SiteHeader brand={<Brand/>} actions={u?<><Link className="profile-pill" href="/profile"><span>{u.name.slice(0,1).toUpperCase()}</span><b>{u.name}</b></Link><Logout/></>:<><AuthLink className="login-link">Masuk</AuthLink><AuthLink mode="register" className="button small">Gabung sekarang <ArrowUpRight size={16}/></AuthLink></>}><nav aria-label="Navigasi utama">{u&&<Link href="/dashboard">Dashboard</Link>}{u&&<Link href="/dashboard/reports">Laporan saya</Link>}<Link href="/#laporan">Jelajahi laporan</Link>{u?.role==='operator'&&<Link href="/operator">Operator</Link>}</nav></SiteHeader>;}
 export function Footer(){return <footer><Brand/><p>Suara warga. Aksi nyata.</p><span>Prototipe MIA 2026 · Jakarta</span></footer>;}
 export function Eyebrow({children}:{children:React.ReactNode}){return <div className="eyebrow"><span/>{children}</div>;}
