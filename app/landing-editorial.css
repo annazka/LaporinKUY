@@ -43,3 +43,11 @@
 }
 .plain-landing .demo-stage .badge{font-size:12px;line-height:1.6}
 .plain-landing .gift-icon{background:none;box-shadow:none;border:0}
+/* Reserve the original paragraph's space throughout the typing cycle. */
+.plain-landing .hero-typewriter{position:relative}
+.hero-typewriter[data-animated=true] .hero-typewriter-static{visibility:hidden}
+.hero-typewriter-live{position:absolute;inset:0;text-align:inherit}
+.hero-typewriter-caret{display:inline-block;width:0;height:.95em;margin-left:3px;border-left:2px solid currentColor;vertical-align:-.08em;animation:hero-caret-blink 1s step-end infinite}
+.hero-typewriter[data-running=false] .hero-typewriter-caret{animation-play-state:paused}
+@keyframes hero-caret-blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.hero-typewriter-caret{animation:none}.hero-typewriter-live{display:none}.hero-typewriter[data-animated=true] .hero-typewriter-static{visibility:visible}}

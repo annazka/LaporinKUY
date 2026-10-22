@@ -4,6 +4,7 @@ Use this file for future interface changes. The user requested removing generic 
 
 - Keep the intentional black, white, and gray palette and Plus Jakarta Sans. Use readable text with clear contrast.
 - The user explicitly restored the original centered hero, its original title “Kota yang lebih baik, dimulai dari suaramu.” and supporting copy. Keep that hero layout and copy; keep its decorative announcement/BETA badge removed.
+- The hero supporting copy has a user-requested typewriter loop inspired by AgentEco: alternate the two existing sentences with typing/deleting, preserve layout height, pause offscreen/in hidden tabs, and show static full copy for reduced motion. This is an explicit exception to avoiding decorative animation.
 - Write concrete Indonesian copy about road damage, reports, locations, verification, repairs, and points. Avoid generic aspirational slogans and repetitive sentence fragments.
 - Do not add hero announcement pills, decorative BETA badges, all-caps section eyebrows, glowing status dots, filler trust strips, fake avatar stacks, mock browser chrome, or decorative charts.
 - Use plain headings and content-led layouts. Do not wrap every feature in an identical icon-topped card. Avoid gradient text, cursor glows, orbit decorations, and entrance animations with no task-related purpose.
