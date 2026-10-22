@@ -9,8 +9,8 @@ const sections=[
  {id:'cara-kerja',label:'Cara kerja',icon:Route},
  {id:'laporan',label:'Laporan',icon:Construction},
  {id:'peta',label:'Peta',icon:MapPin},
- {id:'voucher',label:'Voucher',icon:Ticket},
  {id:'dampak',label:'Dampak',icon:ShieldCheck},
+ {id:'voucher',label:'Voucher',icon:Ticket},
  {id:'faq',label:'FAQ',icon:CircleHelp},
 ];
 
