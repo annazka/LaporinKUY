@@ -41,20 +41,26 @@ for index, frame in enumerate(frames):
     src = np.float32([points[m.queryIdx].pt for m in matches])
     dst = np.float32([keypoints[m.trainIdx].pt for m in matches])
     transform, inliers = cv2.findHomography(src, dst, cv2.RANSAC, 1.5)
-    if transform is None or int(inliers.sum()) < 80:
+    if transform is None or int(inliers.sum()) < 40:
         raise RuntimeError(f'Frame {index}: insufficient static background matches')
     transforms.append(transform)
     inlier_counts.append(int(inliers.sum()))
     correspondences.append((src[inliers[:, 0] == 1], dst[inliers[:, 0] == 1]))
 # Fixed five-frame filter removes estimator jitter; it never changes playback time.
-transforms = np.array(transforms)
+raw_transforms = np.array(transforms)
+transforms = raw_transforms.copy()
 padded = np.pad(transforms, ((2, 2), (0, 0), (0, 0)), mode='edge')
 transforms = sum(weight * padded[i:i + len(frames)] for i, weight in enumerate([1/16, 4/16, 6/16, 4/16, 1/16]))
 scale = np.diag([width / small_width, height / small_height, 1.])
 valid = np.full((height, width), 255, np.uint8)
 full_transforms, errors = [], []
 for transform, (src, dst) in zip(transforms, correspondences):
-    errors.append(float(np.median(np.linalg.norm(cv2.perspectiveTransform(src[:, None], transform)[:, 0] - dst, axis=1))) * width / small_width)
+    error = lambda matrix: float(np.median(np.linalg.norm(cv2.perspectiveTransform(src[:, None], matrix)[:, 0] - dst, axis=1))) * width / small_width
+    # A real short camera step can be blurred by temporal smoothing. Retain
+    # the measured registration for that frame instead of smearing the step.
+    if error(transform) > 2:
+        transform = raw_transforms[len(errors)]
+    errors.append(error(transform))
     transform = scale @ transform @ np.linalg.inv(scale)
     full_transforms.append(transform)
     valid &= cv2.warpPerspective(np.full((height, width), 255, np.uint8), transform, (width, height), flags=cv2.INTER_NEAREST)

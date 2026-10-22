@@ -1,88 +1,124 @@
 {
-  "sourceSha256": "4155ef77dced6f5c993d82fbc4db834d481f238d5d10cc2015c16b96a96b632a",
+  "method": "stabilized cyclic tail/head smoothstep overlap",
   "phases": {
     "night": {
-      "frames": 570,
-      "seam": 4.056180555555556,
-      "median": 0.47965277777777776,
-      "seamRatio": 8.456493412480093,
-      "oneSecondDifference": 7.192430555555555,
-      "referenceSeam": 3.42,
-      "sourcePath": "/media/sources/bundaran-hi-night-original.mp4",
-      "sourceSha256": "0c7b64b40890e8f9eab7b393bbcad245af39e96a137caea8465821786fa160d0",
-      "repetitions": 1,
-      "sourceStartFrame": 0,
-      "sourceEndFrame": 660,
-      "fps": 30,
-      "cycleFrames": 570,
-      "duration": 19.0,
-      "sha256": "42c7211dfa87d2e3d5401f8c25646e8a6507e777e11f5fe625b67f4a4ba90fd6"
+      "sourceName": "malam.mp4",
+      "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
+      "sha256": "c112f8c8a85b8a93fe26825eb1325b9a51e3549dbce2c42813bdb913c9656c51",
+      "fps": 30.0,
+      "frames": 460,
+      "duration": 15.333333333333334,
+      "overlapSeconds": 3.0,
+      "seam": 1.0286110639572144,
+      "referenceSeam": 0.7763194441795349,
+      "medianFrameDifference": 0.6894444227218628,
+      "backgroundContinuity": {
+        "checkedFrames": 460,
+        "minimumMatches": 254,
+        "maxMedianDisplacementPixels": 1.5523606538772583,
+        "worstFrame": 382
+      },
+      "stabilization": {
+        "method": "static-background-homography",
+        "referenceFrame": 275,
+        "minimumInliers": 72,
+        "maxRegistrationErrorPixels": 1.5983734130859375,
+        "fixedCrop": [
+          352,
+          198,
+          1216,
+          684
+        ]
+      }
     },
     "morning": {
-      "frames": 204,
-      "seam": 0.7772222222222223,
-      "median": 0.40770833333333334,
-      "seamRatio": 1.9063191960483734,
-      "oneSecondDifference": 2.4676388888888887,
-      "referenceSeam": 0.5917361111111111,
-      "stabilized": true,
-      "referenceStage": "stabilized",
-      "sourcePath": "/media/sources/bundaran-hi-morning-original.mp4",
-      "sourceSha256": "3f8228e8da06f87a41ba9f97361dad4a32f760b2bee04f117cbcefde8fc2db86",
-      "repetitions": 1,
-      "sourceStartFrame": 0,
-      "sourceEndFrame": 240,
-      "fps": 24,
-      "cycleFrames": 204,
-      "duration": 8.5,
-      "sha256": "193e58c0c9eafd72a0a5e037ee114f5b225b6d423b557f8613f5519f707c54c9"
-    },
-    "day": {
-      "frames": 192,
-      "seam": 1.1104166666666666,
-      "median": 0.6327777777777778,
-      "seamRatio": 1.7548287971905179,
-      "referenceSeam": 0.9220138888888889,
-      "fps": 24,
-      "cycleFrames": 48,
-      "duration": 8.0,
-      "sha256": "5e7d35211250a5f96a3e0d9905a9142c4ac89f8b95338fd4702fb7e4b5b10e90"
-    },
-    "evening": {
-      "frames": 204,
-      "seam": 1.081388888888889,
-      "median": 0.34631944444444446,
-      "seamRatio": 3.122518548225386,
-      "oneSecondDifference": 2.4631944444444445,
-      "referenceSeam": 0.9924305555555556,
+      "sourceName": "Pagi.mp4",
+      "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
+      "sha256": "6f9611722f04890584914644032592b35ba380323113f8183f25958c27aad9f5",
+      "fps": 24.0,
+      "frames": 168,
+      "duration": 7.0,
+      "overlapSeconds": 3.0,
+      "seam": 1.1315972805023193,
+      "referenceSeam": 0.851527750492096,
+      "medianFrameDifference": 0.8097222447395325,
+      "backgroundContinuity": {
+        "checkedFrames": 168,
+        "minimumMatches": 390,
+        "maxMedianDisplacementPixels": 1.927884578704834,
+        "worstFrame": 153
+      },
       "stabilization": {
         "method": "static-background-homography",
         "referenceFrame": 120,
-        "minimumInliers": 501,
-        "maxRegistrationErrorPixels": 0.5754401087760925,
+        "minimumInliers": 332,
+        "maxRegistrationErrorPixels": 1.6444671154022217,
         "fixedCrop": [
-          130,
-          73,
-          1020,
-          574
+          70,
+          39,
+          1140,
+          641
         ]
-      },
-      "stabilized": true,
-      "referenceStage": "stabilized",
-      "sourcePath": "/media/sources/bundaran-hi-evening-original.mp4",
-      "sourceSha256": "d7ac124afd0ab58da6df4c0685c7873dbdeb19862268a8b68355185e684ba610",
-      "repetitions": 1,
-      "sourceStartFrame": 0,
-      "sourceEndFrame": 240,
-      "fps": 24,
-      "cycleFrames": 204,
-      "duration": 8.5,
-      "sha256": "69d06e0a8f01c294a6e7a5c1563fcaeaa116b2c1549680f2dd157f63b99194cb",
+      }
+    },
+    "day": {
+      "sourceName": "Siang.mp4",
+      "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
+      "sha256": "bf5a8d1940799266fa40ead004beb9c68ea46c489936dd93ce94875099b67f42",
+      "fps": 24.0,
+      "frames": 168,
+      "duration": 7.0,
+      "overlapSeconds": 3.0,
+      "seam": 1.1634721755981445,
+      "referenceSeam": 0.8118749856948853,
+      "medianFrameDifference": 0.9221527576446533,
       "backgroundContinuity": {
-        "checkedFrames": 204,
-        "minimumMatches": 505,
-        "maxMedianDisplacementPixels": 0.4653034806251526,
-        "worstFrame": 23
+        "checkedFrames": 168,
+        "minimumMatches": 219,
+        "maxMedianDisplacementPixels": 2.0832748413085938,
+        "worstFrame": 4
+      },
+      "stabilization": {
+        "method": "static-background-homography",
+        "referenceFrame": 120,
+        "minimumInliers": 187,
+        "maxRegistrationErrorPixels": 1.1999304294586182,
+        "fixedCrop": [
+          72,
+          40,
+          1136,
+          639
+        ]
+      }
+    },
+    "evening": {
+      "sourceName": "Sore.mp4",
+      "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
+      "sha256": "a716cf0603e0817bf3dcc28b0ea7a0ef75226e140a4d788b4c411dfb2a81df57",
+      "fps": 24.0,
+      "frames": 168,
+      "duration": 7.0,
+      "overlapSeconds": 3.0,
+      "seam": 1.2393054962158203,
+      "referenceSeam": 0.9945138692855835,
+      "medianFrameDifference": 1.2156250476837158,
+      "backgroundContinuity": {
+        "checkedFrames": 168,
+        "minimumMatches": 253,
+        "maxMedianDisplacementPixels": 2.117983102798462,
+        "worstFrame": 0
+      },
+      "stabilization": {
+        "method": "static-background-homography",
+        "referenceFrame": 120,
+        "minimumInliers": 193,
+        "maxRegistrationErrorPixels": 1.3130254745483398,
+        "fixedCrop": [
+          104,
+          58,
+          1072,
+          603
+        ]
       }
     }
   }

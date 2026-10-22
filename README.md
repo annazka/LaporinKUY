@@ -73,9 +73,11 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 
 ## Latar landing page
 
-Landing page untuk sementara memakai latar polos gelap monokrom (#080808). Seluruh file MP4 background, termasuk loop setiap fase dan video sumber, telah dihapus dari aset aplikasi. Halaman tidak memasang pemutar, kontrol, ataupun sinkronisasi video sehingga tidak mengunduh video.
+Landing memakai empat video Bundaran HI baru dari unggahan pengguna pada 22 Oktober 2026: `Pagi.mp4`, `Siang.mp4`, `Sore.mp4`, dan `malam.mp4`. Kamera distabilkan ke satu referensi per fase dengan crop tetap. Sambungan tail/head memakai overlap smoothstep 3 detik; kendaraan berjalan maju pada FPS asli, tanpa reverse, seek berulang, atau penggandaan snippet pendek. Siklus hasilnya 7 detik untuk pagi/siang/sore dan sekitar 15,33 detik untuk malam. Empat klip yang mengubah suasana dalam 10 detik tidak diputar berulang agar ambience tidak bersiklus lepas dari jam aktual.
 
-Kode pengolahan video dan poster tetap disimpan untuk membantu pemasangan video pengganti nanti. Generator belum dapat dijalankan sampai file sumber baru tersedia; hasil pengukuran lama di fixture merupakan arsip, bukan validasi aset aktif. Video baru belum diaktifkan.
+`lib/video-clock.mjs` memilih fase berdasarkan waktu aktual Asia/Jakarta dan membaurkan video selama 12 detik (6 detik sebelum hingga 6 detik setelah batas 05.00, 10.00, 15.00, 18.00). Pembauran pendek dipilih karena sudut pengambilan sumber berbeda; pembauran berjam-jam membuat gedung/patung tampak ganda. Loop diputar pada 1x, terpisah dari pemilihan ambience oleh jam. Jam diperiksa kembali saat tab aktif. Framing video fixed tanpa parallax, zoom, atau pergeseran vertikal saat scroll; hanya blur dan overlay gelap yang bertambah. Langit tetap terlihat di hero. UI tetap monokrom. Tombol jeda, poster saat video gagal/reduced motion, serta penundaan pemutaran saat tab tersembunyi disediakan.
+
+Untuk mengolah ulang, ekstrak sumber di luar `public/`, pasang `scripts/video-requirements.txt`, lalu jalankan `python3 scripts/prepare-backgrounds.py --sources /path/to/videos` (gunakan `PYTHONPATH` bila dependensi dipasang di direktori tersendiri). Script menstabilkan kamera, mengekspor H.264 720p tanpa audio dengan faststart, memeriksa sambungan dan drift setiap frame, serta menyimpan hash sumber/hasil dan metrik di `tests/fixtures/video-loop-metrics.json`. `generate-phase-loops.py` adalah generator arsip untuk sumber lama dan bukan pipeline aset saat ini.
 
 ## Laporan di landing page
 

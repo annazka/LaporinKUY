@@ -11,6 +11,7 @@ import {LandingMap} from '@/components/landing-map';
 import {LandingVouchers} from '@/components/landing-vouchers';
 import {LandingReports} from '@/components/landing-reports';
 import {HeroTypewriter} from '@/components/hero-typewriter';
+import {LandingVideo} from '@/components/landing-video';
 
 export const dynamic='force-dynamic';
 const faqs=[
@@ -29,7 +30,7 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  const [ledger,redemptions]=account.status==='fulfilled'?account.value:[[],[]];
  const balance=ledger.reduce((sum:number,row:{amount:number})=>sum+row.amount,0);
  const completed=list.filter(r=>r.status==='completed').length;
- return <div className="landing plain-landing">{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
+ return <div className="landing plain-landing"><LandingVideo/>{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
  <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
  <HeroTypewriter/>

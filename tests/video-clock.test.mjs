@@ -47,3 +47,16 @@ test('interface stays monochrome while phase videos change', () => {
   else assert.match(color, /^oklch\([\d.]+% 0 0\)$/);
  }
 });
+
+test('short video crossfades use actual boundary time without two-hour double exposure',()=>{
+ for(const [hour,from,to] of [[5,'night','morning'],[10,'morning','day'],[15,'day','evening'],[18,'evening','night']]){
+  assert.deepEqual(phaseClock(at(hour*3600),12),{from,to,amount:.5});
+  assert.equal(weights(phaseClock(at(hour*3600-6),12))[from],1);
+  assert.equal(weights(phaseClock(at(hour*3600+6),12))[to],1);
+  assert.equal(phaseClock(at(hour*3600-60),12).from,from);
+  assert.equal(phaseClock(at(hour*3600+60),12).from,to);
+  assert.ok(phaseClock(at(hour*3600+.125),12).amount>.5);
+ }
+ assert.throws(()=>phaseClock(at(0),0),RangeError);
+ assert.deepEqual(phaseClock(at(86399.999),12),phaseClock(at(86400),12));
+});

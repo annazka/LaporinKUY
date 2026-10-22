@@ -58,7 +58,7 @@ function PhaseVideo({phase, opacity, paused, attempt, report}: {
 
  return <div className={`film-phase${ready ? ' is-ready' : ''}`} data-phase={phase} style={{opacity}}>
   <img src={phases[phase].poster} alt=""/>
-  <video ref={video} autoPlay={!paused} muted loop playsInline preload="auto" poster={phases[phase].poster}>
+  <video ref={video} autoPlay={!paused} muted loop playsInline preload="auto" disablePictureInPicture poster={phases[phase].poster}>
    <source src={phases[phase].src} type="video/mp4"/>
   </video>
  </div>;
@@ -82,7 +82,7 @@ export function LandingVideo() {
   let frame = 0, clockFrame = 0, lastTick = -Infinity, pair = '';
   const update = () => {
    if (document.hidden) return;
-   const next = phaseClock(new Date());
+   const next = phaseClock(new Date(), 12);
    // Sample actual WIB at display cadence. Only change React's layer set when
    // the phase pair changes, so the playing decoders keep their current frame.
    layer.current?.style.setProperty('--phase-mix', String(next.amount));
@@ -105,12 +105,12 @@ export function LandingVideo() {
    frame = requestAnimationFrame(() => {
     const amount = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
     layer.current?.style.setProperty('--video-blur', `${amount * 12}px`);
-    layer.current?.style.setProperty('--video-shade', `${.68 + amount * .20}`);
+    layer.current?.style.setProperty('--video-shade', `${.48 + amount * .22}`);
     frame = 0;
    });
   };
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const reduce = () => { if (motion.matches) setPaused(true); };
+  const reduce = () => setPaused(motion.matches);
   reduce(); resume(); scroll();
   motion.addEventListener('change', reduce);
   document.addEventListener('visibilitychange', resume);
