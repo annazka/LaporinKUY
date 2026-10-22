@@ -5,7 +5,10 @@ import {AuthLink,AuthEntry} from '@/components/auth-modal';
 import {safeNext} from '@/lib/rules.mjs';
 import {configured} from '@/lib/backend';
 import {ReportJourney} from '@/components/report-journey';
-import {reports} from '@/lib/backend';
+import {reports,backend,viewer,accessToken} from '@/lib/backend';
+import type {Voucher} from '@/lib/types';
+import {LandingMap} from '@/components/landing-map';
+import {LandingVouchers} from '@/components/landing-vouchers';
 import {LandingReports} from '@/components/landing-reports';
 
 export const dynamic='force-dynamic';
@@ -20,6 +23,11 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  const query=await searchParams;
  let list:Awaited<ReturnType<typeof reports>>=[];let loadFailed=!configured();
  try{list=await reports();}catch{loadFailed=true;}
+ const user=await viewer(),token=user?await accessToken():undefined;
+ const [offers,account]=await Promise.allSettled([backend('/rest/v1/vouchers?select=*&order=cost.asc'),user?Promise.all([backend(`/rest/v1/point_ledger?select=amount&user_id=eq.${user.id}`,{},token),backend(`/rest/v1/redemptions?select=id,code,voucher_id,created_at&user_id=eq.${user.id}&order=created_at.desc`,{},token)]):Promise.resolve([[],[]])]);
+ const vouchers:Voucher[]=offers.status==='fulfilled'?offers.value:[];
+ const [ledger,redemptions]=account.status==='fulfilled'?account.value:[[],[]];
+ const balance=ledger.reduce((sum:number,row:{amount:number})=>sum+row.amount,0);
  const completed=list.filter(r=>r.status==='completed').length;
  return <div className="landing plain-landing">{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
@@ -36,8 +44,10 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  <article className="feature-card"><span className="feature-icon"><ScanLine size={23}/></span><h3>Foto jadi informasi.</h3><p>Gemini membantu mengenali kategori dan tingkat kerusakan. Operator tetap memegang keputusan penanganan.</p><div className="ai-chip"><span className="live-dot"/>Dibantu Google Gemini<ArrowUpRight size={14}/></div></article>
  <article className="feature-card"><span className="feature-icon"><Layers size={23}/></span><h3>Satu kerusakan.<br/>Banyak suara.</h3><p>Laporan warga untuk kerusakan yang sama masuk sebagai upvote. Penanganannya terpusat dalam satu kasus.</p><div className="contributor-stack" aria-hidden="true"><span>A</span><span>N</span><span>R</span><i/><small>Kontribusi warga terhubung</small></div></article>
 </div></section>
- <section id="dampak" className="community-section reveal"><div className="container"><div className="section-heading"><div><Eyebrow>ANGKA DARI KONTRIBUSI NYATA</Eyebrow><h2>Setiap laporan,<br/><span>satu langkah maju.</span></h2></div><div className="community-label"><Activity size={16}/>{loadFailed?'Data belum dapat dimuat':'Data laporan saat ini'}</div></div>{loadFailed?<p>Data sedang belum tersedia. Muat ulang halaman untuk mencoba kembali.</p>:<div className="community-stats"><div><strong>{list.length.toLocaleString('id-ID')}<span>↗</span></strong><p>Laporan masuk</p></div><div><strong>{completed.toLocaleString('id-ID')}<span>↗</span></strong><p>Perbaikan terkonfirmasi</p></div><div><strong>{list.reduce((a,r)=>a+r.support_count+1,0).toLocaleString('id-ID')}<span>↗</span></strong><p>Kontribusi pelapor</p></div></div>}<small>Angka mengikuti data laporan yang dimuat. Cakupan awal Jakarta.</small></div></section>
  <section id="laporan" className="container section latest reveal" aria-labelledby="landing-reports-title"><div className="section-heading"><div><Eyebrow>SUARA DARI SEKITAR KITA</Eyebrow><h2 id="landing-reports-title">Kotamu punya cerita.<br/><span>Ini yang perlu dibenahi.</span></h2></div><AuthLink className="button secondary" next="/reports/new">Buat laporan <ArrowUpRight size={17}/></AuthLink></div>{loadFailed?<Empty title="Laporan belum dapat dimuat." text="Muat ulang halaman untuk mencoba kembali." action={false}/>:<LandingReports reports={list}/>}</section>
+ <LandingMap reports={list} failed={loadFailed}/>
+ <section id="dampak" className="community-section reveal"><div className="container"><div className="section-heading"><div><Eyebrow>ANGKA DARI KONTRIBUSI NYATA</Eyebrow><h2>Setiap laporan,<br/><span>satu langkah maju.</span></h2></div><div className="community-label"><Activity size={16}/>{loadFailed?'Data belum dapat dimuat':'Data laporan saat ini'}</div></div>{loadFailed?<p>Data sedang belum tersedia. Muat ulang halaman untuk mencoba kembali.</p>:<div className="community-stats"><div><strong>{list.length.toLocaleString('id-ID')}<span>↗</span></strong><p>Laporan masuk</p></div><div><strong>{completed.toLocaleString('id-ID')}<span>↗</span></strong><p>Perbaikan terkonfirmasi</p></div><div><strong>{list.reduce((a,r)=>a+r.support_count+1,0).toLocaleString('id-ID')}<span>↗</span></strong><p>Kontribusi pelapor</p></div></div>}<small>Angka mengikuti data laporan yang dimuat. Cakupan awal Jakarta.</small></div></section>
+ <LandingVouchers vouchers={vouchers} balance={balance} signedIn={Boolean(user)} failed={offers.status==='rejected'} accountFailed={account.status==='rejected'} redemptions={redemptions}/>
  <section id="faq" className="container section faq-section reveal"><div><Eyebrow>SEBELUM MULAI MELAPOR</Eyebrow><h2>Masih ada<br/><span>yang ingin ditanyakan?</span></h2><p>Kenali cara LaporKUY bekerja.</p></div><div className="faq-list">{faqs.map(([q,a])=><details key={q}><summary>{q}<ChevronDown size={17}/></summary><p>{a}</p></details>)}</div></section>
  <section className="container join-banner reveal"><div className="cta-orbit" aria-hidden="true"/><div><Eyebrow>JAKARTA LEBIH BAIK, MULAI DARI KITA</Eyebrow><h2>Lihat yang perlu diperbaiki?<br/><span>Lapor<span className="cta-kuy">KUY.</span></span></h2><p>Suaramu hari ini bisa membuat perjalanan besok lebih nyaman.</p></div><AuthLink className="button" next="/reports/new">Ambil bagian sekarang <ArrowUpRight size={19}/></AuthLink></section>
  </div>;

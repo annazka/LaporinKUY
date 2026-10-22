@@ -2,5 +2,7 @@ import type {Metadata} from 'next';import './globals.css';import './night-theme.
 import './time-palette.css';
 import './photo-analysis.css';
 import './landing-reports.css';
+import 'leaflet/dist/leaflet.css';
+import './landing-explore.css';
 export const metadata:Metadata={title:{default:'LaporKUY. Suara warga, aksi nyata.',template:'%s | LaporKUY'},description:'Laporkan kerusakan infrastruktur Jakarta, pantau progres perbaikan, dan kumpulkan poin dari laporan yang tuntas.'};
 export default function Layout({children}:{children:React.ReactNode}){return <html lang="id"><head><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></head><body><AuthProvider><a className="skip-link" href="#main">Lewati ke konten</a><Header/><main id="main">{children}</main><Footer/><SessionRefresh/><VisualEffects/></AuthProvider></body></html>;}

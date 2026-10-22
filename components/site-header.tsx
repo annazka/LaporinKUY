@@ -2,11 +2,13 @@
 
 import {useEffect,useRef,useState,type ReactNode} from 'react';
 import {usePathname} from 'next/navigation';
-import {Blocks,Construction,Route,ShieldCheck,CircleHelp,Menu,X} from 'lucide-react';
+import {Blocks,Construction,Route,ShieldCheck,CircleHelp,MapPin,Ticket,Menu,X} from 'lucide-react';
 
 const sections=[
  {id:'fitur',label:'Fitur',icon:Blocks},
  {id:'laporan',label:'Laporan',icon:Construction},
+ {id:'peta',label:'Peta',icon:MapPin},
+ {id:'voucher',label:'Voucher',icon:Ticket},
  {id:'cara-kerja',label:'Cara kerja',icon:Route},
  {id:'dampak',label:'Dampak',icon:ShieldCheck},
  {id:'faq',label:'FAQ',icon:CircleHelp},

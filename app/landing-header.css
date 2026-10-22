@@ -52,3 +52,6 @@
  .header.landing-header,.landing-header .nav-wrap{transition:none}
  .landing-header.menu-open nav{animation:none}
 }
+/* Keep the seven landing anchors clear of the account controls. */
+@media(min-width:901px){.landing-header nav{gap:15px}.landing-header nav a{font-size:11px;gap:5px}.landing-header .nav-wrap{gap:18px}}
+@media(min-width:901px) and (max-width:1180px){.landing-header nav a svg{display:none}.landing-header nav{gap:12px}.landing-header .brand{font-size:21px}.landing-header .nav-wrap{padding-inline:20px;gap:14px}.landing-header .nav-actions{gap:12px}}

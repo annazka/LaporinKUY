@@ -86,3 +86,9 @@ Karusel 3D memakai kartu ringkas dan menghitung posisi dari proyeksi perspektif 
 `/reports` mengarahkan ke `/#laporan`; `/map` dan `/rewards` mengarahkan ke `/`. Detail `/reports/[id]`, pembuatan laporan, API dan data poin tetap tersedia. Tidak ada pengganti peta atau rewards baru.
 
 Jalankan migrasi `202610210001_landing_report_previews.sql` untuk akses foto awal publik. `tests/landing-previews.sql` memeriksa bahwa foto awal dapat dibaca anonim sementara foto pembaruan dan unggahan yang belum dikirim tetap privat; pengujian berakhir dengan rollback dan hanya boleh dijalankan pada database pengembangan yang diizinkan.
+
+### Landing map and vouchers
+
+The landing page now includes `#peta` and `#voucher`; legacy `/map` and `/rewards` redirect to these sections. Leaflet is imported only after opening the map. OpenStreetMap tiles retain attribution; wheel zoom is disabled to preserve page scrolling. Markers and the adjacent accessible list use actual reports with valid Jakarta coordinates. Status filters and an optional device-location filter (5 km approximate radius) operate on the reports loaded by the landing page. Device coordinates stay in browser memory. Map failures leave the report list usable.
+
+Voucher cards read `public.vouchers`. Signed-in balances and redemption history read the user's existing RLS-protected ledger/redemptions; redemption uses the existing authorized `/api/rewards` endpoint and transactional `redeem_voucher` RPC. All offers are explicitly simulations. There are no fabricated fallback offers or balances when the backend is unavailable. Details open in a native modal; visitors open the existing landing authentication popup. Photos are illustrative, not verified partner/destination images: Unsplash IDs `1564399579883-451a5d44ec08`, `1519331379826-f10be5486c6f`, `1534438327276-14e5300c3a48` (local copies under `public/media/vouchers`).
