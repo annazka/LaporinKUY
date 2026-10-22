@@ -15,9 +15,13 @@ test('active videos match validated exports and keep long normal-speed forward c
   assert.equal(record.overlapSeconds,3);
   assert.equal(record.backgroundContinuity.checkedFrames,record.frames);
   assert.ok(record.backgroundContinuity.minimumCorrelation>=.65,`${phase}: unreliable statue tracking`);
-  assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=1.5,`${phase}: monument drift`);
-  assert.ok(record.backgroundContinuity.maximumAdjacentDisplacementPixels<=1.5,`${phase}: camera jump`);
-  assert.ok(record.backgroundContinuity.loopJoinDisplacementPixels<=1.5,`${phase}: anchor resets at seam`);
+  assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=.5,`${phase}: monument drift`);
+  assert.ok(record.backgroundContinuity.maximumAdjacentDisplacementPixels<=.5,`${phase}: camera jump`);
+  assert.ok(record.backgroundContinuity.loopJoinDisplacementPixels<=.5,`${phase}: anchor resets at seam`);
+  assert.equal(record.stabilization.method,'whole-frame-similarity',`${phase}: perspective warp returned`);
+  assert.ok(record.monumentAnchor.conservativeEdgeClearancePixels>=4,`${phase}: filtered source edge enters crop`);
+  assert.equal(record.monumentAnchor.edgeMode,'fixed-crop-no-fill');
+  assert.equal(record.backgroundContinuity.requestedTargetMet,Math.max(record.backgroundContinuity.maxMonumentDisplacementPixels,record.backgroundContinuity.maximumRegionalDisplacementPixels)<=.01);
   assert.equal(record.monumentAnchor.preservesWholeFrames,true);
   assert.equal(record.monumentAnchor.method,'whole-frame-monument-translation');
   assert.equal(record.monumentAnchor.checkedFrames,record.frames+record.fps*record.overlapSeconds);

@@ -19,14 +19,16 @@ import numpy as np
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--sources', type=Path, required=True)
 parser.add_argument('--stabilized', type=Path)
+parser.add_argument('--output',type=Path,default=Path('public/media/phases'))
+parser.add_argument('--manifest',type=Path,default=Path('tests/fixtures/video-loop-metrics.json'))
 parser.add_argument('--phase', choices=['morning','day','evening','night'])
 args = parser.parse_args()
-output = Path('public/media/phases')
+output = args.output
 output.mkdir(parents=True, exist_ok=True)
 names = {'morning':'Pagi.mp4','day':'Siang.mp4','evening':'Sore.mp4','night':'malam.mp4'}
-manifest_path = Path('tests/fixtures/video-loop-metrics.json')
+manifest_path = args.manifest
 manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-manifest = {'method':'intact forward footage; whole-frame monument anchoring; cyclic 3-second smoothstep overlap', 'phases':manifest.get('phases',{})}
+manifest = {'method':'intact forward footage; filtered similarity camera correction and whole-frame monument anchoring; cyclic 3-second smoothstep overlap', 'phases':manifest.get('phases',{})}
 
 def run(*command):
     subprocess.run(list(map(str,command)), check=True)
@@ -47,7 +49,12 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             run(sys.executable,'scripts/stabilize-video.py',source,stable,registration)
         anchored=work/f'{phase}-monument.mp4'
         anchor_metadata=work/f'{phase}-monument.json'
-        run(sys.executable,'scripts/anchor-video-monument.py',stable,anchored,phase,anchor_metadata)
+        registration_data=json.loads(registration.read_text())
+        if registration_data.get('method')!='whole-frame-similarity':
+            raise RuntimeError('Reuse only similarity-registered clips; projective warps are not allowed')
+        box=registration_data.get('outputAnchorBox')
+        extra=[json.dumps(box)] if box else []
+        run(sys.executable,'scripts/anchor-video-monument.py',stable,anchored,phase,anchor_metadata,*extra)
         anchor=json.loads(anchor_metadata.read_text())
         stable=anchored
         details=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=r_frame_rate,nb_frames','-of','json',str(stable)]))['streams'][0]
@@ -65,8 +72,8 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             f'[t]trim=start_frame={frames-fade},settb=1/{fps},setpts=N[tail];'
             f"[tail][head]blend=all_expr='A*(1-({weight}))+B*({weight})':shortest=1[bridge];"
             f'[middle][bridge]concat=n=2:v=1:a=0,format=yuv420p[out]')
-        destination=output/f'{phase}.mp4'
-        run('ffmpeg','-y','-v','error','-i',stable,'-filter_complex_threads','1','-filter_complex',graph,'-map','[out]','-an','-c:v','libx264','-threads','2','-preset','medium','-crf','21','-maxrate','4500k','-bufsize','9000k','-r',fps,'-g',round(fps*2),'-keyint_min',round(fps*2),'-sc_threshold','0','-movflags','+faststart',destination)
+        destination=work/f'{phase}.mp4'
+        run('ffmpeg','-y','-v','error','-i',stable,'-filter_complex_threads','1','-filter_complex',graph,'-map','[out]','-an','-c:v','libx264','-threads','2','-preset','medium','-crf','18','-r',fps,'-g',frames-fade,'-keyint_min',frames-fade,'-sc_threshold','0','-movflags','+faststart',destination)
         decoded=luma(destination)
         original=luma(stable)
         diffs=np.abs(np.diff(decoded,axis=0)).mean(axis=(1,2))
@@ -77,6 +84,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         drift=json.loads(subprocess.check_output([sys.executable,'scripts/check-monument-anchor.py',str(destination),json.dumps(anchor['outputAnchorBox'])],text=True))
         run('ffmpeg','-y','-v','error','-i',destination,'-frames:v','1','-q:v','3',output/f'{phase}.jpg')
         record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'stabilization':json.loads(registration.read_text()),'monumentAnchor':anchor}
+        destination.replace(output/f'{phase}.mp4')
         with open('/tmp/laporkuy-background-manifest.lock','w') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             latest=json.loads(manifest_path.read_text()) if manifest_path.exists() else {}

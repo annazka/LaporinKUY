@@ -1,212 +1,276 @@
 {
-  "method": "intact forward footage; whole-frame monument anchoring; cyclic 3-second smoothstep overlap",
+  "method": "intact forward footage; filtered similarity camera correction and whole-frame monument anchoring; cyclic 3-second smoothstep overlap",
   "phases": {
-    "night": {
-      "sourceName": "malam.mp4",
-      "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
-      "sha256": "0b0ce839891d0c16178cde5d5d762252368e986506908f9a3e66b94cd9a42d46",
-      "fps": 30.0,
-      "frames": 460,
-      "duration": 15.333333333333334,
+    "day": {
+      "sourceName": "Siang.mp4",
+      "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
+      "sha256": "c0d0e35f958278abd5504a6c747d17d2b41dbc249fa2bca9023df566c93b69ca",
+      "fps": 24.0,
+      "frames": 168,
+      "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.1052777767181396,
-      "referenceSeam": 0.785069465637207,
-      "medianFrameDifference": 0.6396527886390686,
+      "seam": 0.7729166746139526,
+      "referenceSeam": 0.5845139026641846,
+      "medianFrameDifference": 0.4731944501399994,
       "backgroundContinuity": {
-        "checkedFrames": 460,
-        "minimumCorrelation": 0.8541618787345729,
-        "maxMonumentDisplacementPixels": 0.3815035820007324,
-        "maximumAdjacentDisplacementPixels": 0.09254223108291626,
-        "loopJoinDisplacementPixels": 0.0308572705835104,
-        "worstFrame": 120
+        "checkedFrames": 168,
+        "minimumCorrelation": 0.9564949922363409,
+        "maxMonumentDisplacementPixels": 0.09441447573687102,
+        "maximumAdjacentDisplacementPixels": 0.05396586848719352,
+        "loopJoinDisplacementPixels": 0.034835334464139445,
+        "maximumRegionalDisplacementPixels": 0.45886055364906386,
+        "maximumInterRegionDisplacementPixels": 0.8539467708436606,
+        "worstFrame": 152,
+        "requestedMaximumPixels": 0.01,
+        "requestedTargetMet": false,
+        "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
       },
       "stabilization": {
-        "method": "static-background-homography",
-        "referenceFrame": 275,
-        "minimumInliers": 72,
-        "maxRegistrationErrorPixels": 1.5983734130859375,
+        "method": "whole-frame-similarity",
+        "referenceFrame": 120,
+        "minimumInliers": 164,
+        "maxRegistrationErrorPixels": 1.3431038856506348,
         "fixedCrop": [
-          352,
-          198,
-          1216,
-          684
-        ]
+          22,
+          12,
+          1236,
+          695
+        ],
+        "outputAnchorBox": [
+          629,
+          314,
+          64,
+          115
+        ],
+        "scaleRotationFilterFrames": 21,
+        "preservesStraightLines": true
       },
       "monumentAnchor": {
         "method": "whole-frame-monument-translation",
-        "checkedFrames": 550,
-        "referenceFrame": 275,
-        "minimumCorrelation": 0.8139661171210035,
-        "maximumCorrectionPixels": 1.6753435134887695,
+        "checkedFrames": 240,
+        "referenceFrame": 120,
+        "minimumCorrelation": 0.9290883721979015,
+        "maximumCorrectionPixels": 8.35159565161339,
         "fixedCrop": [
-          8,
-          4,
-          1264,
-          711
+          52,
+          29,
+          1176,
+          662
         ],
         "outputAnchorBox": [
-          630,
-          345,
-          66,
-          127
+          628,
+          310,
+          70,
+          125
         ],
-        "preservesWholeFrames": true
+        "preservesWholeFrames": true,
+        "requestedTargetPixels": 0.01,
+        "edgeMode": "fixed-crop-no-fill",
+        "conservativeEdgeClearancePixels": 20.64840434838661
       }
     },
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "0271a8d1c0570eccea384fde2d0e3212aab6b11f30557ee252059477d1117c91",
+      "sha256": "85981d936956839ccafceafcca315eb7963f8f6c7d4d4800df5b0371d862077d",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.1162500381469727,
-      "referenceSeam": 0.8514583110809326,
-      "medianFrameDifference": 0.820069432258606,
+      "seam": 0.8087499737739563,
+      "referenceSeam": 0.6199305653572083,
+      "medianFrameDifference": 0.4960416555404663,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumCorrelation": 0.9132154822939778,
-        "maxMonumentDisplacementPixels": 0.1359868198633194,
-        "maximumAdjacentDisplacementPixels": 0.10215649008750916,
-        "loopJoinDisplacementPixels": 0.03034706600010395,
-        "worstFrame": 95
+        "minimumCorrelation": 0.9192112375731368,
+        "maxMonumentDisplacementPixels": 0.05974602376511371,
+        "maximumAdjacentDisplacementPixels": 0.06378469882372882,
+        "loopJoinDisplacementPixels": 0.021665883509120836,
+        "maximumRegionalDisplacementPixels": 0.1405020885137853,
+        "maximumInterRegionDisplacementPixels": 0.20736967240959506,
+        "worstFrame": 43,
+        "requestedMaximumPixels": 0.01,
+        "requestedTargetMet": false,
+        "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
       },
       "stabilization": {
-        "method": "static-background-homography",
+        "method": "whole-frame-similarity",
         "referenceFrame": 120,
-        "minimumInliers": 332,
-        "maxRegistrationErrorPixels": 1.6444671154022217,
+        "minimumInliers": 267,
+        "maxRegistrationErrorPixels": 1.5470322370529175,
         "fixedCrop": [
-          70,
-          39,
-          1140,
-          641
-        ]
-      },
-      "monumentAnchor": {
-        "method": "whole-frame-monument-translation",
-        "checkedFrames": 240,
-        "referenceFrame": 120,
-        "minimumCorrelation": 0.855631570187355,
-        "maximumCorrectionPixels": 1.4924010038375854,
-        "fixedCrop": [
-          7,
-          4,
-          1266,
-          712
+          42,
+          23,
+          1196,
+          673
         ],
         "outputAnchorBox": [
           636,
-          208,
-          51,
-          111
+          217,
+          48,
+          105
         ],
-        "preservesWholeFrames": true
-      }
-    },
-    "day": {
-      "sourceName": "Siang.mp4",
-      "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "95a1ee09a8fa1e991e59a124d563f45f6dc272f7438a1c50a1d50e9c4ceb5854",
-      "fps": 24.0,
-      "frames": 168,
-      "duration": 7.0,
-      "overlapSeconds": 3.0,
-      "seam": 1.1620138883590698,
-      "referenceSeam": 0.8286111354827881,
-      "medianFrameDifference": 0.926319420337677,
-      "backgroundContinuity": {
-        "checkedFrames": 168,
-        "minimumCorrelation": 0.9580510737604988,
-        "maxMonumentDisplacementPixels": 0.12747220695018768,
-        "maximumAdjacentDisplacementPixels": 0.0795029029250145,
-        "loopJoinDisplacementPixels": 0.060238976031541824,
-        "worstFrame": 28
-      },
-      "stabilization": {
-        "method": "static-background-homography",
-        "referenceFrame": 120,
-        "minimumInliers": 187,
-        "maxRegistrationErrorPixels": 1.1999304294586182,
-        "fixedCrop": [
-          72,
-          40,
-          1136,
-          639
-        ]
+        "scaleRotationFilterFrames": 21,
+        "preservesStraightLines": true
       },
       "monumentAnchor": {
         "method": "whole-frame-monument-translation",
         "checkedFrames": 240,
         "referenceFrame": 120,
-        "minimumCorrelation": 0.9052661715153636,
-        "maximumCorrectionPixels": 2.506808280944824,
+        "minimumCorrelation": 0.8996017164231402,
+        "maximumCorrectionPixels": 15.374029258735295,
         "fixedCrop": [
-          8,
-          4,
-          1264,
-          711
+          52,
+          29,
+          1176,
+          662
         ],
         "outputAnchorBox": [
-          628,
-          310,
-          71,
-          127
+          636,
+          204,
+          52,
+          114
         ],
-        "preservesWholeFrames": true
+        "preservesWholeFrames": true,
+        "requestedTargetPixels": 0.01,
+        "edgeMode": "fixed-crop-no-fill",
+        "conservativeEdgeClearancePixels": 13.625970741264705
       }
     },
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "180295ad43296277d0f6fcc67237643aa56af2a876fc622e8941cf66de0cf531",
+      "sha256": "6cdadda834bc0a7777010e0b295ef21a3b05153cafd80fb2c5de640e4a2051af",
       "fps": 24.0,
       "frames": 168,
       "duration": 7.0,
       "overlapSeconds": 3.0,
-      "seam": 1.2384722232818604,
-      "referenceSeam": 0.9699305295944214,
-      "medianFrameDifference": 1.219236135482788,
+      "seam": 0.8943750262260437,
+      "referenceSeam": 0.8075694441795349,
+      "medianFrameDifference": 0.7039583325386047,
       "backgroundContinuity": {
         "checkedFrames": 168,
-        "minimumCorrelation": 0.8729868820240028,
-        "maxMonumentDisplacementPixels": 0.268373042345047,
-        "maximumAdjacentDisplacementPixels": 0.12491697072982788,
-        "loopJoinDisplacementPixels": 0.03015892766416073,
-        "worstFrame": 148
+        "minimumCorrelation": 0.85720344410803,
+        "maxMonumentDisplacementPixels": 0.22590879444967318,
+        "maximumAdjacentDisplacementPixels": 0.12584815764707777,
+        "loopJoinDisplacementPixels": 0.038597434421966455,
+        "maximumRegionalDisplacementPixels": 0.6623446923047263,
+        "maximumInterRegionDisplacementPixels": 1.1458977392052643,
+        "worstFrame": 156,
+        "requestedMaximumPixels": 0.01,
+        "requestedTargetMet": false,
+        "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
       },
       "stabilization": {
-        "method": "static-background-homography",
+        "method": "whole-frame-similarity",
         "referenceFrame": 120,
-        "minimumInliers": 193,
-        "maxRegistrationErrorPixels": 1.3130254745483398,
+        "minimumInliers": 155,
+        "maxRegistrationErrorPixels": 1.7065300941467285,
         "fixedCrop": [
-          104,
-          58,
-          1072,
-          603
-        ]
+          102,
+          57,
+          1076,
+          605
+        ],
+        "outputAnchorBox": [
+          642,
+          252,
+          38,
+          62
+        ],
+        "scaleRotationFilterFrames": 21,
+        "preservesStraightLines": true
       },
       "monumentAnchor": {
         "method": "whole-frame-monument-translation",
         "checkedFrames": 240,
         "referenceFrame": 120,
-        "minimumCorrelation": 0.8168682441438874,
-        "maximumCorrectionPixels": 8.178756713867188,
+        "minimumCorrelation": 0.8342143092628099,
+        "maximumCorrectionPixels": 21.38381134275889,
         "fixedCrop": [
-          20,
-          11,
-          1240,
-          698
+          52,
+          29,
+          1176,
+          662
         ],
         "outputAnchorBox": [
           642,
-          249,
-          39,
-          64
+          243,
+          41,
+          67
         ],
-        "preservesWholeFrames": true
+        "preservesWholeFrames": true,
+        "requestedTargetPixels": 0.01,
+        "edgeMode": "fixed-crop-no-fill",
+        "conservativeEdgeClearancePixels": 7.616188657241111
+      }
+    },
+    "night": {
+      "sourceName": "malam.mp4",
+      "sourceSha256": "19dd5a0cbe3ebb6a21a47ba6ee643fc49fc18ab1b292fd4079ddec11c35c492d",
+      "sha256": "485ebeb8436b456435829429a88f59f012620319c0b3dc2d44b7acaa62498d7b",
+      "fps": 30.0,
+      "frames": 460,
+      "duration": 15.333333333333334,
+      "overlapSeconds": 3.0,
+      "seam": 0.8448610901832581,
+      "referenceSeam": 0.699097216129303,
+      "medianFrameDifference": 0.554236114025116,
+      "backgroundContinuity": {
+        "checkedFrames": 460,
+        "minimumCorrelation": 0.786611400317648,
+        "maxMonumentDisplacementPixels": 0.3971558729633338,
+        "maximumAdjacentDisplacementPixels": 0.08116426463631775,
+        "loopJoinDisplacementPixels": 0.052878435609124065,
+        "maximumRegionalDisplacementPixels": 0.6793650833899544,
+        "maximumInterRegionDisplacementPixels": 0.8067998536756638,
+        "worstFrame": 127,
+        "requestedMaximumPixels": 0.01,
+        "requestedTargetMet": false,
+        "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
+      },
+      "stabilization": {
+        "method": "whole-frame-similarity",
+        "referenceFrame": 275,
+        "minimumInliers": 43,
+        "maxRegistrationErrorPixels": 2.7325742840766907,
+        "fixedCrop": [
+          334,
+          188,
+          1252,
+          704
+        ],
+        "outputAnchorBox": [
+          630,
+          345,
+          63,
+          121
+        ],
+        "scaleRotationFilterFrames": 21,
+        "preservesStraightLines": true
+      },
+      "monumentAnchor": {
+        "method": "whole-frame-monument-translation",
+        "checkedFrames": 550,
+        "referenceFrame": 275,
+        "minimumCorrelation": 0.8173855041326967,
+        "maximumCorrectionPixels": 11.483230507262213,
+        "fixedCrop": [
+          52,
+          29,
+          1176,
+          662
+        ],
+        "outputAnchorBox": [
+          629,
+          344,
+          69,
+          132
+        ],
+        "preservesWholeFrames": true,
+        "requestedTargetPixels": 0.01,
+        "edgeMode": "fixed-crop-no-fill",
+        "conservativeEdgeClearancePixels": 17.516769492737787
       }
     }
   }
