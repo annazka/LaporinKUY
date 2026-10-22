@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import {ArrowUpRight,ArrowRight,MapPin,ShieldCheck,Check,ScanLine,CalendarClock,Layers,ChevronDown,MoveDown,Activity} from 'lucide-react';
-import {Eyebrow,Empty} from '@/components/ui';
+import {ArrowUpRight,ArrowRight,ChevronDown} from 'lucide-react';
+import {Empty} from '@/components/ui';
 import {AuthLink,AuthEntry} from '@/components/auth-modal';
 import {safeNext} from '@/lib/rules.mjs';
 import {configured} from '@/lib/backend';
@@ -12,7 +12,6 @@ import {LandingVouchers} from '@/components/landing-vouchers';
 import {LandingReports} from '@/components/landing-reports';
 
 export const dynamic='force-dynamic';
-const values=[{icon:MapPin,label:'Suara warga'},{icon:ScanLine,label:'Analisis AI'},{icon:CalendarClock,label:'Progres terbuka'},{icon:ShieldCheck,label:'Hasil terverifikasi'}];
 const faqs=[
  ['Siapa yang bisa mengirim laporan?','Warga yang memiliki akun LaporKUY dapat mengirim foto, deskripsi, dan lokasi kerusakan. Cakupan awal berfokus pada jalan berlubang di Jakarta daratan.'],
  ['Kalau kerusakannya sudah dilaporkan orang lain?','Laporan serupa digabung ke satu kasus dan dihitung sebagai upvote. Satu akun dihitung satu kali untuk kasus yang sama. Bukti tambahan dari akun yang sama tidak menambah upvote.'],
@@ -31,24 +30,20 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  const completed=list.filter(r=>r.status==='completed').length;
  return <div className="landing plain-landing">{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
- <div className="beta-pill"><span className="live-dot"/> WARGA BERGERAK, JAKARTA MEMBAIK <span className="beta-tag">BETA</span></div>
- <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
- <p>LaporKUY. Laporkan kerusakan infrastruktur. Pantau sampai tuntas.<br className="desktop-break"/>Satu langkah kecilmu, berarti untuk perjalanan banyak orang.</p>
+ <h1>Laporkan jalan rusak.<br/><span>Pantau perbaikannya.</span></h1>
+ <p>Kirim foto dan lokasi jalan rusak di Jakarta. Lihat status laporan, jadwal penanganan, dan hasil perbaikannya.</p>
  <div className="hero-actions"><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={18}/></AuthLink><AuthLink className="button secondary">Masuk <ArrowRight size={17}/></AuthLink></div>
- <div className="hero-trust"><span><ShieldCheck size={14}/> Identitas pelapor terlindungi</span><span><Check size={14}/> Progres bisa kamu pantau</span></div></div>
- <div className="hero-location"><MapPin size={14}/> JAKARTA, INDONESIA <span>SUARA WARGA. AKSI NYATA.</span></div><a className="scroll-cue" href="#fitur">KENALI LAPORKUY <MoveDown size={14}/></a></section>
- <div className="values-strip"><div className="container"><span className="values-label">DARI LAPORAN KE AKSI</span><div className="values-list">{values.map(v=><span key={v.label}><v.icon size={16}/>{v.label}</span>)}</div></div></div>
- <section id="fitur" className="container section feature-section reveal"><div className="center-heading"><Eyebrow>DIBUAT UNTUK WARGA YANG PEDULI</Eyebrow><h2>Biar setiap laporan<br/>punya <span>arah dan kabar.</span></h2><p>Informasi yang kamu butuhkan, dari satu tempat.</p></div>
- <div className="feature-grid"><article className="feature-card feature-wide"><div className="feature-copy"><span className="feature-icon"><CalendarClock size={23}/></span><h3>Progresnya terbuka.<br/>Setiap hari ada kabar.</h3><p>Lihat target selesai, pekerjaan hari ini, dan alasan jika ada kendala. Riwayat perubahan jadwal tetap tercatat.</p><Link className="text-button" href="#laporan">Pantau penanganan <ArrowUpRight size={16}/></Link></div><div className="mini-progress" aria-hidden="true"><div><span className="live-dot"/> PEMBARUAN OPERATOR <small>CONTOH</small></div><h4>Perbaikan sedang berlangsung</h4><div className="mini-progress-bars">{[38,55,46,78,68,87,100].map((n,i)=><i key={i} style={{height:`${n}%`}}/>)}</div><div className="mini-progress-bottom"><span>Setiap langkah tercatat</span><Check size={15}/></div></div></article>
- <article className="feature-card"><span className="feature-icon"><ScanLine size={23}/></span><h3>Foto jadi informasi.</h3><p>Gemini membantu mengenali kategori dan tingkat kerusakan. Operator tetap memegang keputusan penanganan.</p><div className="ai-chip"><span className="live-dot"/>Dibantu Google Gemini<ArrowUpRight size={14}/></div></article>
- <article className="feature-card"><span className="feature-icon"><Layers size={23}/></span><h3>Satu kerusakan.<br/>Banyak suara.</h3><p>Laporan warga untuk kerusakan yang sama masuk sebagai upvote. Penanganannya terpusat dalam satu kasus.</p><div className="contributor-stack" aria-hidden="true"><span>A</span><span>N</span><span>R</span><i/><small>Kontribusi warga terhubung</small></div></article>
-</div></section>
- <section id="cara-kerja" className="container section journey-section reveal"><div className="section-heading"><div><Eyebrow>SETIAP KONTRIBUSI PUNYA PERJALANAN</Eyebrow><h2>Bersuara itu mudah.<br/><span>Melihat hasilnya juga.</span></h2></div><p>Laporanmu punya tujuan yang jelas.<br/>Dari bukti pertama sampai perbaikan terakhir.</p></div><ReportJourney/></section>
- <section id="laporan" className="container section latest reveal" aria-labelledby="landing-reports-title"><div className="section-heading"><div><Eyebrow>SUARA DARI SEKITAR KITA</Eyebrow><h2 id="landing-reports-title">Kotamu punya cerita.<br/><span>Ini yang perlu dibenahi.</span></h2></div><AuthLink className="button secondary" next="/reports/new">Buat laporan <ArrowUpRight size={17}/></AuthLink></div>{loadFailed?<Empty title="Laporan belum dapat dimuat." text="Muat ulang halaman untuk mencoba kembali." action={false}/>:<LandingReports reports={list}/>}</section>
+ </div></section>
+ <section id="fitur" className="container section feature-section"><div className="section-heading"><div><h2>Informasi yang bisa<br/><span>kamu pantau.</span></h2></div></div>
+ <div className="landing-feature-list"><article><h3>Jadwal dan progres perbaikan</h3><div><p>Lihat target selesai, pembaruan pekerjaan, dan alasan jika jadwal berubah. Riwayat penanganan tetap tercatat.</p><Link className="text-button" href="#laporan">Lihat laporan <ArrowUpRight size={16}/></Link></div></article>
+ <article><h3>Penilaian foto kerusakan</h3><p>Gemini membantu mengenali jenis dan tingkat kerusakan dari foto. Operator memverifikasi hasilnya sebelum menentukan penanganan.</p></article>
+ <article><h3>Laporan di lokasi yang sama</h3><p>Laporan untuk kerusakan yang sama digabung menjadi satu kasus. Dukungan warga ikut tercatat tanpa memecah proses penanganan.</p></article></div></section>
+ <section id="cara-kerja" className="container section journey-section"><div className="section-heading"><div><h2>Dari laporan<br/><span>sampai perbaikan.</span></h2></div><p>Pilih tahap untuk melihat alur pelaporan.</p></div><ReportJourney/></section>
+ <section id="laporan" className="container section latest" aria-labelledby="landing-reports-title"><div className="section-heading"><div><h2 id="landing-reports-title">Laporan jalan rusak<br/><span>di Jakarta.</span></h2></div><AuthLink className="button secondary" next="/reports/new">Buat laporan <ArrowUpRight size={17}/></AuthLink></div>{loadFailed?<Empty title="Laporan belum dapat dimuat." text="Muat ulang halaman untuk mencoba kembali." action={false}/>:<LandingReports reports={list}/>}</section>
  <LandingMap reports={list} failed={loadFailed}/>
- <section id="dampak" className="community-section reveal"><div className="container"><div className="section-heading"><div><Eyebrow>ANGKA DARI KONTRIBUSI NYATA</Eyebrow><h2>Setiap laporan,<br/><span>satu langkah maju.</span></h2></div><div className="community-label"><Activity size={16}/>{loadFailed?'Data belum dapat dimuat':'Data laporan saat ini'}</div></div>{loadFailed?<p>Data sedang belum tersedia. Muat ulang halaman untuk mencoba kembali.</p>:<div className="community-stats"><div><strong>{list.length.toLocaleString('id-ID')}<span>↗</span></strong><p>Laporan masuk</p></div><div><strong>{completed.toLocaleString('id-ID')}<span>↗</span></strong><p>Perbaikan terkonfirmasi</p></div><div><strong>{list.reduce((a,r)=>a+r.support_count+1,0).toLocaleString('id-ID')}<span>↗</span></strong><p>Kontribusi pelapor</p></div></div>}<small>Angka mengikuti data laporan yang dimuat. Cakupan awal Jakarta.</small></div></section>
+ <section id="dampak" className="community-section"><div className="container"><div className="section-heading"><div><h2>Laporan masuk.<br/><span>Perbaikan selesai.</span></h2></div></div>{loadFailed?<p>Data sedang belum tersedia. Muat ulang halaman untuk mencoba kembali.</p>:<div className="community-stats"><div><strong>{list.length.toLocaleString('id-ID')}</strong><p>Laporan masuk</p></div><div><strong>{completed.toLocaleString('id-ID')}</strong><p>Perbaikan terkonfirmasi</p></div><div><strong>{list.reduce((a,r)=>a+r.support_count+1,0).toLocaleString('id-ID')}</strong><p>Kontribusi pelapor</p></div></div>}<small>Angka mengikuti data laporan yang dimuat. Cakupan awal Jakarta.</small></div></section>
  <LandingVouchers vouchers={vouchers} balance={balance} signedIn={Boolean(user)} failed={offers.status==='rejected'} accountFailed={account.status==='rejected'} redemptions={redemptions}/>
- <section id="faq" className="container section faq-section reveal"><div><Eyebrow>SEBELUM MULAI MELAPOR</Eyebrow><h2>Masih ada<br/><span>yang ingin ditanyakan?</span></h2><p>Kenali cara LaporKUY bekerja.</p></div><div className="faq-list">{faqs.map(([q,a])=><details key={q}><summary>{q}<ChevronDown size={17}/></summary><p>{a}</p></details>)}</div></section>
- <section className="container join-banner reveal"><div className="cta-orbit" aria-hidden="true"/><div><Eyebrow>JAKARTA LEBIH BAIK, MULAI DARI KITA</Eyebrow><h2>Lihat yang perlu diperbaiki?<br/><span>Lapor<span className="cta-kuy">KUY.</span></span></h2><p>Suaramu hari ini bisa membuat perjalanan besok lebih nyaman.</p></div><AuthLink className="button" next="/reports/new">Ambil bagian sekarang <ArrowUpRight size={19}/></AuthLink></section>
+ <section id="faq" className="container section faq-section"><div><h2>Pertanyaan umum</h2></div><div className="faq-list">{faqs.map(([q,a])=><details key={q}><summary>{q}<ChevronDown size={17}/></summary><p>{a}</p></details>)}</div></section>
+ <section className="container join-banner"><div><h2>Ada jalan rusak<br/>di sekitarmu?</h2><p>Siapkan foto dan lokasi untuk membuat laporan.</p></div><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={19}/></AuthLink></section>
  </div>;
 }
