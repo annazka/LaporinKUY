@@ -30,8 +30,8 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  const completed=list.filter(r=>r.status==='completed').length;
  return <div className="landing plain-landing">{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
- <h1>Laporkan jalan rusak.<br/><span>Pantau perbaikannya.</span></h1>
- <p>Kirim foto dan lokasi jalan rusak di Jakarta. Lihat status laporan, jadwal penanganan, dan hasil perbaikannya.</p>
+ <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
+ <p>LaporKUY. Laporkan kerusakan infrastruktur. Pantau sampai tuntas.<br className="desktop-break"/>Satu langkah kecilmu, berarti untuk perjalanan banyak orang.</p>
  <div className="hero-actions"><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={18}/></AuthLink><AuthLink className="button secondary">Masuk <ArrowRight size={17}/></AuthLink></div>
  </div></section>
  <section id="fitur" className="container section feature-section"><div className="section-heading"><div><h2>Informasi yang bisa<br/><span>kamu pantau.</span></h2></div></div>

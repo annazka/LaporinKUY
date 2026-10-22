@@ -1,10 +1,5 @@
 /* Landing: content first, with decoration reserved for the report carousel. */
-.plain-landing .night-hero{min-height:78svh;padding-block:160px 80px}
-.plain-landing .hero-intro{text-align:left;padding-inline:0}
-.plain-landing .hero-intro h1{font-size:clamp(42px,6vw,78px);max-width:1000px;margin:0 0 28px;line-height:1.12}
-.plain-landing .hero-intro h1>span{background:none;color:#bdbdbd;-webkit-text-fill-color:currentColor}
-.plain-landing .hero-intro>p{max-width:620px;margin-inline:0;color:#bdbdbd}
-.plain-landing .hero-intro .hero-actions{justify-content:flex-start}
+.plain-landing .hero-intro h1>span{background:none;color:var(--time-text);-webkit-text-fill-color:currentColor}
 .plain-landing .hero-intro>*{animation:none}
 .landing-feature-list{border-top:1px solid #333}
 .landing-feature-list article{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;padding:30px 0;border-bottom:1px solid #333}
@@ -36,11 +31,9 @@
 .plain-landing .voucher-destination>span,.plain-landing .voucher-destination>small{font-size:11px;letter-spacing:0}
 .plain-landing .landing-voucher-content>small{font-size:12px;letter-spacing:0;text-transform:none}
 @media(max-width:650px){
- .plain-landing .night-hero{min-height:75svh;padding-block:140px 60px}
  .landing-feature-list article{grid-template-columns:1fr;gap:12px;padding-block:24px}
  .landing-feature-list h3{font-size:20px}
  .landing-feature-list p{font-size:14px}
- .plain-landing .hero-intro h1{font-size:clamp(36px,8.9vw,52px)}
  .plain-landing .step-choice p{font-size:13px}
  .plain-landing .community-stats{gap:20px;grid-template-columns:1fr}
  .plain-landing .community-stats>div{padding:0 0 18px;border:0;border-bottom:1px solid #262626;display:flex;align-items:baseline;gap:20px}
