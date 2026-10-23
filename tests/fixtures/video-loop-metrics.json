@@ -277,7 +277,7 @@
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "b1b6dd6786c2cfeba2f03ff6ed991184c9eca587d4bb70bcc7b130ad88f4db1c",
+      "sha256": "97326278f146e815c0e65739f8448373216237df47879bb20e6897c0319fc230",
       "fps": 30,
       "frames": 460,
       "duration": 15.333333333333334,
@@ -287,18 +287,18 @@
         192
       ],
       "originalSourceFrames": 240,
-      "seam": 0.3613194525241852,
+      "seam": 0.4819444417953491,
       "referenceSeam": 0.10284721851348877,
-      "medianFrameDifference": 0.13187499344348907,
+      "medianFrameDifference": 0.1505555510520935,
       "backgroundContinuity": {
         "checkedFrames": 460,
-        "minimumCorrelation": 0.9279905961518681,
-        "maxMonumentDisplacementPixels": 0.07422298310801012,
-        "maximumAdjacentDisplacementPixels": 0.02309149297105335,
-        "loopJoinDisplacementPixels": 0.01400560074847407,
-        "maximumRegionalDisplacementPixels": 0.1738963140414141,
-        "maximumInterRegionDisplacementPixels": 0.29278238598297723,
-        "worstFrame": 42,
+        "minimumCorrelation": 0.931185930629046,
+        "maxMonumentDisplacementPixels": 0.2918424774530346,
+        "maximumAdjacentDisplacementPixels": 0.02213573149711105,
+        "loopJoinDisplacementPixels": 0.004161106066812561,
+        "maximumRegionalDisplacementPixels": 0.2989569844028082,
+        "maximumInterRegionDisplacementPixels": 0.28440784570731975,
+        "worstFrame": 439,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
@@ -307,33 +307,33 @@
         "checkedFrames": 460,
         "regions": {
           "left": {
-            "minimumTracks": 157,
-            "maximumMedianStepPixels": 0.08904951065778732,
-            "p95MedianStepPixels": 0.05477896332740784,
-            "medianStepPixels": 0.014290695078670979,
-            "worstFrame": 400,
-            "loopJoinMedianStepPixels": 0.047179337590932846
+            "minimumTracks": 156,
+            "maximumMedianStepPixels": 0.05901280790567398,
+            "p95MedianStepPixels": 0.03504412993788719,
+            "medianStepPixels": 0.007046942599117756,
+            "worstFrame": 0,
+            "loopJoinMedianStepPixels": 0.05901280790567398
           },
           "center": {
-            "minimumTracks": 121,
-            "maximumMedianStepPixels": 0.05784657225012779,
-            "p95MedianStepPixels": 0.031942978501319885,
-            "medianStepPixels": 0.005899139679968357,
-            "worstFrame": 387,
-            "loopJoinMedianStepPixels": 0.048599500209093094
+            "minimumTracks": 127,
+            "maximumMedianStepPixels": 0.05202329531311989,
+            "p95MedianStepPixels": 0.024477969855070114,
+            "medianStepPixels": 0.004622193984687328,
+            "worstFrame": 274,
+            "loopJoinMedianStepPixels": 0.04252104088664055
           },
           "right": {
-            "minimumTracks": 155,
-            "maximumMedianStepPixels": 0.08114117383956909,
-            "p95MedianStepPixels": 0.055117879062891006,
-            "medianStepPixels": 0.019025392830371857,
-            "worstFrame": 395,
-            "loopJoinMedianStepPixels": 0.04516591131687164
+            "minimumTracks": 160,
+            "maximumMedianStepPixels": 0.06480864435434341,
+            "p95MedianStepPixels": 0.03145042061805725,
+            "medianStepPixels": 0.00835210457444191,
+            "worstFrame": 0,
+            "loopJoinMedianStepPixels": 0.06480864435434341
           }
         },
-        "maximumEdgeDisagreementPixels": 0.16864581406116486,
-        "p95EdgeDisagreementPixels": 0.10079382359981537,
-        "worstEdgeFrame": 400
+        "maximumEdgeDisagreementPixels": 0.09158296138048172,
+        "p95EdgeDisagreementPixels": 0.053919002413749695,
+        "worstEdgeFrame": 415
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -394,28 +394,28 @@
         "measurementSpace": "1280x720 pixel equivalents; 90th percentile regional non-rigid residual",
         "regions": {
           "left": {
-            "minimumTracks": 106,
-            "p95ShapeResidualPixels": 1.4284974997033832,
-            "maximumShapeResidualPixels": 5.189966402939042
+            "minimumTracks": 107,
+            "p95ShapeResidualPixels": 1.7717661637490596,
+            "maximumShapeResidualPixels": 5.172231886071357
           },
           "right": {
-            "minimumTracks": 116,
-            "p95ShapeResidualPixels": 1.004450677450994,
-            "maximumShapeResidualPixels": 1.0682835785958034
+            "minimumTracks": 118,
+            "p95ShapeResidualPixels": 1.0216805622389717,
+            "maximumShapeResidualPixels": 1.0705548202455575
           },
           "lowerLeft": {
-            "minimumTracks": 81,
-            "p95ShapeResidualPixels": 8.365498622458176,
-            "maximumShapeResidualPixels": 10.090321091731035
+            "minimumTracks": 85,
+            "p95ShapeResidualPixels": 7.709724116982702,
+            "maximumShapeResidualPixels": 10.409351103777617
           },
           "lowerRight": {
-            "minimumTracks": 68,
-            "p95ShapeResidualPixels": 2.8686977771375917,
-            "maximumShapeResidualPixels": 5.005890665507744
+            "minimumTracks": 61,
+            "p95ShapeResidualPixels": 2.9493887087122097,
+            "maximumShapeResidualPixels": 6.043150496735005
           }
         },
-        "worstRegionP95Pixels": 8.365498622458176,
-        "meanRegionP95Pixels": 3.416786144187536
+        "worstRegionP95Pixels": 7.709724116982702,
+        "meanRegionP95Pixels": 3.363139887920736
       },
       "edgeReference": {
         "sha256": "26c5126cb14af4afd701c8c4646e4a375343af061573654af15044004e9c1233",
@@ -448,6 +448,26 @@
           "worstRegionP95Pixels": 21.042421652573317,
           "meanRegionP95Pixels": 9.781444821134933
         }
+      },
+      "reviewedRefinement": {
+        "method": "whole-frame-similarity",
+        "inputSha256": "b1b6dd6786c2cfeba2f03ff6ed991184c9eca587d4bb70bcc7b130ad88f4db1c",
+        "referenceSha256": "97326278f146e815c0e65739f8448373216237df47879bb20e6897c0319fc230",
+        "sigmaSeconds": 0.3,
+        "fixedCrop": [
+          8,
+          4,
+          1264,
+          711
+        ],
+        "outputAnchorBox": [
+          635,
+          188,
+          58,
+          127
+        ],
+        "referenceFrame": 153,
+        "framesWithNoEmptyBorder": 460
       }
     },
     "evening": {

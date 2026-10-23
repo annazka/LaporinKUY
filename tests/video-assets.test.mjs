@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {phases} from '../lib/video-clock.mjs';
 const manifest=JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json',import.meta.url),'utf8'));
+const morningPreview=JSON.parse(readFileSync(new URL('./fixtures/morning-preview-metrics.json',import.meta.url),'utf8'));
 
 test('active videos match validated exports and use the accepted night cycle length',()=>{
  for(const [phase,asset] of Object.entries(phases)){
@@ -44,7 +45,8 @@ test('active videos match validated exports and use the accepted night cycle len
    const sourceFrameStep=retiming.speed*retiming.sourceFps/retiming.outputFps;
    assert.ok(record.medianFrameDifference/sourceFrameStep>.2,`${phase}: motion was frozen rather than interpolated`);
   }
-  const seamLimit=phase==='day'?record.reviewedRefinement.referenceSeam*1.05+.01:record.referenceSeam*1.3+.25;
+  const seamLimit=phase==='day'?record.reviewedRefinement.referenceSeam*1.05+.01
+   :phase==='morning'?morningPreview.seam*1.05+.01:record.referenceSeam*1.3+.25;
   assert.ok(record.seam<=seamLimit,`${phase}: cyclic seam exceeds the accepted reference`);
  }
 });
@@ -110,5 +112,21 @@ test('day uses the approved preview and reduces the measured shake around second
  for(const region of Object.values(refinement.localMotion.regions)){
   assert.ok(region.fixed.maximumStepPixels<.06,'visible local jump');
   assert.ok(region.fixed.loopJoinStepPixels<.1,'new loop join jump');
+ }
+});
+
+test('morning uses the exact approved preview and retains its validated motion',()=>{
+ const record=manifest.phases.morning;
+ const preview=readFileSync(new URL('../public/media/previews/morning-smooth.mp4',import.meta.url));
+ const approved='97326278f146e815c0e65739f8448373216237df47879bb20e6897c0319fc230';
+ assert.equal(record.sha256,approved);
+ assert.equal(morningPreview.sha256,approved);
+ assert.equal(createHash('sha256').update(preview).digest('hex'),approved);
+ assert.deepEqual(record.backgroundContinuity,morningPreview.backgroundContinuity);
+ assert.deepEqual(record.peripheralMotion,morningPreview.peripheralMotion);
+ assert.deepEqual(record.reviewedRefinement.fixedCrop,[8,4,1264,711]);
+ assert.equal(record.reviewedRefinement.framesWithNoEmptyBorder,record.frames);
+ for(const region of ['left','right']){
+  assert.ok(record.peripheralMotion.regions[region].maximumMedianStepPixels<morningPreview.reference.peripheralMotion.regions[region].maximumMedianStepPixels);
  }
 });
