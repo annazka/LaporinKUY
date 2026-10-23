@@ -5,14 +5,14 @@ import {createHash} from 'node:crypto';
 import {phases} from '../lib/video-clock.mjs';
 const manifest=JSON.parse(readFileSync(new URL('./fixtures/video-loop-metrics.json',import.meta.url),'utf8'));
 
-test('active videos match validated exports and keep long normal-speed forward cycles',()=>{
+test('active videos match validated exports and keep native-speed forward cycles',()=>{
  for(const [phase,asset] of Object.entries(phases)){
   const bytes=readFileSync(new URL('../public'+asset.src.split('?')[0],import.meta.url));
   const record=manifest.phases[phase];
   assert.equal(createHash('sha256').update(bytes).digest('hex'),record.sha256,`${phase}: stale validation`);
-  assert.ok(record.duration>=(phase==='evening'?5.5:7),`${phase}: short repeated snippet`);
+  assert.ok(record.duration>=(phase==='evening'?2.8:7),`${phase}: insufficient original footage`);
   assert.equal(record.fps,phase==='night'?30:24);
-  assert.equal(record.overlapSeconds,phase==='evening'?0.5:3);
+  assert.equal(record.overlapSeconds,phase==='evening'?0.75:3);
   assert.equal(record.backgroundContinuity.checkedFrames,record.frames);
   assert.ok(record.backgroundContinuity.minimumCorrelation>=.65,`${phase}: unreliable statue tracking`);
   assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=.5,`${phase}: monument drift`);
@@ -34,7 +34,9 @@ test('evening avoids the source camera cut and keeps edge motion within the acce
  const record=manifest.phases.evening, reference=record.peripheralReference;
  assert.equal(reference.sha256,manifest.phases.night.sha256,'night benchmark changed without rechecking evening');
  const [start,end]=record.sourceFrameRange;
- assert.ok(end-start>=record.fps*6,'insufficient original continuous motion');
+ assert.ok(end-start>=record.fps*3.5,'insufficient original continuous motion');
+ assert.equal(start,record.stabilization.cameraStepFrames.at(-1),'the opening backward dolly returned');
+ assert.equal(end,record.originalSourceFrames,'camera-hold take was unnecessarily truncated');
  assert.equal(record.frames, end-start-record.fps*record.overlapSeconds);
  assert.ok(!record.stabilization.cameraStepFrames.some(frame=>frame>start&&frame<end),'source camera jump is inside the loop');
  assert.equal(record.peripheralMotion.checkedFrames,record.frames);
@@ -44,4 +46,12 @@ test('evening avoids the source camera cut and keeps edge motion within the acce
  }
  assert.ok(record.peripheralMotion.maximumEdgeDisagreementPixels<=reference.motion.maximumEdgeDisagreementPixels,'opposite edges move less coherently than night');
  assert.ok(record.peripheralMotion.p95EdgeDisagreementPixels<=reference.motion.p95EdgeDisagreementPixels,'recurring edge wobble exceeds night');
+ assert.equal(record.fixedView.checkedFrames,record.frames);
+ for(const [name,region] of Object.entries(record.fixedView.regions)){
+  assert.ok(region.minimumTracks>=40,`${name}: insufficient fixed-reference observations`);
+  const limit=name.endsWith('Foreground')?5:.75;
+  assert.equal(region.limitPixels,limit,`${name}: accumulated-drift guard was changed`);
+  assert.ok(region.maximumMedianDriftPixels<=limit,`${name}: slow camera pullback returned`);
+  assert.ok(region.loopJoinMedianDisplacementPixels<=.5,`${name}: scenery jumps at loop restart`);
+ }
 });

@@ -49,6 +49,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             run(sys.executable,'scripts/stabilize-video.py',source,stable,registration)
         original_details=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=r_frame_rate,nb_frames','-of','json',str(stable)]))['streams'][0]
         source_frames=int(original_details['nb_frames'])
+        source_rate=original_details['r_frame_rate']
         source_range=[0,source_frames]
         anchored=work/f'{phase}-monument.mp4'
         anchor_metadata=work/f'{phase}-monument.json'
@@ -58,12 +59,15 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         cuts=registration_data.get('cameraStepFrames',[])
         if phase=='evening' and cuts:
             boundaries=[0,*cuts,source_frames]
-            source_range=max(zip(boundaries,boundaries[1:]),key=lambda pair:pair[1]-pair[0])
+            # The opening take dollies backward: holding the statue alone does
+            # not stop foreground parallax. The final take holds its viewpoint.
+            # Prefer that genuine camera hold over the longer moving take.
+            source_range=list(zip(boundaries,boundaries[1:]))[-1]
             trimmed=work/f'{phase}-continuous.mp4'
             if source_range[0]==0:
                 run('ffmpeg','-y','-v','error','-i',stable,'-frames:v',source_range[1],'-an','-c:v','copy',trimmed)
             else:
-                run('ffmpeg','-y','-v','error','-i',stable,'-vf',f'trim=start_frame={source_range[0]}:end_frame={source_range[1]},setpts=PTS-STARTPTS','-an','-c:v','libx264','-threads','2','-preset','ultrafast','-crf','0',trimmed)
+                run('ffmpeg','-y','-v','error','-i',stable,'-vf',f'trim=start_frame={source_range[0]}:end_frame={source_range[1]},setpts=N/({source_rate}*TB)','-r',source_rate,'-fps_mode','cfr','-an','-c:v','libx264','-threads','2','-preset','ultrafast','-crf','0',trimmed)
             stable=trimmed
         box=registration_data.get('outputAnchorBox')
         extra=[json.dumps(box)] if box else []
@@ -74,9 +78,9 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         numerator,denominator=map(int,details['r_frame_rate'].split('/'))
         fps=numerator/denominator
         frames=int(details['nb_frames'])
-        overlap=.5 if phase=='evening' and cuts else 3
+        overlap=.75 if phase=='evening' and cuts else 3
         fade=round(overlap*fps)
-        minimum_source=6 if phase=='evening' and cuts else 7
+        minimum_source=3.5 if phase=='evening' and cuts else 7
         if frames < minimum_source*fps or frames < fade*2+fps:
             raise RuntimeError('Insufficient continuous source footage; do not repeat a short snippet')
         t=f'clip(T/{(fade-1)/fps},0,1)'
@@ -101,6 +105,11 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         run('ffmpeg','-y','-v','error','-i',destination,'-frames:v','1','-q:v','3',output/f'{phase}.jpg')
         record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'sourceFrameRange':list(source_range),'originalSourceFrames':source_frames,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'peripheralMotion':motion,'stabilization':json.loads(registration.read_text()),'monumentAnchor':anchor}
         if phase=='evening':
+            framing=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-framing.py',str(destination)],text=True))
+            if any(region['maximumMedianDriftPixels']>region['limitPixels'] for region in framing['regions'].values()):
+                raise RuntimeError('Evening camera hold still contains excessive accumulated scene drift')
+            record['fixedView']=framing
+            record['shotSelection']='final camera hold; exclude opening backward dolly'
             reference=Path('public/media/phases/night.mp4')
             reference_motion=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-motion.py',str(reference)],text=True))
             record['peripheralReference']={'phase':'night','sha256':hashlib.sha256(reference.read_bytes()).hexdigest(),'motion':reference_motion}
