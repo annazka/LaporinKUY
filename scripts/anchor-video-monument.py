@@ -50,6 +50,12 @@ if __name__ == '__main__':
     reference = frames[len(frames)//2]
     scores, offsets = zip(*(measure(reference, frame, box) for frame in frames))
     offsets = np.array(offsets)
+    residual_filter=5 if phase=='evening' else 1
+    if residual_filter>1:
+        # Global camera steps have already been removed by the architecture
+        # tracker. Do not turn tiny local statue morphs into whole-frame shakes.
+        padded=np.pad(offsets,((2,2),(0,0)),mode='edge')
+        offsets=sum(weight*padded[i:i+len(offsets)] for i,weight in enumerate([1/16,4/16,6/16,4/16,1/16]))
     if min(scores) < .65 or np.abs(offsets).max() > 20:
         raise RuntimeError(f'{phase}: monument registration is unreliable: {min(scores)}, {np.abs(offsets).max()}')
     # One fixed crop for all frames; never zoom/shift individual scene regions.
@@ -80,6 +86,6 @@ if __name__ == '__main__':
         raise RuntimeError('Video encoder failed')
     x,y,w,h=box
     output_box=[round((x-left)*1280/crop_width),round((y-top)*720/crop_height),round(w*1280/crop_width),round(h*720/crop_height)]
-    result={'method':'whole-frame-monument-translation','checkedFrames':len(frames),'referenceFrame':len(frames)//2,'minimumCorrelation':min(scores),'maximumCorrectionPixels':float(np.linalg.norm(offsets,axis=1).max()),'fixedCrop':[left,top,crop_width,crop_height],'outputAnchorBox':output_box,'preservesWholeFrames':True,'requestedTargetPixels':.01,'edgeMode':'fixed-crop-no-fill','conservativeEdgeClearancePixels':min(left,top,1280-left-crop_width,720-top-crop_height)-maximum_correction}
+    result={'method':'whole-frame-monument-translation','checkedFrames':len(frames),'referenceFrame':len(frames)//2,'minimumCorrelation':min(scores),'maximumCorrectionPixels':float(np.linalg.norm(offsets,axis=1).max()),'fixedCrop':[left,top,crop_width,crop_height],'outputAnchorBox':output_box,'preservesWholeFrames':True,'requestedTargetPixels':.01,'residualFilterFrames':residual_filter,'edgeMode':'fixed-crop-no-fill','conservativeEdgeClearancePixels':min(left,top,1280-left-crop_width,720-top-crop_height)-maximum_correction}
     Path(metadata).write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)

@@ -1,5 +1,5 @@
 {
-  "method": "intact forward footage; filtered similarity camera correction and whole-frame monument anchoring; cyclic 3-second smoothstep overlap",
+  "method": "intact forward footage; similarity camera correction, continuous shots and smoothstep overlap",
   "phases": {
     "day": {
       "sourceName": "Siang.mp4",
@@ -140,26 +140,63 @@
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "6cdadda834bc0a7777010e0b295ef21a3b05153cafd80fb2c5de640e4a2051af",
+      "sha256": "a9280603c1540f0a486f252a4a3a643a5f42be7f1f1b5053605d1f352754c990",
       "fps": 24.0,
-      "frames": 168,
-      "duration": 7.0,
-      "overlapSeconds": 3.0,
-      "seam": 0.8943750262260437,
-      "referenceSeam": 0.8075694441795349,
-      "medianFrameDifference": 0.7039583325386047,
+      "frames": 141,
+      "duration": 5.875,
+      "overlapSeconds": 0.5,
+      "sourceFrameRange": [
+        0,
+        153
+      ],
+      "originalSourceFrames": 240,
+      "seam": 0.8977083563804626,
+      "referenceSeam": 0.800694465637207,
+      "medianFrameDifference": 0.6945139169692993,
       "backgroundContinuity": {
-        "checkedFrames": 168,
-        "minimumCorrelation": 0.85720344410803,
-        "maxMonumentDisplacementPixels": 0.22590879444967318,
-        "maximumAdjacentDisplacementPixels": 0.12584815764707777,
-        "loopJoinDisplacementPixels": 0.038597434421966455,
-        "maximumRegionalDisplacementPixels": 0.6623446923047263,
-        "maximumInterRegionDisplacementPixels": 1.1458977392052643,
-        "worstFrame": 156,
+        "checkedFrames": 141,
+        "minimumCorrelation": 0.8275547755268942,
+        "maxMonumentDisplacementPixels": 0.3230764832022709,
+        "maximumAdjacentDisplacementPixels": 0.3250247191093745,
+        "loopJoinDisplacementPixels": 0.08699660589486445,
+        "maximumRegionalDisplacementPixels": 0.8846399322380231,
+        "maximumInterRegionDisplacementPixels": 1.40400195936048,
+        "worstFrame": 116,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
+      },
+      "peripheralMotion": {
+        "checkedFrames": 141,
+        "regions": {
+          "left": {
+            "minimumTracks": 150,
+            "maximumMedianStepPixels": 0.2208448201417923,
+            "p95MedianStepPixels": 0.18136462569236755,
+            "medianStepPixels": 0.11010624468326569,
+            "worstFrame": 0,
+            "loopJoinMedianStepPixels": 0.2208448201417923
+          },
+          "center": {
+            "minimumTracks": 107,
+            "maximumMedianStepPixels": 0.37442055344581604,
+            "p95MedianStepPixels": 0.23739872872829437,
+            "medianStepPixels": 0.12406161427497864,
+            "worstFrame": 135,
+            "loopJoinMedianStepPixels": 0.26776883006095886
+          },
+          "right": {
+            "minimumTracks": 158,
+            "maximumMedianStepPixels": 0.2571558654308319,
+            "p95MedianStepPixels": 0.19476060569286346,
+            "medianStepPixels": 0.1153109148144722,
+            "worstFrame": 0,
+            "loopJoinMedianStepPixels": 0.2571558654308319
+          }
+        },
+        "maximumEdgeDisagreementPixels": 0.2561166286468506,
+        "p95EdgeDisagreementPixels": 0.10813836753368378,
+        "worstEdgeFrame": 134
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -167,26 +204,31 @@
         "minimumInliers": 155,
         "maxRegistrationErrorPixels": 1.7065300941467285,
         "fixedCrop": [
-          102,
-          57,
-          1076,
-          605
+          98,
+          55,
+          1084,
+          610
         ],
         "outputAnchorBox": [
           642,
-          252,
+          253,
           38,
-          62
+          61
         ],
         "scaleRotationFilterFrames": 21,
-        "preservesStraightLines": true
+        "preservesStraightLines": true,
+        "cameraStepFrames": [
+          153
+        ],
+        "filterMode": "piecewise-with-edge-tracks",
+        "minimumEdgeTracks": 352
       },
       "monumentAnchor": {
         "method": "whole-frame-monument-translation",
-        "checkedFrames": 240,
-        "referenceFrame": 120,
-        "minimumCorrelation": 0.8342143092628099,
-        "maximumCorrectionPixels": 21.38381134275889,
+        "checkedFrames": 153,
+        "referenceFrame": 76,
+        "minimumCorrelation": 0.8413985136599103,
+        "maximumCorrectionPixels": 7.3310746123446355,
         "fixedCrop": [
           52,
           29,
@@ -195,14 +237,51 @@
         ],
         "outputAnchorBox": [
           642,
-          243,
+          244,
           41,
-          67
+          66
         ],
         "preservesWholeFrames": true,
         "requestedTargetPixels": 0.01,
+        "residualFilterFrames": 5,
         "edgeMode": "fixed-crop-no-fill",
-        "conservativeEdgeClearancePixels": 7.616188657241111
+        "conservativeEdgeClearancePixels": 21.668925387655364
+      },
+      "peripheralReference": {
+        "phase": "night",
+        "sha256": "485ebeb8436b456435829429a88f59f012620319c0b3dc2d44b7acaa62498d7b",
+        "motion": {
+          "checkedFrames": 460,
+          "regions": {
+            "left": {
+              "minimumTracks": 87,
+              "maximumMedianStepPixels": 0.21218745410442352,
+              "p95MedianStepPixels": 0.1138974204659462,
+              "medianStepPixels": 0.037488751113414764,
+              "worstFrame": 445,
+              "loopJoinMedianStepPixels": 0.1167946606874466
+            },
+            "center": {
+              "minimumTracks": 48,
+              "maximumMedianStepPixels": 0.17551691830158234,
+              "p95MedianStepPixels": 0.09576373547315598,
+              "medianStepPixels": 0.032520025968551636,
+              "worstFrame": 435,
+              "loopJoinMedianStepPixels": 0.11280854046344757
+            },
+            "right": {
+              "minimumTracks": 79,
+              "maximumMedianStepPixels": 0.2353636622428894,
+              "p95MedianStepPixels": 0.10309019684791565,
+              "medianStepPixels": 0.038306593894958496,
+              "worstFrame": 444,
+              "loopJoinMedianStepPixels": 0.09343221038579941
+            }
+          },
+          "maximumEdgeDisagreementPixels": 0.38294339179992676,
+          "p95EdgeDisagreementPixels": 0.15041767060756683,
+          "worstEdgeFrame": 444
+        }
       }
     },
     "night": {

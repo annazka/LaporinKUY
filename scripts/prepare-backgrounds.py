@@ -28,7 +28,7 @@ output.mkdir(parents=True, exist_ok=True)
 names = {'morning':'Pagi.mp4','day':'Siang.mp4','evening':'Sore.mp4','night':'malam.mp4'}
 manifest_path = args.manifest
 manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-manifest = {'method':'intact forward footage; filtered similarity camera correction and whole-frame monument anchoring; cyclic 3-second smoothstep overlap', 'phases':manifest.get('phases',{})}
+manifest = {'method':'intact forward footage; similarity camera correction, continuous shots and smoothstep overlap', 'phases':manifest.get('phases',{})}
 
 def run(*command):
     subprocess.run(list(map(str,command)), check=True)
@@ -47,11 +47,24 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         registration = stable.with_name(f'{phase}-registration.json')
         if not args.stabilized:
             run(sys.executable,'scripts/stabilize-video.py',source,stable,registration)
+        original_details=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=r_frame_rate,nb_frames','-of','json',str(stable)]))['streams'][0]
+        source_frames=int(original_details['nb_frames'])
+        source_range=[0,source_frames]
         anchored=work/f'{phase}-monument.mp4'
         anchor_metadata=work/f'{phase}-monument.json'
         registration_data=json.loads(registration.read_text())
         if registration_data.get('method')!='whole-frame-similarity':
             raise RuntimeError('Reuse only similarity-registered clips; projective warps are not allowed')
+        cuts=registration_data.get('cameraStepFrames',[])
+        if phase=='evening' and cuts:
+            boundaries=[0,*cuts,source_frames]
+            source_range=max(zip(boundaries,boundaries[1:]),key=lambda pair:pair[1]-pair[0])
+            trimmed=work/f'{phase}-continuous.mp4'
+            if source_range[0]==0:
+                run('ffmpeg','-y','-v','error','-i',stable,'-frames:v',source_range[1],'-an','-c:v','copy',trimmed)
+            else:
+                run('ffmpeg','-y','-v','error','-i',stable,'-vf',f'trim=start_frame={source_range[0]}:end_frame={source_range[1]},setpts=PTS-STARTPTS','-an','-c:v','libx264','-threads','2','-preset','ultrafast','-crf','0',trimmed)
+            stable=trimmed
         box=registration_data.get('outputAnchorBox')
         extra=[json.dumps(box)] if box else []
         run(sys.executable,'scripts/anchor-video-monument.py',stable,anchored,phase,anchor_metadata,*extra)
@@ -61,9 +74,11 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         numerator,denominator=map(int,details['r_frame_rate'].split('/'))
         fps=numerator/denominator
         frames=int(details['nb_frames'])
-        fade=round(3*fps)
-        if frames < fade*2+fps:
-            raise RuntimeError('Need at least seven seconds of continuous source footage')
+        overlap=.5 if phase=='evening' and cuts else 3
+        fade=round(overlap*fps)
+        minimum_source=6 if phase=='evening' and cuts else 7
+        if frames < minimum_source*fps or frames < fade*2+fps:
+            raise RuntimeError('Insufficient continuous source footage; do not repeat a short snippet')
         t=f'clip(T/{(fade-1)/fps},0,1)'
         weight=f'({t})*({t})*(3-2*({t}))'
         graph=(f'[0:v]scale=1280:720,setsar=1,split=3[h][m][t];'
@@ -82,8 +97,13 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         if len(decoded)!=frames-fade or seam>reference*1.3+.25:
             raise RuntimeError(f'{phase}: unexpected frame count or visible cyclic reset: {seam}, reference {reference}')
         drift=json.loads(subprocess.check_output([sys.executable,'scripts/check-monument-anchor.py',str(destination),json.dumps(anchor['outputAnchorBox'])],text=True))
+        motion=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-motion.py',str(destination)],text=True))
         run('ffmpeg','-y','-v','error','-i',destination,'-frames:v','1','-q:v','3',output/f'{phase}.jpg')
-        record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'stabilization':json.loads(registration.read_text()),'monumentAnchor':anchor}
+        record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'sourceFrameRange':list(source_range),'originalSourceFrames':source_frames,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'peripheralMotion':motion,'stabilization':json.loads(registration.read_text()),'monumentAnchor':anchor}
+        if phase=='evening':
+            reference=Path('public/media/phases/night.mp4')
+            reference_motion=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-motion.py',str(reference)],text=True))
+            record['peripheralReference']={'phase':'night','sha256':hashlib.sha256(reference.read_bytes()).hexdigest(),'motion':reference_motion}
         destination.replace(output/f'{phase}.mp4')
         with open('/tmp/laporkuy-background-manifest.lock','w') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
