@@ -29,7 +29,7 @@ output.mkdir(parents=True, exist_ok=True)
 names = {'morning':'Pagi.mp4','day':'Siang.mp4','evening':'Sore.mp4','night':'malam.mp4'}
 manifest_path = args.manifest
 manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-manifest = {'method':'forward footage; similarity camera correction, motion-compensated slow motion and smoothstep overlap', 'phases':manifest.get('phases',{})}
+manifest = {'method':'forward footage; similarity camera correction, frame-blended morning/day, motion-compensated evening and smoothstep overlap', 'phases':manifest.get('phases',{})}
 
 def run(*command):
     subprocess.run(list(map(str,command)), check=True)
@@ -59,12 +59,15 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         if registration_data.get('method')!='whole-frame-similarity':
             raise RuntimeError('Reuse only similarity-registered clips; projective warps are not allowed')
         cuts=registration_data.get('cameraStepFrames',[])
-        if phase=='evening' and cuts:
+        # Fixed continuous source ranges avoid the large changes of viewpoint
+        # that make the outer buildings/roof appear to bend at a cyclic fade.
+        if phase in ('morning','day') or (phase=='evening' and cuts):
             boundaries=[0,*cuts,source_frames]
-            # The opening take dollies backward: holding the statue alone does
-            # not stop foreground parallax. The final take holds its viewpoint.
-            # Prefer that genuine camera hold over the longer moving take.
-            source_range=list(zip(boundaries,boundaries[1:]))[-1]
+            # Evening's opening take dollies backward; use its final camera
+            # hold. Morning/day use their calibrated, quieter continuous ranges
+            # rather than spanning the large source changes at the borders.
+            source_range={'morning':(96,192),'day':(0,96)}.get(phase,list(zip(boundaries,boundaries[1:]))[-1])
+            if source_range[1]>source_frames:raise RuntimeError('Source is shorter than its calibrated steady shot')
             trimmed=work/f'{phase}-continuous.mp4'
             if source_range[0]==0:
                 run('ffmpeg','-y','-v','error','-i',stable,'-frames:v',source_range[1],'-an','-c:v','copy',trimmed)
@@ -80,7 +83,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         numerator,denominator=map(int,details['r_frame_rate'].split('/'))
         fps=numerator/denominator
         frames=int(details['nb_frames'])
-        minimum_source=3.5 if phase=='evening' and cuts else 7
+        minimum_source=3.5 if phase!='night' else 7
         if frames < minimum_source*fps:
             raise RuntimeError('Insufficient continuous source footage; do not repeat a short snippet')
         source_fps,selected_frames=fps,frames
@@ -92,15 +95,20 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             fps,frames=30,550
             duration=frames/fps
             speed=(selected_frames/source_fps)/duration
+            preserve_geometry=phase in ('morning','day')
+            interpolation_method='frame-blend-interpolation' if preserve_geometry else 'motion-compensated-interpolation'
             slowed=work/f'{phase}-slow.mp4'
             stamp=slowed.with_suffix('.json')
             signature={'inputSha256':hashlib.sha256(stable.read_bytes()).hexdigest(),
-                'frames':frames,'fps':fps,'method':'mci-aobmc-bidir-vsbmc-source-lookahead-v2'}
+                'frames':frames,'fps':fps,'method':'frame-blend-source-lookahead-v1' if preserve_geometry else 'mci-aobmc-bidir-vsbmc-source-lookahead-v2'}
             # Add lookahead in SOURCE frames before retiming. Padding seconds
             # afterward retains nominal input cadence and can truncate the
             # interpolated head/tail, preventing the fade reaching its endpoint.
+            # Frame blending averages intact adjacent frames without deforming
+            # architecture with per-block optical-flow fields at the edges.
+            mode='blend' if preserve_geometry else 'mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1'
             interpolation=(f'tpad=stop_mode=clone:stop=3,settb=AVTB,setpts=N*{duration}/({selected_frames}*TB),'
-                f'minterpolate=fps={fps}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1,'
+                f'minterpolate=fps={fps}:mi_mode={mode},'
                 f'trim=end_frame={frames},settb=1/{fps},setpts=N')
             if not (slowed.exists() and stamp.exists() and json.loads(stamp.read_text())==signature):
                 print(f'{phase}: interpolating {selected_frames} source frames to {frames} frames at {fps} fps; speed {speed:.4f}x',flush=True)
@@ -114,7 +122,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
             if int(probe['nb_frames'])!=frames or probe['r_frame_rate']!='30/1':
                 raise RuntimeError(f'{phase}: interpolation frame count/rate mismatch: {probe}')
             stamp.write_text(json.dumps(signature))
-            retiming={'method':'motion-compensated-interpolation','sourceFps':source_fps,
+            retiming={'method':interpolation_method,'sourceFps':source_fps,
                 'sourceFrames':selected_frames,'speed':speed,'interpolatedFrames':frames,
                 'outputFps':fps,'interpolateBeforeDissolve':True}
             stable=slowed
@@ -134,7 +142,7 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         # Slow scenes expose codec texture changes at the I/P loop join. Keep
         # more detail and equal frame-type quality rather than relaxing the
         # seam guard merely because the actual motion is now much smaller.
-        quality=['-crf','12' if phase=='evening' else '14','-x264-params','ipratio=1:pbratio=1'] if retiming else ['-crf','18']
+        quality=['-crf','12','-x264-params','ipratio=1:pbratio=1'] if retiming else ['-crf','18']
         run('ffmpeg','-y','-v','error','-i',stable,'-filter_complex_threads','1','-filter_complex',graph,'-map','[out]','-an','-c:v','libx264','-threads','2','-preset','medium',*quality,'-r',fps,'-g',frames-fade,'-keyint_min',frames-fade,'-sc_threshold','0','-movflags','+faststart',destination)
         decoded=luma(destination)
         original=luma(stable)
@@ -149,6 +157,20 @@ with tempfile.TemporaryDirectory(prefix='laporkuy-loop-') as temporary:
         run('ffmpeg','-y','-v','error','-i',destination,'-frames:v','1','-q:v','3',poster)
         record={'sourceName':name,'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'sha256':hashlib.sha256(destination.read_bytes()).hexdigest(),'fps':fps,'frames':len(decoded),'duration':len(decoded)/fps,'overlapSeconds':fade/fps,'sourceFrameRange':list(source_range),'originalSourceFrames':source_frames,'seam':seam,'referenceSeam':reference,'medianFrameDifference':float(np.median(diffs)),'backgroundContinuity':drift,'peripheralMotion':motion,'stabilization':json.loads(registration.read_text()),'monumentAnchor':anchor}
         if retiming:record['retiming']=retiming
+        if phase in ('morning','day'):
+            edges=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-edge-shape.py',str(destination)],text=True))
+            record['edgeShape']=edges
+            reference=Path(f'public/media/phases/{phase}.mp4')
+            if reference.exists():
+                previous=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-edge-shape.py',str(reference)],text=True))
+                active_sha=hashlib.sha256(reference.read_bytes()).hexdigest()
+                record['edgeReference']={'sha256':active_sha,'shape':previous}
+                if active_sha==record['sha256']:
+                    # Rebuilding an identical validated export is not a new
+                    # improvement; keep its original comparison when available.
+                    record['edgeReference']=manifest['phases'].get(phase,{}).get('edgeReference',record['edgeReference'])
+                elif edges['worstRegionP95Pixels']>=previous['worstRegionP95Pixels'] or edges['meanRegionP95Pixels']>=previous['meanRegionP95Pixels']:
+                    raise RuntimeError(f'{phase}: edge shape did not improve against the active clip')
         if phase=='evening':
             framing=json.loads(subprocess.check_output([sys.executable,'scripts/check-video-framing.py',str(destination)],text=True))
             if any(region['maximumMedianDriftPixels']>region['limitPixels'] for region in framing['regions'].values()):

@@ -60,10 +60,13 @@ if __name__ == '__main__':
         raise RuntimeError(f'{phase}: monument registration is unreliable: {min(scores)}, {np.abs(offsets).max()}')
     # One fixed crop for all frames; never zoom/shift individual scene regions.
     margin = int(np.ceil(max(np.abs(offsets[:,0]).max()+3, (np.abs(offsets[:,1]).max()+3)*1280/720)))
-    # Fixed 4% overscan trims the outer source border throughout the clip.
+    # Fixed overscan (at least 4%) trims the outer border throughout the clip.
     # No mirrored/stretch-filled edges and no animated crop.
     maximum_correction=float(np.linalg.norm(offsets,axis=1).max())
-    margin = max(margin,52,int(np.ceil((maximum_correction+4)*1280/720)))
+    # Morning/day have visibly deforming source borders. A constant 8% crop
+    # excludes more of those edges without animated zooms or border filling.
+    minimum_margin=103 if phase in ('morning','day') else 52
+    margin = max(margin,minimum_margin,int(np.ceil((maximum_correction+4)*1280/720)))
     crop_width = 1280 - 2*margin
     crop_height = round(crop_width*720/1280)
     left, top = (1280-crop_width)//2, (720-crop_height)//2

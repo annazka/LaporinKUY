@@ -30,7 +30,7 @@ test('active videos match validated exports and use the accepted night cycle len
    assert.equal(record.monumentAnchor.checkedFrames,record.frames+record.fps*record.overlapSeconds);
    assert.ok(record.medianFrameDifference>.2,`${phase}: video was frozen`);
   }else{
-   assert.equal(retiming.method,'motion-compensated-interpolation');
+   assert.equal(retiming.method,phase==='evening'?'motion-compensated-interpolation':'frame-blend-interpolation');
    assert.equal(retiming.interpolateBeforeDissolve,true,'flow must not distort the blended seam');
    assert.equal(retiming.sourceFps,24);
    assert.equal(retiming.outputFps,30);
@@ -43,6 +43,22 @@ test('active videos match validated exports and use the accepted night cycle len
    assert.ok(record.medianFrameDifference/sourceFrameStep>.2,`${phase}: motion was frozen rather than interpolated`);
   }
   assert.ok(record.seam<=record.referenceSeam*1.3+.25,`${phase}: cyclic seam`);
+ }
+});
+
+test('morning and day reduce visible edge deformation without optical-flow warps',()=>{
+ const previous={morning:'26c5126cb14af4afd701c8c4646e4a375343af061573654af15044004e9c1233',day:'6618ce22952fbf3af8f01cf2ae571bf63397a5a7d75553a53cc1ac6e1bceb5bd'};
+ for(const phase of ['morning','day']){
+  const record=manifest.phases[phase],shape=record.edgeShape,baseline=record.edgeReference;
+  assert.equal(record.retiming.method,'frame-blend-interpolation','geometric motion fields returned at the frame borders');
+  assert.ok(record.monumentAnchor.fixedCrop[0]>=103,'unstable source border was reintroduced');
+  assert.equal(record.retiming.sourceFrames,96,'the large source viewpoint changes returned');
+  assert.equal(shape.decodedFrames,record.frames);
+  assert.ok(shape.sampledFrames>=116,'insufficient edge samples');
+  assert.equal(baseline.sha256,previous[phase],'edge comparison no longer uses the previous published clip');
+  assert.ok(shape.worstRegionP95Pixels<baseline.shape.worstRegionP95Pixels,`${phase}: worst edge deformation did not improve`);
+  assert.ok(shape.meanRegionP95Pixels<baseline.shape.meanRegionP95Pixels,`${phase}: average edge deformation did not improve`);
+  for(const region of Object.values(shape.regions))assert.ok(region.minimumTracks>=20,'unreliable edge measurements');
  }
 });
 
