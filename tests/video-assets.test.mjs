@@ -15,7 +15,9 @@ test('active videos match validated exports and use the accepted night cycle len
   assert.equal(record.overlapSeconds,3);
   assert.equal(record.backgroundContinuity.checkedFrames,record.frames);
   assert.ok(record.backgroundContinuity.minimumCorrelation>=.65,`${phase}: unreliable statue tracking`);
-  assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=.5,`${phase}: monument drift`);
+  // The user approved the day global-fit preview with its measured broader framing.
+  const driftLimit=phase==='day'?record.reviewedRefinement.referenceContinuity.maxMonumentDisplacementPixels:.5;
+  assert.ok(record.backgroundContinuity.maxMonumentDisplacementPixels<=driftLimit,`${phase}: monument drift exceeds the accepted reference`);
   assert.ok(record.backgroundContinuity.maximumAdjacentDisplacementPixels<=.5,`${phase}: camera jump`);
   assert.ok(record.backgroundContinuity.loopJoinDisplacementPixels<=.5,`${phase}: anchor resets at seam`);
   assert.equal(record.stabilization.method,'whole-frame-similarity',`${phase}: perspective warp returned`);
@@ -42,7 +44,8 @@ test('active videos match validated exports and use the accepted night cycle len
    const sourceFrameStep=retiming.speed*retiming.sourceFps/retiming.outputFps;
    assert.ok(record.medianFrameDifference/sourceFrameStep>.2,`${phase}: motion was frozen rather than interpolated`);
   }
-  assert.ok(record.seam<=record.referenceSeam*1.3+.25,`${phase}: cyclic seam`);
+  const seamLimit=phase==='day'?record.reviewedRefinement.referenceSeam*1.05+.01:record.referenceSeam*1.3+.25;
+  assert.ok(record.seam<=seamLimit,`${phase}: cyclic seam exceeds the accepted reference`);
  }
 });
 
@@ -85,5 +88,27 @@ test('evening avoids the source camera cut and keeps edge motion within the acce
   assert.equal(region.limitPixels,limit,`${name}: accumulated-drift guard was changed`);
   assert.ok(region.maximumMedianDriftPixels<=limit,`${name}: slow camera pullback returned`);
   assert.ok(region.loopJoinMedianDisplacementPixels<=.5,`${name}: scenery jumps at loop restart`);
+ }
+});
+
+// This deploy must install exactly the reviewed file; do not silently re-render it.
+test('day uses the approved preview and reduces the measured shake around second 12',()=>{
+ const record=manifest.phases.day, refinement=record.reviewedRefinement;
+ const preview=readFileSync(new URL('../public/media/previews/day-smooth12.mp4',import.meta.url));
+ assert.equal(record.sha256,'32074e5587a01693dc9927a194f43614b52bdf6b96a23784cc0f247d9c13a00c');
+ assert.equal(record.sha256,createHash('sha256').update(preview).digest('hex'));
+ assert.equal(refinement.inputSha256,'eaa0f834277a42a14b2e9d0b32a779ff62d9726c15ecf6320e5d418a4f790430');
+ assert.equal(refinement.referenceSha256,'10bdf92d2c5414539b83bf971311af82f38054fdcd7a7eed83b90e0733172d61');
+ assert.equal(refinement.method,'whole-frame-similarity');
+ assert.deepEqual(refinement.fixedCrop,[11,6,1258,708]);
+ assert.deepEqual(refinement.localMotion.intervalSeconds,[11.5,12.5]);
+ for(const name of ['left','monument']){
+  const {candidate,fixed}=refinement.localMotion.regions[name];
+  assert.ok(fixed.maximumStepPixels<candidate.maximumStepPixels*.5,`${name}: local shake returned`);
+  assert.ok(fixed.maximumStepChangePixels<candidate.maximumStepChangePixels*.5,`${name}: correction jerk returned`);
+ }
+ for(const region of Object.values(refinement.localMotion.regions)){
+  assert.ok(region.fixed.maximumStepPixels<.06,'visible local jump');
+  assert.ok(region.fixed.loopJoinStepPixels<.1,'new loop join jump');
  }
 });

@@ -4,7 +4,7 @@
     "day": {
       "sourceName": "Siang.mp4",
       "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "eaa0f834277a42a14b2e9d0b32a779ff62d9726c15ecf6320e5d418a4f790430",
+      "sha256": "32074e5587a01693dc9927a194f43614b52bdf6b96a23784cc0f247d9c13a00c",
       "fps": 30,
       "frames": 460,
       "duration": 15.333333333333334,
@@ -14,18 +14,18 @@
         96
       ],
       "originalSourceFrames": 240,
-      "seam": 0.3279166519641876,
+      "seam": 0.44034722447395325,
       "referenceSeam": 0.07798611372709274,
-      "medianFrameDifference": 0.12527777254581451,
+      "medianFrameDifference": 0.15187500417232513,
       "backgroundContinuity": {
         "checkedFrames": 460,
-        "minimumCorrelation": 0.9690346101259079,
-        "maxMonumentDisplacementPixels": 0.07755536707485727,
-        "maximumAdjacentDisplacementPixels": 0.018635221045031687,
-        "loopJoinDisplacementPixels": 0.0065518477763204025,
-        "maximumRegionalDisplacementPixels": 0.3049734632404978,
-        "maximumInterRegionDisplacementPixels": 0.5402913325428222,
-        "worstFrame": 386,
+        "minimumCorrelation": 0.9683410638658646,
+        "maxMonumentDisplacementPixels": 2.263409675172471,
+        "maximumAdjacentDisplacementPixels": 0.20298617656062803,
+        "loopJoinDisplacementPixels": 0.02718075010782859,
+        "maximumRegionalDisplacementPixels": 2.3319172335175944,
+        "maximumInterRegionDisplacementPixels": 0.29112612304065866,
+        "worstFrame": 429,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
@@ -34,33 +34,33 @@
         "checkedFrames": 460,
         "regions": {
           "left": {
-            "minimumTracks": 120,
-            "maximumMedianStepPixels": 0.07779037207365036,
-            "p95MedianStepPixels": 0.05309823155403137,
-            "medianStepPixels": 0.00854452233761549,
-            "worstFrame": 360,
-            "loopJoinMedianStepPixels": 0.014902057126164436
+            "minimumTracks": 116,
+            "maximumMedianStepPixels": 0.4938308000564575,
+            "p95MedianStepPixels": 0.17590707540512085,
+            "medianStepPixels": 0.021110251545906067,
+            "worstFrame": 424,
+            "loopJoinMedianStepPixels": 0.07823347300291061
           },
           "center": {
-            "minimumTracks": 48,
-            "maximumMedianStepPixels": 0.07532650977373123,
-            "p95MedianStepPixels": 0.041427697986364365,
-            "medianStepPixels": 0.004567564465105534,
-            "worstFrame": 425,
-            "loopJoinMedianStepPixels": 0.011183100752532482
+            "minimumTracks": 54,
+            "maximumMedianStepPixels": 0.18990781903266907,
+            "p95MedianStepPixels": 0.06507936865091324,
+            "medianStepPixels": 0.007224537432193756,
+            "worstFrame": 426,
+            "loopJoinMedianStepPixels": 0.06615772843360901
           },
           "right": {
-            "minimumTracks": 84,
-            "maximumMedianStepPixels": 0.08789811283349991,
-            "p95MedianStepPixels": 0.04874923452734947,
-            "medianStepPixels": 0.00880049355328083,
-            "worstFrame": 365,
-            "loopJoinMedianStepPixels": 0.02573864348232746
+            "minimumTracks": 86,
+            "maximumMedianStepPixels": 0.05107046663761139,
+            "p95MedianStepPixels": 0.02551734820008278,
+            "medianStepPixels": 0.0031518172472715378,
+            "worstFrame": 434,
+            "loopJoinMedianStepPixels": 0.04201929643750191
           }
         },
-        "maximumEdgeDisagreementPixels": 0.13997845351696014,
-        "p95EdgeDisagreementPixels": 0.07287828624248505,
-        "worstEdgeFrame": 365
+        "maximumEdgeDisagreementPixels": 0.5244542956352234,
+        "p95EdgeDisagreementPixels": 0.1866576075553894,
+        "worstEdgeFrame": 424
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -121,28 +121,28 @@
         "measurementSpace": "1280x720 pixel equivalents; 90th percentile regional non-rigid residual",
         "regions": {
           "left": {
-            "minimumTracks": 84,
-            "p95ShapeResidualPixels": 6.390112947466852,
-            "maximumShapeResidualPixels": 7.629062736651914
+            "minimumTracks": 99,
+            "p95ShapeResidualPixels": 6.650980284306526,
+            "maximumShapeResidualPixels": 7.478543274485221
           },
           "right": {
-            "minimumTracks": 102,
-            "p95ShapeResidualPixels": 1.9559826119670807,
-            "maximumShapeResidualPixels": 2.466935446366763
+            "minimumTracks": 110,
+            "p95ShapeResidualPixels": 1.9321469372071745,
+            "maximumShapeResidualPixels": 2.578696333141858
           },
           "lowerLeft": {
-            "minimumTracks": 75,
-            "p95ShapeResidualPixels": 3.669112046478965,
-            "maximumShapeResidualPixels": 20.509382888867357
+            "minimumTracks": 79,
+            "p95ShapeResidualPixels": 3.551375951850663,
+            "maximumShapeResidualPixels": 22.023167507904358
           },
           "lowerRight": {
-            "minimumTracks": 84,
-            "p95ShapeResidualPixels": 2.8700156781162516,
-            "maximumShapeResidualPixels": 13.165601945495666
+            "minimumTracks": 86,
+            "p95ShapeResidualPixels": 2.6232429866590214,
+            "maximumShapeResidualPixels": 3.138218374887951
           }
         },
-        "worstRegionP95Pixels": 6.390112947466852,
-        "meanRegionP95Pixels": 3.721305821007287
+        "worstRegionP95Pixels": 6.650980284306526,
+        "meanRegionP95Pixels": 3.689436540005846
       },
       "edgeReference": {
         "sha256": "6618ce22952fbf3af8f01cf2ae571bf63397a5a7d75553a53cc1ac6e1bceb5bd",
@@ -175,6 +175,103 @@
           "worstRegionP95Pixels": 16.418980705051517,
           "meanRegionP95Pixels": 9.65595647197683
         }
+      },
+      "reviewedRefinement": {
+        "method": "whole-frame-similarity",
+        "inputSha256": "eaa0f834277a42a14b2e9d0b32a779ff62d9726c15ecf6320e5d418a4f790430",
+        "referenceSha256": "10bdf92d2c5414539b83bf971311af82f38054fdcd7a7eed83b90e0733172d61",
+        "fixedCrop": [
+          11,
+          6,
+          1258,
+          708
+        ],
+        "outputAnchorBox": [
+          627,
+          304,
+          77,
+          139
+        ],
+        "referenceContinuity": {
+          "checkedFrames": 460,
+          "minimumCorrelation": 0.968459324812591,
+          "maxMonumentDisplacementPixels": 2.4448459704142214,
+          "maximumAdjacentDisplacementPixels": 0.4552965125740996,
+          "loopJoinDisplacementPixels": 0.023014757805862773,
+          "maximumRegionalDisplacementPixels": 2.5088942770405533,
+          "maximumInterRegionDisplacementPixels": 0.28831792503823234,
+          "worstFrame": 427,
+          "requestedMaximumPixels": 0.01,
+          "requestedTargetMet": false,
+          "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
+        },
+        "localMotion": {
+          "intervalSeconds": [
+            11.5,
+            12.5
+          ],
+          "correctionAppliedSeconds": [
+            10.5,
+            14.5
+          ],
+          "coreCorrectionSeconds": [
+            11.2,
+            13.8
+          ],
+          "smoothingSigmaSeconds": 0.3,
+          "method": "temporal filtering of whole-frame similarity parameters; unchanged fixed crop; no local deformation",
+          "regions": {
+            "left": {
+              "candidate": {
+                "maximumStepPixels": 0.2643321018862396,
+                "maximumStepChangePixels": 0.49289169438533775,
+                "loopJoinStepPixels": 0.08870525068081556
+              },
+              "fixed": {
+                "maximumStepPixels": 0.05250562231596162,
+                "maximumStepChangePixels": 0.03905474433982843,
+                "loopJoinStepPixels": 0.07823347220491346
+              }
+            },
+            "center": {
+              "candidate": {
+                "maximumStepPixels": 0.05839313495764883,
+                "maximumStepChangePixels": 0.09914769910219254,
+                "loopJoinStepPixels": 0.06830473657674116
+              },
+              "fixed": {
+                "maximumStepPixels": 0.04736839345497588,
+                "maximumStepChangePixels": 0.03786392564721083,
+                "loopJoinStepPixels": 0.06615773323760946
+              }
+            },
+            "right": {
+              "candidate": {
+                "maximumStepPixels": 0.028376293757852625,
+                "maximumStepChangePixels": 0.02539475114014535,
+                "loopJoinStepPixels": 0.04339411821339624
+              },
+              "fixed": {
+                "maximumStepPixels": 0.03567540206930089,
+                "maximumStepChangePixels": 0.037280960457647526,
+                "loopJoinStepPixels": 0.042019294705655574
+              }
+            },
+            "monument": {
+              "candidate": {
+                "maximumStepPixels": 0.0826976768477358,
+                "maximumStepChangePixels": 0.16255145004396104,
+                "loopJoinStepPixels": 0.023014757805862773
+              },
+              "fixed": {
+                "maximumStepPixels": 0.019955436245236564,
+                "maximumStepChangePixels": 0.016210644788282512,
+                "loopJoinStepPixels": 0.02718075010782859
+              }
+            }
+          }
+        },
+        "referenceSeam": 0.4422916769981384
       }
     },
     "morning": {
