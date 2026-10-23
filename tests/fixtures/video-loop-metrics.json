@@ -1,29 +1,66 @@
 {
-  "method": "intact forward footage; similarity camera correction, continuous shots and smoothstep overlap",
+  "method": "forward footage; similarity camera correction, motion-compensated slow motion and smoothstep overlap",
   "phases": {
     "day": {
       "sourceName": "Siang.mp4",
       "sourceSha256": "293df08a138f980f8967600b554343b2f80cbed22af868476fbf9f4eceade465",
-      "sha256": "c0d0e35f958278abd5504a6c747d17d2b41dbc249fa2bca9023df566c93b69ca",
-      "fps": 24.0,
-      "frames": 168,
-      "duration": 7.0,
+      "sha256": "6618ce22952fbf3af8f01cf2ae571bf63397a5a7d75553a53cc1ac6e1bceb5bd",
+      "fps": 30,
+      "frames": 460,
+      "duration": 15.333333333333334,
       "overlapSeconds": 3.0,
-      "seam": 0.7729166746139526,
-      "referenceSeam": 0.5845139026641846,
-      "medianFrameDifference": 0.4731944501399994,
+      "sourceFrameRange": [
+        0,
+        240
+      ],
+      "originalSourceFrames": 240,
+      "seam": 0.44055554270744324,
+      "referenceSeam": 0.22736111283302307,
+      "medianFrameDifference": 0.2529166638851166,
       "backgroundContinuity": {
-        "checkedFrames": 168,
-        "minimumCorrelation": 0.9564949922363409,
-        "maxMonumentDisplacementPixels": 0.09441447573687102,
-        "maximumAdjacentDisplacementPixels": 0.05396586848719352,
-        "loopJoinDisplacementPixels": 0.034835334464139445,
-        "maximumRegionalDisplacementPixels": 0.45886055364906386,
-        "maximumInterRegionDisplacementPixels": 0.8539467708436606,
-        "worstFrame": 152,
+        "checkedFrames": 460,
+        "minimumCorrelation": 0.9373165545025159,
+        "maxMonumentDisplacementPixels": 0.19064216112885227,
+        "maximumAdjacentDisplacementPixels": 0.03553853304297962,
+        "loopJoinDisplacementPixels": 0.017748562831916642,
+        "maximumRegionalDisplacementPixels": 0.7030356628617614,
+        "maximumInterRegionDisplacementPixels": 1.2317108854056835,
+        "worstFrame": 387,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
+      },
+      "peripheralMotion": {
+        "checkedFrames": 460,
+        "regions": {
+          "left": {
+            "minimumTracks": 102,
+            "maximumMedianStepPixels": 0.21190263330936432,
+            "p95MedianStepPixels": 0.11056040972471237,
+            "medianStepPixels": 0.029253143817186356,
+            "worstFrame": 93,
+            "loopJoinMedianStepPixels": 0.06783769279718399
+          },
+          "center": {
+            "minimumTracks": 45,
+            "maximumMedianStepPixels": 0.14332188665866852,
+            "p95MedianStepPixels": 0.08464687317609787,
+            "medianStepPixels": 0.012939777225255966,
+            "worstFrame": 102,
+            "loopJoinMedianStepPixels": 0.020333049818873405
+          },
+          "right": {
+            "minimumTracks": 61,
+            "maximumMedianStepPixels": 0.17935524880886078,
+            "p95MedianStepPixels": 0.1062709167599678,
+            "medianStepPixels": 0.023793010041117668,
+            "worstFrame": 102,
+            "loopJoinMedianStepPixels": 0.045747060328722
+          }
+        },
+        "maximumEdgeDisagreementPixels": 0.3038704991340637,
+        "p95EdgeDisagreementPixels": 0.196720153093338,
+        "worstEdgeFrame": 102
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -65,33 +102,80 @@
         ],
         "preservesWholeFrames": true,
         "requestedTargetPixels": 0.01,
+        "residualFilterFrames": 1,
         "edgeMode": "fixed-crop-no-fill",
         "conservativeEdgeClearancePixels": 20.64840434838661
+      },
+      "retiming": {
+        "method": "motion-compensated-interpolation",
+        "sourceFps": 24.0,
+        "sourceFrames": 240,
+        "speed": 0.5454545454545455,
+        "interpolatedFrames": 550,
+        "outputFps": 30,
+        "interpolateBeforeDissolve": true
       }
     },
     "morning": {
       "sourceName": "Pagi.mp4",
       "sourceSha256": "2687be8efe24e6c697f83f25b2ba1cb22079f5275143ca3c4fa341c84676682e",
-      "sha256": "85981d936956839ccafceafcca315eb7963f8f6c7d4d4800df5b0371d862077d",
-      "fps": 24.0,
-      "frames": 168,
-      "duration": 7.0,
+      "sha256": "26c5126cb14af4afd701c8c4646e4a375343af061573654af15044004e9c1233",
+      "fps": 30,
+      "frames": 460,
+      "duration": 15.333333333333334,
       "overlapSeconds": 3.0,
-      "seam": 0.8087499737739563,
-      "referenceSeam": 0.6199305653572083,
-      "medianFrameDifference": 0.4960416555404663,
+      "sourceFrameRange": [
+        0,
+        240
+      ],
+      "originalSourceFrames": 240,
+      "seam": 0.4620139002799988,
+      "referenceSeam": 0.2836805582046509,
+      "medianFrameDifference": 0.28111112117767334,
       "backgroundContinuity": {
-        "checkedFrames": 168,
-        "minimumCorrelation": 0.9192112375731368,
-        "maxMonumentDisplacementPixels": 0.05974602376511371,
-        "maximumAdjacentDisplacementPixels": 0.06378469882372882,
-        "loopJoinDisplacementPixels": 0.021665883509120836,
-        "maximumRegionalDisplacementPixels": 0.1405020885137853,
-        "maximumInterRegionDisplacementPixels": 0.20736967240959506,
-        "worstFrame": 43,
+        "checkedFrames": 460,
+        "minimumCorrelation": 0.9047666257852327,
+        "maxMonumentDisplacementPixels": 0.10736642623607903,
+        "maximumAdjacentDisplacementPixels": 0.039750687647977234,
+        "loopJoinDisplacementPixels": 0.037665004911997965,
+        "maximumRegionalDisplacementPixels": 0.2917741057721873,
+        "maximumInterRegionDisplacementPixels": 0.40357348878871,
+        "worstFrame": 437,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
+      },
+      "peripheralMotion": {
+        "checkedFrames": 460,
+        "regions": {
+          "left": {
+            "minimumTracks": 149,
+            "maximumMedianStepPixels": 0.17334596812725067,
+            "p95MedianStepPixels": 0.10466833412647247,
+            "medianStepPixels": 0.032313961535692215,
+            "worstFrame": 45,
+            "loopJoinMedianStepPixels": 0.09677506238222122
+          },
+          "center": {
+            "minimumTracks": 118,
+            "maximumMedianStepPixels": 0.12346135824918747,
+            "p95MedianStepPixels": 0.051846399903297424,
+            "medianStepPixels": 0.013446317985653877,
+            "worstFrame": 322,
+            "loopJoinMedianStepPixels": 0.04736839234828949
+          },
+          "right": {
+            "minimumTracks": 149,
+            "maximumMedianStepPixels": 0.1711958944797516,
+            "p95MedianStepPixels": 0.0935501903295517,
+            "medianStepPixels": 0.03661045432090759,
+            "worstFrame": 322,
+            "loopJoinMedianStepPixels": 0.05929379165172577
+          }
+        },
+        "maximumEdgeDisagreementPixels": 0.30180802941322327,
+        "p95EdgeDisagreementPixels": 0.17358195781707764,
+        "worstEdgeFrame": 45
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -133,70 +217,80 @@
         ],
         "preservesWholeFrames": true,
         "requestedTargetPixels": 0.01,
+        "residualFilterFrames": 1,
         "edgeMode": "fixed-crop-no-fill",
         "conservativeEdgeClearancePixels": 13.625970741264705
+      },
+      "retiming": {
+        "method": "motion-compensated-interpolation",
+        "sourceFps": 24.0,
+        "sourceFrames": 240,
+        "speed": 0.5454545454545455,
+        "interpolatedFrames": 550,
+        "outputFps": 30,
+        "interpolateBeforeDissolve": true
       }
     },
     "evening": {
       "sourceName": "Sore.mp4",
       "sourceSha256": "ce872ef5177882484eb932d01e490156e047a383b85eb3069a788a8dff7699d2",
-      "sha256": "182ab13e56f9bf84efa0756e83856c1d2346229c6fa86d208cc07f9ad3573f74",
-      "fps": 24.0,
-      "frames": 69,
-      "duration": 2.875,
-      "overlapSeconds": 0.75,
+      "sha256": "5028c6db8f8625c402a6aac9546a2de44e0d123594ee762967a7574854a2fe31",
+      "fps": 30,
+      "frames": 460,
+      "duration": 15.333333333333334,
+      "overlapSeconds": 3.0,
       "sourceFrameRange": [
         153,
         240
       ],
       "originalSourceFrames": 240,
-      "seam": 0.6609722375869751,
-      "referenceSeam": 0.3223611116409302,
-      "medianFrameDifference": 0.34166666865348816,
+      "seam": 0.35951387882232666,
+      "referenceSeam": 0.10034722089767456,
+      "medianFrameDifference": 0.09666666388511658,
       "backgroundContinuity": {
-        "checkedFrames": 69,
-        "minimumCorrelation": 0.9236798249584979,
-        "maxMonumentDisplacementPixels": 0.05846360752282034,
-        "maximumAdjacentDisplacementPixels": 0.0896775661294546,
-        "loopJoinDisplacementPixels": 0.016184454790395437,
-        "maximumRegionalDisplacementPixels": 0.18806646539539063,
-        "maximumInterRegionDisplacementPixels": 0.25581284765229434,
-        "worstFrame": 31,
+        "checkedFrames": 460,
+        "minimumCorrelation": 0.9234457184714925,
+        "maxMonumentDisplacementPixels": 0.10184147697444294,
+        "maximumAdjacentDisplacementPixels": 0.031833684680111544,
+        "loopJoinDisplacementPixels": 0.02620266243180105,
+        "maximumRegionalDisplacementPixels": 0.21097265251475458,
+        "maximumInterRegionDisplacementPixels": 0.21798723466279565,
+        "worstFrame": 5,
         "requestedMaximumPixels": 0.01,
         "requestedTargetMet": false,
         "measurementSpace": "decoded 1280x720 video; whole anchor and independent upper/lower patches"
       },
       "peripheralMotion": {
-        "checkedFrames": 69,
+        "checkedFrames": 460,
         "regions": {
           "left": {
-            "minimumTracks": 157,
-            "maximumMedianStepPixels": 0.07380446791648865,
-            "p95MedianStepPixels": 0.0549752414226532,
-            "medianStepPixels": 0.01752660423517227,
-            "worstFrame": 37,
-            "loopJoinMedianStepPixels": 0.03952129930257797
+            "minimumTracks": 156,
+            "maximumMedianStepPixels": 0.0275524090975523,
+            "p95MedianStepPixels": 0.01702270284295082,
+            "medianStepPixels": 0.002326808637008071,
+            "worstFrame": 192,
+            "loopJoinMedianStepPixels": 0.025087453424930573
           },
           "center": {
-            "minimumTracks": 106,
-            "maximumMedianStepPixels": 0.09986243396997452,
-            "p95MedianStepPixels": 0.055347543209791183,
-            "medianStepPixels": 0.01273744273930788,
-            "worstFrame": 21,
-            "loopJoinMedianStepPixels": 0.056859090924263
+            "minimumTracks": 107,
+            "maximumMedianStepPixels": 0.032334428280591965,
+            "p95MedianStepPixels": 0.01801275834441185,
+            "medianStepPixels": 0.0022372622042894363,
+            "worstFrame": 437,
+            "loopJoinMedianStepPixels": 0.031893301755189896
           },
           "right": {
             "minimumTracks": 160,
-            "maximumMedianStepPixels": 0.10717406123876572,
-            "p95MedianStepPixels": 0.05529866740107536,
-            "medianStepPixels": 0.017511513084173203,
-            "worstFrame": 21,
-            "loopJoinMedianStepPixels": 0.038351722061634064
+            "maximumMedianStepPixels": 0.027175094932317734,
+            "p95MedianStepPixels": 0.015011332929134369,
+            "medianStepPixels": 0.0025665992870926857,
+            "worstFrame": 192,
+            "loopJoinMedianStepPixels": 0.013342520222067833
           }
         },
-        "maximumEdgeDisagreementPixels": 0.07278886437416077,
-        "p95EdgeDisagreementPixels": 0.04151129350066185,
-        "worstEdgeFrame": 21
+        "maximumEdgeDisagreementPixels": 0.026454469189047813,
+        "p95EdgeDisagreementPixels": 0.009426980279386044,
+        "worstEdgeFrame": 76
       },
       "stabilization": {
         "method": "whole-frame-similarity",
@@ -247,41 +341,50 @@
         "edgeMode": "fixed-crop-no-fill",
         "conservativeEdgeClearancePixels": 28.53466707436074
       },
+      "retiming": {
+        "method": "motion-compensated-interpolation",
+        "sourceFps": 24.0,
+        "sourceFrames": 87,
+        "speed": 0.19772727272727275,
+        "interpolatedFrames": 550,
+        "outputFps": 30,
+        "interpolateBeforeDissolve": true
+      },
       "fixedView": {
-        "checkedFrames": 69,
-        "referenceFrame": 23,
+        "checkedFrames": 460,
+        "referenceFrame": 153,
         "measurementSpace": "decoded 1280x720; direct reference-to-frame regional medians",
         "regions": {
           "leftArchitecture": {
-            "minimumTracks": 191,
-            "maximumMedianDriftPixels": 0.33765313029289246,
-            "horizontalRangePixels": 0.26940155029296875,
-            "verticalRangePixels": 0.5259628295898438,
-            "loopJoinMedianDisplacementPixels": 0.043537646532058716,
+            "minimumTracks": 182,
+            "maximumMedianDriftPixels": 0.2990393042564392,
+            "horizontalRangePixels": 0.3433380126953125,
+            "verticalRangePixels": 0.5686225891113281,
+            "loopJoinMedianDisplacementPixels": 0.027568010613322258,
             "limitPixels": 0.75
           },
           "rightArchitecture": {
             "minimumTracks": 200,
-            "maximumMedianDriftPixels": 0.3175235390663147,
-            "horizontalRangePixels": 0.27166748046875,
-            "verticalRangePixels": 0.4521331787109375,
-            "loopJoinMedianDisplacementPixels": 0.029489804059267044,
+            "maximumMedianDriftPixels": 0.25727951526641846,
+            "horizontalRangePixels": 0.286346435546875,
+            "verticalRangePixels": 0.46244049072265625,
+            "loopJoinMedianDisplacementPixels": 0.02025030553340912,
             "limitPixels": 0.75
           },
           "leftForeground": {
-            "minimumTracks": 120,
-            "maximumMedianDriftPixels": 4.163196563720703,
-            "horizontalRangePixels": 3.74127197265625,
-            "verticalRangePixels": 3.15216064453125,
-            "loopJoinMedianDisplacementPixels": 0.21405038237571716,
+            "minimumTracks": 100,
+            "maximumMedianDriftPixels": 4.413829803466797,
+            "horizontalRangePixels": 4.128395080566406,
+            "verticalRangePixels": 3.518341064453125,
+            "loopJoinMedianDisplacementPixels": 0.08242718875408173,
             "limitPixels": 5.0
           },
           "rightForeground": {
-            "minimumTracks": 143,
-            "maximumMedianDriftPixels": 2.4354493618011475,
-            "horizontalRangePixels": 2.17413330078125,
-            "verticalRangePixels": 2.111419677734375,
-            "loopJoinMedianDisplacementPixels": 0.06029300391674042,
+            "minimumTracks": 135,
+            "maximumMedianDriftPixels": 2.659620761871338,
+            "horizontalRangePixels": 2.398193359375,
+            "verticalRangePixels": 2.4854736328125,
+            "loopJoinMedianDisplacementPixels": 0.05158085376024246,
             "limitPixels": 5.0
           }
         }
