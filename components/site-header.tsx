@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   Blocks,
   Construction,
@@ -34,7 +35,8 @@ export function SiteHeader({
   children: ReactNode;
 }) {
   const pathname = usePathname(),
-    landing = pathname === "/";
+    landing = pathname === "/",
+    profileArea = pathname.startsWith("/profile");
   const header = useRef<HTMLElement>(null);
   const [floating, setFloating] = useState(false),
     [open, setOpen] = useState(false);
@@ -82,7 +84,14 @@ export function SiteHeader({
             ))}
           </nav>
         ) : (
-          children
+          profileArea ? (
+            <nav aria-label="Navigasi utama">
+              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/profile/reports">Jelajahi Laporan</Link>
+            </nav>
+          ) : (
+            children
+          )
         )}
         <div className="nav-actions" onClick={() => setOpen(false)}>
           {actions}

@@ -8,11 +8,17 @@ const links = [
   ["/#laporan", "Jelajahi laporan"],
   ["/profile", "Profil saya"],
 ];
-export function DashboardNav() {
+export function DashboardNav({ profile = false }: { profile?: boolean }) {
   const path = usePathname();
+  const items = profile
+    ? [
+        ["/dashboard", "Dashboard"],
+        ["/profile/reports", "Jelajahi Laporan"],
+      ]
+    : links;
   return (
     <nav className="dashboard-side" aria-label="Navigasi akun">
-      {links.map(([href, label]) => (
+      {items.map(([href, label]) => (
         <Link
           key={href}
           className={path === href ? "active" : ""}
