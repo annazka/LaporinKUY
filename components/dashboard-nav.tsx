@@ -8,9 +8,9 @@ const links = [
   ["/#laporan", "Jelajahi laporan"],
   ["/profile", "Profil saya"],
 ];
-export function DashboardNav({ profile = false }: { profile?: boolean }) {
+export function DashboardNav({ compact = false }: { compact?: boolean }) {
   const path = usePathname();
-  const items = profile
+  const items = compact
     ? [
         ["/dashboard", "Dashboard"],
         ["/profile/reports", "Jelajahi Laporan"],

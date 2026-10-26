@@ -18,7 +18,7 @@ export default async function ProfileReports() {
 
   return (
     <div className="container page dashboard-shell">
-      <DashboardNav profile />
+      <DashboardNav compact />
       <div className="dashboard-content">
         <PageTitle
           eyebrow="LAPORAN WARGA"

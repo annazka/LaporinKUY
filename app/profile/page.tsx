@@ -6,7 +6,7 @@ export default async function Profile() {
   const user = await requireViewer(false, "/profile");
   return (
     <div className="container page dashboard-shell">
-      <DashboardNav profile />
+      <DashboardNav compact />
       <div className="dashboard-content">
         <PageTitle
           eyebrow="AKUN SAYA"

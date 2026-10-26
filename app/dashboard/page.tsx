@@ -50,7 +50,7 @@ export default async function Dashboard() {
     );
   return (
     <div className="container page dashboard-shell">
-      <DashboardNav />
+      <DashboardNav compact />
       <div className="dashboard-content">
         <PageTitle
           eyebrow="DASHBOARD WARGA"

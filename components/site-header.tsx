@@ -36,7 +36,8 @@ export function SiteHeader({
 }) {
   const pathname = usePathname(),
     landing = pathname === "/",
-    profileArea = pathname.startsWith("/profile");
+    accountArea =
+      pathname.startsWith("/dashboard") || pathname.startsWith("/profile");
   const header = useRef<HTMLElement>(null);
   const [floating, setFloating] = useState(false),
     [open, setOpen] = useState(false);
@@ -84,7 +85,7 @@ export function SiteHeader({
             ))}
           </nav>
         ) : (
-          profileArea ? (
+          accountArea ? (
             <nav aria-label="Navigasi utama">
               <Link href="/dashboard">Dashboard</Link>
               <Link href="/profile/reports">Jelajahi Laporan</Link>
