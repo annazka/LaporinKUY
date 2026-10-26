@@ -114,3 +114,10 @@ Semua perubahan disimpan di `uji-coba`. DNS yang valid belum memindahkan kode pr
 Form `/operator/login` menerima username `admin` atau email operator. Username tersebut dipetakan **di server** ke `admin@laporkuy.online`; tidak ada password bawaan yang ditanam pada aplikasi. Password diverifikasi oleh Supabase dan cookie baru hanya diterbitkan bila hasil autentikasi memiliki `app_metadata.role = operator`. Akun warga dengan password yang benar tetap ditolak oleh alur login operator.
 
 Pemilik proyek perlu membuat akun `admin@laporkuy.online` melalui Supabase Authentication → Users → Add user, memasukkan password yang dipilih secara langsung di dashboard, dan mengaktifkan Auto Confirm User. Sesudah itu jalankan `docs/setup-admin-account.sql` pada proyek yang dipakai Preview untuk menetapkan role operator. Skrip berhenti bila akun belum ada, ambigu, atau email belum terkonfirmasi; tidak menyimpan atau mengganti password. Akses Admin API dari lingkungan ini ditolak (401), jadi pembuatan akun dan pemberian role harus dilakukan oleh pemilik proyek melalui dashboard. Jangan memakai signup publik atau metadata dari browser untuk memberikan hak operator. Masuk kembali sesudah role ditetapkan agar JWT memuat hak akses yang baru.
+
+
+### Dashboard admin ringkas dan peta
+
+Navigasi admin hanya berada di sidebar, bersama akun, logout dan muat ulang. Deskripsi berulang, label dekoratif dan stepper laporan dihapus; status, tenggat, harga/stok, field formulir, pesan kesalahan dan riwayat aktual tetap tersedia. CSS admin tetap terisolasi dari landing page.
+
+Peta Leaflet memakai tile publik CARTO dengan OpenStreetMap sebagai cadangan tanpa API key. Tile baru dipasang setelah viewport laporan siap; kegagalan tile tidak meninggalkan pesan lama setelah peta berhasil dimuat. Bila tile gagal atau tidak selesai dalam 12 detik, peta mencoba sumber cadangan. Kegagalan kedua sumber menampilkan Coba lagi dan tautan OpenStreetMap; marker dan daftar laporan tetap bisa dipakai. Ukuran kanvas diperbarui saat resize dan listener/timer/layer dibersihkan saat pindah menu atau retry. Atribusi penyedia tetap tampil.
