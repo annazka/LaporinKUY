@@ -30,11 +30,11 @@ export default async function Home({searchParams}:{searchParams:Promise<{auth?:s
  const [ledger,redemptions]=account.status==='fulfilled'?account.value:[[],[]];
  const balance=ledger.reduce((sum:number,row:{amount:number})=>sum+row.amount,0);
  const completed=list.filter(r=>r.status==='completed').length;
- return <div className="landing plain-landing"><LandingVideo/>{(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
+ return <div className="landing plain-landing"><LandingVideo/>{!user&&(query.auth==="login"||query.auth==="register")&&<AuthEntry mode={query.auth} next={safeNext(query.next)}/>}
  <section className="night-hero"><div className="container hero-intro">
  <h1>Kota yang lebih baik,<br/>dimulai dari <span>suaramu.</span></h1>
  <HeroTypewriter/>
- <div className="hero-actions"><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={18}/></AuthLink><AuthLink className="button secondary">Masuk <ArrowRight size={17}/></AuthLink></div>
+ <div className="hero-actions"><AuthLink className="button" next="/reports/new">Buat laporan <ArrowUpRight size={18}/></AuthLink>{!user&&<AuthLink className="button secondary">Masuk <ArrowRight size={17}/></AuthLink>}</div>
  </div></section>
  <section id="fitur" className="container section feature-section"><div className="section-heading"><div><h2>Fitur LaporKUY</h2></div><p>Untuk melaporkan jalan rusak di Jakarta<br/>dan memantau penanganannya sampai selesai.</p></div>
  <div className="landing-feature-list"><article><h3>Pelaporan dengan foto dan lokasi</h3><p>Kirim foto kerusakan, deskripsi, dan titik lokasi jalan. Bukti ini membantu operator memverifikasi kondisi yang kamu laporkan.</p></article>
