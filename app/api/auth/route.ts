@@ -4,6 +4,7 @@ import {backend} from '@/lib/backend';
 import {failure} from '@/lib/http';
 import {tokenNeedsRefresh} from '@/lib/rules.mjs';
 import {renewSession,REFRESH_COOKIE_MAX_AGE} from '@/lib/auth-session.mjs';
+import {operatorEmail,operatorSession} from '@/lib/operator-login.mjs';
 import {signupPath} from '@/lib/email-confirmation.mjs';
 export async function POST(request:Request){try{
  if(request.headers.get('origin')!==new URL(request.url).origin)throw new Error('Permintaan tidak valid.');
@@ -20,6 +21,13 @@ export async function POST(request:Request){try{
    return NextResponse.json({error:'Sesi tidak berlaku. Silakan masuk kembali.'},{status:401});
   }
   setSession(jar,result.session);return NextResponse.json({ok:true,refreshed:true});
+ }
+ if(body.action==='operator-login'){
+  const email=operatorEmail(body.username);
+  if(typeof body.password!=='string'||body.password.length<8)throw new Error('Masukkan kata sandi minimal 8 karakter.');
+  const data=await backend('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password:body.password})});
+  const session=operatorSession(data);
+  setSession(jar,session);return NextResponse.json({ok:true,role:'operator'});
  }
  if(!['login','register'].includes(body.action))throw new Error('Aksi tidak valid.');
  if(typeof body.email!=='string'||typeof body.password!=='string'||body.password.length<8)throw new Error('Masukkan email dan kata sandi minimal 8 karakter.');
