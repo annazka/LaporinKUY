@@ -1,2 +1,4 @@
-import {redirect} from 'next/navigation';
-export default function MapPage(){redirect('/#peta');}
+import { redirect } from "next/navigation";
+export default function MapPage() {
+  redirect("/#peta");
+}

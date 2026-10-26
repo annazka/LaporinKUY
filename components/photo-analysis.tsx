@@ -1,60 +1,215 @@
-'use client';
-import {useEffect,useRef,useState} from 'react';
-import {Sparkles,LoaderCircle,RotateCcw} from 'lucide-react';
-import {AnalysisRequestError,photoFingerprint,sendPhotoForAnalysis,validatePhoto} from '@/lib/photo-analysis-client.mjs';
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { Sparkles, LoaderCircle, RotateCcw } from "lucide-react";
+import {
+  AnalysisRequestError,
+  photoFingerprint,
+  sendPhotoForAnalysis,
+  validatePhoto,
+} from "@/lib/photo-analysis-client.mjs";
 
-type Analysis={relevant:boolean;category:string;severity:string;priority:string;summary:string;reason:string;model:string};
-type State={file:File|null;stage:'idle'|'uploading'|'analyzing'|'success'|'error';result?:Analysis;error?:string;retryAt?:number;invalid?:boolean};
-export function PhotoAnalysis({file}:{file:File|null}){
- const [state,setState]=useState<State>({file:null,stage:'idle'}),[attempt,setAttempt]=useState(0),[preview,setPreview]=useState<{file:File;url:string}|null>(null),[retryWait,setRetryWait]=useState(0);
- const generation=useRef(0),pending=useRef(false),cache=useRef(new Map<string,Analysis>());
- useEffect(()=>{
-  if(!file){setPreview(null);return;}
-  const url=URL.createObjectURL(file);setPreview({file,url});
-  return()=>URL.revokeObjectURL(url);
- },[file]);
- useEffect(()=>{
-  const id=++generation.current,controller=new AbortController();
-  const current=()=>generation.current===id&&!controller.signal.aborted;
-  pending.current=false;
-  if(!file){setState({file:null,stage:'idle'});return()=>controller.abort();}
-  const invalid=validatePhoto(file);
-  if(invalid){setState({file,stage:'error',error:invalid,invalid:true});return()=>controller.abort();}
-  pending.current=true;setState({file,stage:'uploading'});
-  (async()=>{
-   try{
-    const fingerprint=await photoFingerprint(file);
-    if(!current())return;
-    let result=cache.current.get(fingerprint);
-    if(!result){
-     result=await sendPhotoForAnalysis(file,{signal:controller.signal,onPhase:(stage:'uploading'|'analyzing')=>{if(current())setState({file,stage});}}) as Analysis;
-     if(!current())return;
-     if(cache.current.size>=8)cache.current.delete(cache.current.keys().next().value!);
-     cache.current.set(fingerprint,result);
+type Analysis = {
+  relevant: boolean;
+  category: string;
+  severity: string;
+  priority: string;
+  summary: string;
+  reason: string;
+  model: string;
+};
+type State = {
+  file: File | null;
+  stage: "idle" | "uploading" | "analyzing" | "success" | "error";
+  result?: Analysis;
+  error?: string;
+  retryAt?: number;
+  invalid?: boolean;
+};
+export function PhotoAnalysis({ file }: { file: File | null }) {
+  const [state, setState] = useState<State>({ file: null, stage: "idle" }),
+    [attempt, setAttempt] = useState(0),
+    [preview, setPreview] = useState<{ file: File; url: string } | null>(null),
+    [retryWait, setRetryWait] = useState(0);
+  const generation = useRef(0),
+    pending = useRef(false),
+    cache = useRef(new Map<string, Analysis>());
+  useEffect(() => {
+    if (!file) {
+      setPreview(null);
+      return;
     }
-    if(current())setState({file,stage:'success',result});
-   }catch(error){
-    if(!current())return;
-    const retryAfter=error instanceof AnalysisRequestError?error.retryAfter:0;
-    setState({file,stage:'error',error:error instanceof AnalysisRequestError?error.message:'Analisis belum berhasil. Foto tetap tersedia; silakan coba lagi.',retryAt:Date.now()+retryAfter*1000});
-   }finally{if(current())pending.current=false;}
-  })();
-  return()=>{controller.abort();};
- },[file,attempt]);
- useEffect(()=>{
-  const update=()=>setRetryWait(state.retryAt?Math.max(0,Math.ceil((state.retryAt-Date.now())/1000)):0);
-  update();if(!state.retryAt)return;
-  const timer=setInterval(update,1000);return()=>clearInterval(timer);
- },[state.retryAt]);
- if(!file)return null;
- const active:State=state.file===file?state:{file,stage:'uploading'};
- const result=active.result,busy=active.stage==='uploading'||active.stage==='analyzing';
- return <section className="photo-analysis form-stack" aria-label="Pratinjau dan analisis foto" aria-busy={busy}>
-  {preview?.file===file&&<figure className="photo-preview"><img src={preview.url} alt="Pratinjau foto yang dipilih untuk laporan"/><figcaption>{file.name}</figcaption></figure>}
-  <div className="analysis-heading"><Sparkles size={17}/><strong>Analisis otomatis</strong></div>
-  {busy&&<div className="analysis-progress" role="status" aria-live="polite"><LoaderCircle size={18} className="analysis-spinner"/><span>{active.stage==='uploading'?'Mengunggah gambar…':'Menganalisis gambar…'}</span></div>}
-  <p className="help-text">Foto dianalisis otomatis oleh Google Gemini. Hasil berupa saran; keputusan penanganan tetap diverifikasi operator. Foto dan hasil belum menjadi laporan sampai kamu menekan Kirim laporan.</p>
-  {active.error&&<div className="form-error" role="alert"><p>{active.error}</p>{!active.invalid&&<button type="button" className="button secondary" disabled={retryWait>0||busy} onClick={()=>{if(pending.current)return;pending.current=true;setAttempt(value=>value+1);}}><RotateCcw size={16}/>{retryWait>0?`Coba Lagi (${retryWait} dtk)`:'Coba Lagi'}</button>}</div>}
-  {result&&<div className="notice" role="status"><div><strong>{result.relevant?'Kerusakan terdeteksi':'Foto belum sesuai sebagai bukti kerusakan'}</strong><p style={{marginTop:10}}>{result.summary}</p><div className="facts"><div><span>Jenis kerusakan</span><b>{result.category}</b></div><div><span>Tingkat kerusakan</span><b>{result.severity.replaceAll('_',' ')}</b></div><div><span>Prioritas penanganan</span><b>{({low:'Rendah',medium:'Sedang',high:'Tinggi',urgent:'Darurat',unknown:'Belum dapat ditentukan'} as Record<string,string>)[result.priority]||'Belum dapat ditentukan'}</b></div></div><p style={{marginTop:12}}>{result.reason}</p><small className="help-text">Model {result.model}. Lokasi dan estimasi durasi tetap diverifikasi operator.</small></div></div>}
- </section>;
+    const url = URL.createObjectURL(file);
+    setPreview({ file, url });
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+  useEffect(() => {
+    const id = ++generation.current,
+      controller = new AbortController();
+    const current = () =>
+      generation.current === id && !controller.signal.aborted;
+    pending.current = false;
+    if (!file) {
+      setState({ file: null, stage: "idle" });
+      return () => controller.abort();
+    }
+    const invalid = validatePhoto(file);
+    if (invalid) {
+      setState({ file, stage: "error", error: invalid, invalid: true });
+      return () => controller.abort();
+    }
+    pending.current = true;
+    setState({ file, stage: "uploading" });
+    (async () => {
+      try {
+        const fingerprint = await photoFingerprint(file);
+        if (!current()) return;
+        let result = cache.current.get(fingerprint);
+        if (!result) {
+          result = (await sendPhotoForAnalysis(file, {
+            signal: controller.signal,
+            onPhase: (stage: "uploading" | "analyzing") => {
+              if (current()) setState({ file, stage });
+            },
+          })) as Analysis;
+          if (!current()) return;
+          if (cache.current.size >= 8)
+            cache.current.delete(cache.current.keys().next().value!);
+          cache.current.set(fingerprint, result);
+        }
+        if (current()) setState({ file, stage: "success", result });
+      } catch (error) {
+        if (!current()) return;
+        const retryAfter =
+          error instanceof AnalysisRequestError ? error.retryAfter : 0;
+        setState({
+          file,
+          stage: "error",
+          error:
+            error instanceof AnalysisRequestError
+              ? error.message
+              : "Analisis belum berhasil. Foto tetap tersedia; silakan coba lagi.",
+          retryAt: Date.now() + retryAfter * 1000,
+        });
+      } finally {
+        if (current()) pending.current = false;
+      }
+    })();
+    return () => {
+      controller.abort();
+    };
+  }, [file, attempt]);
+  useEffect(() => {
+    const update = () =>
+      setRetryWait(
+        state.retryAt
+          ? Math.max(0, Math.ceil((state.retryAt - Date.now()) / 1000))
+          : 0,
+      );
+    update();
+    if (!state.retryAt) return;
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [state.retryAt]);
+  if (!file) return null;
+  const active: State =
+    state.file === file ? state : { file, stage: "uploading" };
+  const result = active.result,
+    busy = active.stage === "uploading" || active.stage === "analyzing";
+  return (
+    <section
+      className="photo-analysis form-stack"
+      aria-label="Pratinjau dan analisis foto"
+      aria-busy={busy}
+    >
+      {preview?.file === file && (
+        <figure className="photo-preview">
+          <img
+            src={preview.url}
+            alt="Pratinjau foto yang dipilih untuk laporan"
+          />
+          <figcaption>{file.name}</figcaption>
+        </figure>
+      )}
+      <div className="analysis-heading">
+        <Sparkles size={17} />
+        <strong>Analisis otomatis</strong>
+      </div>
+      {busy && (
+        <div className="analysis-progress" role="status" aria-live="polite">
+          <LoaderCircle size={18} className="analysis-spinner" />
+          <span>
+            {active.stage === "uploading"
+              ? "Mengunggah gambar…"
+              : "Menganalisis gambar…"}
+          </span>
+        </div>
+      )}
+      <p className="help-text">
+        Foto dianalisis otomatis oleh Google Gemini. Hasil berupa saran;
+        keputusan penanganan tetap diverifikasi operator. Foto dan hasil belum
+        menjadi laporan sampai kamu menekan Kirim laporan.
+      </p>
+      {active.error && (
+        <div className="form-error" role="alert">
+          <p>{active.error}</p>
+          {!active.invalid && (
+            <button
+              type="button"
+              className="button secondary"
+              disabled={retryWait > 0 || busy}
+              onClick={() => {
+                if (pending.current) return;
+                pending.current = true;
+                setAttempt((value) => value + 1);
+              }}
+            >
+              <RotateCcw size={16} />
+              {retryWait > 0 ? `Coba Lagi (${retryWait} dtk)` : "Coba Lagi"}
+            </button>
+          )}
+        </div>
+      )}
+      {result && (
+        <div className="notice" role="status">
+          <div>
+            <strong>
+              {result.relevant
+                ? "Kerusakan terdeteksi"
+                : "Foto belum sesuai sebagai bukti kerusakan"}
+            </strong>
+            <p style={{ marginTop: 10 }}>{result.summary}</p>
+            <div className="facts">
+              <div>
+                <span>Jenis kerusakan</span>
+                <b>{result.category}</b>
+              </div>
+              <div>
+                <span>Tingkat kerusakan</span>
+                <b>{result.severity.replaceAll("_", " ")}</b>
+              </div>
+              <div>
+                <span>Prioritas penanganan</span>
+                <b>
+                  {(
+                    {
+                      low: "Rendah",
+                      medium: "Sedang",
+                      high: "Tinggi",
+                      urgent: "Darurat",
+                      unknown: "Belum dapat ditentukan",
+                    } as Record<string, string>
+                  )[result.priority] || "Belum dapat ditentukan"}
+                </b>
+              </div>
+            </div>
+            <p style={{ marginTop: 12 }}>{result.reason}</p>
+            <small className="help-text">
+              Model {result.model}. Lokasi dan estimasi durasi tetap
+              diverifikasi operator.
+            </small>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }

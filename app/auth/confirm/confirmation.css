@@ -1,1 +1,149 @@
-.confirmation-wrap{min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center;flex-direction:column;padding-block:65px;position:relative}.confirmation-ambient{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,color-mix(in oklch,var(--time-accent) 3.529412%,transparent),transparent 60%);pointer-events:none}.confirmation-card{position:relative;max-width:470px;width:100%;padding:36px;text-align:center;border-color:color-mix(in oklch,var(--time-accent) 10.196078%,transparent);box-shadow:0 30px 100px color-mix(in oklch,var(--time-shadow) 20.000000%,transparent)}.confirmation-label{display:flex;align-items:center;justify-content:center;gap:8px;font-size:7px;letter-spacing:1.5px;color:var(--time-muted);margin-bottom:30px}.confirmation-label>span{width:5px;height:5px;background:var(--mint);border-radius:50%;box-shadow:0 0 14px color-mix(in oklch,var(--time-accent) 33.333333%,transparent)}.confirmation-symbol{width:88px;height:88px;margin:0 auto 30px;display:grid;place-items:center;color:var(--time-muted);background:color-mix(in oklch,var(--time-accent) 3.529412%,transparent);border:1px solid color-mix(in oklch,var(--time-accent) 13.333333%,transparent);border-radius:50%;box-shadow:0 0 0 12px color-mix(in oklch,var(--time-accent) 1.176471%,transparent)}.confirmation-symbol.confirmed{color:var(--mint);background:color-mix(in oklch,var(--time-accent) 3.921569%,transparent);border-color:color-mix(in oklch,var(--time-accent) 18.823529%,transparent);box-shadow:0 0 0 12px color-mix(in oklch,var(--time-accent) 1.176471%,transparent),0 0 60px color-mix(in oklch,var(--time-accent) 3.529412%,transparent)}.confirmation-symbol.failed{color:var(--time-accent);background:color-mix(in oklch,var(--time-accent) 3.137255%,transparent);border-color:color-mix(in oklch,var(--time-accent) 13.333333%,transparent)}.confirmation-card h1{font-size:29px;line-height:1.2;letter-spacing:-1px;margin-bottom:17px}.confirmation-card>p{font-size:11px;line-height:1.95;margin-bottom:28px;color:var(--time-muted)}.confirmation-card .button{font-size:11px}.confirmation-back{display:flex;align-items:center;justify-content:center;gap:7px;font-size:9px;color:var(--time-muted);margin-top:20px}.confirmation-footer{display:flex;align-items:center;justify-content:center;gap:7px;font-size:8px;color:var(--time-muted);border-top:1px solid color-mix(in oklch,var(--time-text) 3.921569%,transparent);padding-top:23px;margin-top:28px}.confirmation-footer svg{color:var(--time-accent)}.confirmation-bottom{position:relative;margin-top:25px;font-size:7px;letter-spacing:2px;color:var(--time-subtle)}.confirmation-spinner{animation:confirmation-spin 1.2s linear infinite}@keyframes confirmation-spin{to{transform:rotate(360deg)}}@media(max-width:480px){.confirmation-wrap{padding-block:40px;min-height:calc(100vh - 245px)}.confirmation-card{padding:28px 22px}.confirmation-card h1{font-size:25px}.confirmation-label{font-size:6px;letter-spacing:1px}}@media(prefers-reduced-motion:reduce){.confirmation-spinner{animation:none}}
+.confirmation-wrap {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-block: 65px;
+  position: relative;
+}
+.confirmation-ambient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    color-mix(in oklch, var(--time-accent) 3.529412%, transparent),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+.confirmation-card {
+  position: relative;
+  max-width: 470px;
+  width: 100%;
+  padding: 36px;
+  text-align: center;
+  border-color: color-mix(in oklch, var(--time-accent) 10.196078%, transparent);
+  box-shadow: 0 30px 100px
+    color-mix(in oklch, var(--time-shadow) 20%, transparent);
+}
+.confirmation-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 7px;
+  letter-spacing: 1.5px;
+  color: var(--time-muted);
+  margin-bottom: 30px;
+}
+.confirmation-label > span {
+  width: 5px;
+  height: 5px;
+  background: var(--mint);
+  border-radius: 50%;
+  box-shadow: 0 0 14px
+    color-mix(in oklch, var(--time-accent) 33.333333%, transparent);
+}
+.confirmation-symbol {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 30px;
+  display: grid;
+  place-items: center;
+  color: var(--time-muted);
+  background: color-mix(in oklch, var(--time-accent) 3.529412%, transparent);
+  border: 1px solid
+    color-mix(in oklch, var(--time-accent) 13.333333%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 12px
+    color-mix(in oklch, var(--time-accent) 1.176471%, transparent);
+}
+.confirmation-symbol.confirmed {
+  color: var(--mint);
+  background: color-mix(in oklch, var(--time-accent) 3.921569%, transparent);
+  border-color: color-mix(in oklch, var(--time-accent) 18.823529%, transparent);
+  box-shadow:
+    0 0 0 12px color-mix(in oklch, var(--time-accent) 1.176471%, transparent),
+    0 0 60px color-mix(in oklch, var(--time-accent) 3.529412%, transparent);
+}
+.confirmation-symbol.failed {
+  color: var(--time-accent);
+  background: color-mix(in oklch, var(--time-accent) 3.137255%, transparent);
+  border-color: color-mix(in oklch, var(--time-accent) 13.333333%, transparent);
+}
+.confirmation-card h1 {
+  font-size: 29px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin-bottom: 17px;
+}
+.confirmation-card > p {
+  font-size: 11px;
+  line-height: 1.95;
+  margin-bottom: 28px;
+  color: var(--time-muted);
+}
+.confirmation-card .button {
+  font-size: 11px;
+}
+.confirmation-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 9px;
+  color: var(--time-muted);
+  margin-top: 20px;
+}
+.confirmation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 8px;
+  color: var(--time-muted);
+  border-top: 1px solid
+    color-mix(in oklch, var(--time-text) 3.921569%, transparent);
+  padding-top: 23px;
+  margin-top: 28px;
+}
+.confirmation-footer svg {
+  color: var(--time-accent);
+}
+.confirmation-bottom {
+  position: relative;
+  margin-top: 25px;
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: var(--time-subtle);
+}
+.confirmation-spinner {
+  animation: confirmation-spin 1.2s linear infinite;
+}
+@keyframes confirmation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 480px) {
+  .confirmation-wrap {
+    padding-block: 40px;
+    min-height: calc(100vh - 245px);
+  }
+  .confirmation-card {
+    padding: 28px 22px;
+  }
+  .confirmation-card h1 {
+    font-size: 25px;
+  }
+  .confirmation-label {
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confirmation-spinner {
+    animation: none;
+  }
+}
