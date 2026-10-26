@@ -37,7 +37,9 @@ export function SiteHeader({
   const pathname = usePathname(),
     landing = pathname === "/",
     accountArea =
-      pathname.startsWith("/dashboard") || pathname.startsWith("/profile");
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/profile") ||
+      pathname.startsWith("/reports/new");
   const header = useRef<HTMLElement>(null);
   const [floating, setFloating] = useState(false),
     [open, setOpen] = useState(false);
