@@ -21,7 +21,7 @@ export function VisualEffects(){
     frame=0;
     if(!(target instanceof Element))return;
     const card=target.closest<HTMLElement>('.report-card,.panel,.feature-card,.stat-card,.demo-stage,.voucher-card,.step-choice');
-    if(card&&!card.closest('.plain-landing')){const b=card.getBoundingClientRect();card.style.setProperty('--mouse-x',`${x-b.left}px`);card.style.setProperty('--mouse-y',`${y-b.top}px`);}
+    if(card&&!card.closest('.plain-landing,.admin-app')){const b=card.getBoundingClientRect();card.style.setProperty('--mouse-x',`${x-b.left}px`);card.style.setProperty('--mouse-y',`${y-b.top}px`);}
     const stage=target.closest<HTMLElement>('.city-scene');
     if(stage){const b=stage.getBoundingClientRect();stage.style.setProperty('--tilt-x',`${((y-b.top)/b.height-.5)*-5}deg`);stage.style.setProperty('--tilt-y',`${((x-b.left)/b.width-.5)*5}deg`);}
    });

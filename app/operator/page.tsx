@@ -1,3 +1,24 @@
-import Link from 'next/link';import {ArrowUpRight} from 'lucide-react';import {PageTitle,Stats,Status,DailyFlag,Empty} from '@/components/ui';import {requireViewer,reports} from '@/lib/backend';import {isOverdue,missingDailyUpdate} from '@/lib/rules.mjs';import {formatDate} from '@/lib/types';
+import {redirect} from 'next/navigation';
+import {backend,viewer,accessToken,reports} from '@/lib/backend';
+import type {Update,Voucher} from '@/lib/types';
+import {OperatorDashboard,type AdminEvent,type Redemption} from '@/components/operator-dashboard';
 export const dynamic='force-dynamic';
-export default async function Operator(){await requireViewer(true);const list=await reports();const sorted=[...list].sort((a,b)=>Number(missingDailyUpdate(b))-Number(missingDailyUpdate(a)));return <div className="container page"><PageTitle eyebrow="RUANG OPERATOR" title="Tindak lanjut yang bisa dipercaya." description="Verifikasi laporan, tetapkan target, dan kabarkan progres setiap hari."/><Stats items={[{label:'Menunggu verifikasi',value:list.filter(r=>r.status==='submitted').length,note:'Periksa bukti dan lokasi laporan'},{label:'Perlu pembaruan hari ini',value:list.filter(r=>missingDailyUpdate(r)).length,note:'Sejak tanggal mulai perbaikan'},{label:'Melewati target',value:list.filter(r=>isOverdue(r)).length,note:'Jelaskan kendala dan target baru'}]}/><div className="section-heading"><h2>Antrean penanganan</h2><span className="small-label">{list.length} LAPORAN</span></div>{list.length?<div className="table-wrap"><table><thead><tr><th>Laporan</th><th>Status</th><th>Target selesai</th><th>Progres</th><th>Tindakan</th></tr></thead><tbody>{sorted.map(r=><tr key={r.id}><td><strong>{r.title}</strong><small>{r.address}</small><DailyFlag report={r}/></td><td><Status report={r}/></td><td>{formatDate(r.target_date)}</td><td>{r.progress}%</td><td><Link className="text-button" href={`/reports/${r.id}`}>Kelola <ArrowUpRight size={16}/></Link></td></tr>)}</tbody></table></div>:<Empty title="Belum ada laporan masuk." text="Laporan warga akan muncul di antrean ini." action={false}/>}</div>;}
+export const metadata={title:'Meja kendali operator',robots:{index:false,follow:false}};
+export default async function Operator(){
+ const user=await viewer();if(!user||user.role!=='operator')redirect('/operator/login');
+ const token=await accessToken();
+ const [list,history,offers,admin]=await Promise.allSettled([
+  reports(),backend('/rest/v1/report_updates?select=*&order=created_at.desc&limit=500',{},token),
+  backend('/rest/v1/vouchers?select=*&order=cost.asc',{},token),
+  backend('/rest/v1/rpc/operator_admin_overview',{method:'POST',body:'{}'},token),
+ ]);
+ const failures:string[]=[];
+ if(list.status==='rejected')failures.push('Laporan belum dapat dimuat.');
+ if(history.status==='rejected')failures.push('Riwayat laporan belum dapat dimuat.');
+ if(offers.status==='rejected')failures.push('Katalog voucher belum dapat dimuat.');
+ const snapshot=admin.status==='fulfilled'?admin.value:null;
+ const reason=admin.status==='rejected'?String(admin.reason?.message||''):'';
+ const voucherNotice=/operator_admin_overview|schema cache|function.*not found|could not find.*function/i.test(reason)?'Katalog dapat dibaca. Pengelolaan stok dan riwayat penukaran menunggu aktivasi fitur admin pada database.':'Layanan pengelolaan voucher belum dapat dimuat. Muat ulang halaman untuk mencoba kembali.';
+ const voucherReady=Boolean(snapshot&&Array.isArray(snapshot.redemptions)&&Array.isArray(snapshot.events));
+ return <OperatorDashboard asOf={new Date().toISOString()} user={user} reports={list.status==='fulfilled'?list.value:[]} updates={history.status==='fulfilled'?history.value as Update[]:[]} vouchers={offers.status==='fulfilled'?offers.value as Voucher[]:[]} redemptions={voucherReady?snapshot.redemptions as Redemption[]:[]} voucherEvents={voucherReady?snapshot.events as AdminEvent[]:[]} voucherReady={voucherReady} voucherNotice={voucherNotice} failures={failures}/>;
+}
