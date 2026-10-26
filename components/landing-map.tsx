@@ -1,57 +1,344 @@
-'use client';
-import Link from 'next/link';
-import {useEffect,useRef,useState} from 'react';
-import {MapPin,LocateFixed,ArrowUpRight,X} from 'lucide-react';
-import type {Report} from '@/lib/types';
-import {statusLabels} from '@/lib/types';
-import {validCoordinates} from '@/lib/rules.mjs';
-import type {Map as LeafletMap} from 'leaflet';
+"use client";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { MapPin, LocateFixed, ArrowUpRight, X } from "lucide-react";
+import type { Report } from "@/lib/types";
+import { statusLabels } from "@/lib/types";
+import { validCoordinates } from "@/lib/rules.mjs";
+import type { Map as LeafletMap } from "leaflet";
 
-export function LandingMap({reports,failed}:{reports:Report[];failed:boolean}){
- const [active,setActive]=useState(false),[filter,setFilter]=useState('all'),[selected,setSelected]=useState<string|null>(null),[location,setLocation]=useState<[number,number]|null>(null),[locating,setLocating]=useState(false),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
- const canvas=useRef<HTMLDivElement>(null),map=useRef<LeafletMap|null>(null),request=useRef(0);
- const located=reports.filter(r=>validCoordinates(r.latitude,r.longitude));
- const filtered=located.filter(r=>filter==='completed'?r.status==='completed':filter==='active'?['verified','scheduled','in_progress','awaiting_confirmation'].includes(r.status):filter==='nearby'&&location?Math.hypot((r.latitude-location[0])*111,(r.longitude-location[1])*110)<=5:true);
- const chosen=filtered.find(r=>r.id===selected)||null;
- // Rebuild only when data/filter changes, never as the landing page scrolls.
- const signature=JSON.stringify(filtered.map(r=>[r.id,r.latitude,r.longitude,r.title]));
- useEffect(()=>{
-  if(!active||!canvas.current)return;
-  let disposed=false;let instance:LeafletMap|undefined;let resize:ResizeObserver|undefined;
-  setError('');
-  import('leaflet').then(L=>{
-   if(disposed||!canvas.current)return;
-   instance=L.map(canvas.current,{scrollWheelZoom:false,zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false}).setView(location||[-6.2,106.83],11);map.current=instance;
-   resize=new ResizeObserver(()=>instance?.invalidateSize({animate:false}));resize.observe(canvas.current);
-   const tiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(instance);
-   let tileFailed=false;
-   tiles.on('tileerror',()=>{tileFailed=true;if(!disposed)setError('Peta dasar belum dapat dimuat. Daftar laporan tetap bisa dibuka.');});
-   tiles.on('load',()=>{if(!disposed&&!tileFailed)setError('');});
-   const rows=filtered;
-   rows.forEach(r=>{
-    const marker=L.marker([r.latitude,r.longitude],{icon:L.divIcon({className:'report-map-marker',html:'<span aria-hidden="true"></span>',iconSize:[30,30],iconAnchor:[15,15]}),title:r.title,alt:`Laporan: ${r.title}`}).addTo(instance!);
-    marker.on('click',()=>setSelected(r.id));
-   });
-   if(location)L.circleMarker(location,{radius:7,color:'#fff',fillColor:'#555',fillOpacity:1}).addTo(instance);
-   const focus=rows.find(r=>r.id===selected);
-   if(focus)instance.setView([focus.latitude,focus.longitude],14);
-   else if(rows.length)instance.fitBounds(L.latLngBounds(rows.map(r=>[r.latitude,r.longitude] as [number,number])),{padding:[55,55],maxZoom:14});
-  }).catch(()=>{if(!disposed)setError('Peta belum dapat dibuka. Coba lagi.');});
-  return()=>{disposed=true;resize?.disconnect();instance?.stop();instance?.remove();map.current=null;};
- },[active,signature,location,attempt]);
- useEffect(()=>{if(chosen)map.current?.panTo([chosen.latitude,chosen.longitude],{animate:!matchMedia('(prefers-reduced-motion: reduce)').matches});},[chosen?.id]);
- useEffect(()=>()=>{request.current++;},[]);
- function nearby(){
-  if(location){setFilter('nearby');return;}
-  if(!navigator.geolocation){setError('Browser ini belum mendukung lokasi. Gunakan filter status.');return;}
-  const id=++request.current;setLocating(true);setError('');
-  navigator.geolocation.getCurrentPosition(p=>{if(id!==request.current)return;setLocation([p.coords.latitude,p.coords.longitude]);setFilter('nearby');setLocating(false);},()=>{if(id!==request.current)return;setLocating(false);setError('Lokasi belum dapat diakses. Izinkan lokasi di browser atau gunakan filter status.');},{timeout:10000,maximumAge:60000});
- }
- return <section id="peta" className="container section landing-map-section" aria-labelledby="map-title"><div className="section-heading"><div><h2 id="map-title">Peta laporan Jakarta</h2></div><p>Temukan laporan dan kabar perbaikan<br/>di sekitar Jakarta.</p></div>
- <div className="map-toolbar" role="group" aria-label="Filter peta laporan">{[['all','Semua laporan'],['active','Dalam penanganan'],['completed','Selesai']].map(([value,label])=><button key={value} type="button" aria-pressed={filter===value} onClick={()=>{setFilter(value);setSelected(null);}}>{label}</button>)}<button type="button" aria-pressed={filter==='nearby'} disabled={locating} onClick={nearby}><LocateFixed size={15}/>{locating?'Mencari lokasi…':'Sekitar saya'}</button></div>
- {error&&<p className="map-error" role="status">{error} {active&&<button type="button" onClick={()=>setAttempt(n=>n+1)}>Coba lagi</button>}</p>}
- <div className={`landing-map-panel${active?' is-active':''}`}><div className="map-viewport"><div ref={canvas} className="report-map-canvas" aria-label="Peta lokasi laporan Jakarta"/>{!active&&<div className="map-cover"><div className="map-grid-art" aria-hidden="true"><MapPin size={44}/></div><h3>Lihat lokasi laporan</h3><p>Pilih laporan pada peta untuk melihat foto dan progresnya.</p><button className="button" type="button" onClick={()=>setActive(true)}>Jelajahi peta <ArrowUpRight size={17}/></button></div>}{active&&<button type="button" className="map-close" onClick={()=>{setActive(false);setSelected(null);}}>Tutup peta <X size={15}/></button>} {chosen&&<article className="map-detail"><button className="map-detail-close" type="button" aria-label="Tutup detail laporan di peta" onClick={()=>setSelected(null)}><X size={18}/></button><img src={`/api/report-preview/${chosen.id}`} alt={`Foto ${chosen.title}`} onError={e=>{e.currentTarget.style.display='none';}}/><div><small>{statusLabels[chosen.status]||chosen.status}</small><h3>{chosen.title}</h3><p>{chosen.address}</p><progress value={chosen.progress} max={100} aria-label="Progres perbaikan"/><p>{chosen.progress}% progres</p><Link className="text-button" href={`/reports/${chosen.id}`}>Lihat detail laporan <ArrowUpRight size={16}/></Link></div></article>}</div>
- <aside className="map-report-list" aria-label="Daftar laporan pada peta"><div className="map-list-heading"><strong>{filter==='nearby'?'Dalam radius 5 km':'Laporan di peta'}</strong><span>{filtered.length} laporan</span></div>{failed?<p>Data laporan belum dapat dimuat. Muat ulang halaman.</p>:!filtered.length?<p>Belum ada laporan dengan lokasi yang sesuai filter ini.</p>:filtered.map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>{setActive(true);setSelected(r.id);}}><MapPin size={18}/><span><small>{statusLabels[r.status]||r.status}</small><strong>{r.title}</strong><span>{r.address}</span></span><ArrowUpRight size={16}/></button>)}</aside>
-
- </div><p className="section-footnote">Hanya laporan dengan koordinat valid yang ditampilkan. Lokasi perangkat digunakan saat kamu memilih “Sekitar saya” dan tidak disimpan.</p></section>;
+export function LandingMap({
+  reports,
+  failed,
+}: {
+  reports: Report[];
+  failed: boolean;
+}) {
+  const [active, setActive] = useState(false),
+    [filter, setFilter] = useState("all"),
+    [selected, setSelected] = useState<string | null>(null),
+    [location, setLocation] = useState<[number, number] | null>(null),
+    [locating, setLocating] = useState(false),
+    [error, setError] = useState(""),
+    [attempt, setAttempt] = useState(0);
+  const canvas = useRef<HTMLDivElement>(null),
+    map = useRef<LeafletMap | null>(null),
+    request = useRef(0);
+  const located = reports.filter((r) =>
+    validCoordinates(r.latitude, r.longitude),
+  );
+  const filtered = located.filter((r) =>
+    filter === "completed"
+      ? r.status === "completed"
+      : filter === "active"
+        ? [
+            "verified",
+            "scheduled",
+            "in_progress",
+            "awaiting_confirmation",
+          ].includes(r.status)
+        : filter === "nearby" && location
+          ? Math.hypot(
+              (r.latitude - location[0]) * 111,
+              (r.longitude - location[1]) * 110,
+            ) <= 5
+          : true,
+  );
+  const chosen = filtered.find((r) => r.id === selected) || null;
+  // Rebuild only when data/filter changes, never as the landing page scrolls.
+  const signature = JSON.stringify(
+    filtered.map((r) => [r.id, r.latitude, r.longitude, r.title]),
+  );
+  useEffect(() => {
+    if (!active || !canvas.current) return;
+    let disposed = false;
+    let instance: LeafletMap | undefined;
+    let resize: ResizeObserver | undefined;
+    setError("");
+    import("leaflet")
+      .then((L) => {
+        if (disposed || !canvas.current) return;
+        instance = L.map(canvas.current, {
+          scrollWheelZoom: false,
+          zoomAnimation: false,
+          fadeAnimation: false,
+          markerZoomAnimation: false,
+        }).setView(location || [-6.2, 106.83], 11);
+        map.current = instance;
+        resize = new ResizeObserver(() =>
+          instance?.invalidateSize({ animate: false }),
+        );
+        resize.observe(canvas.current);
+        const tiles = L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            maxZoom: 19,
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          },
+        ).addTo(instance);
+        let tileFailed = false;
+        tiles.on("tileerror", () => {
+          tileFailed = true;
+          if (!disposed)
+            setError(
+              "Peta dasar belum dapat dimuat. Daftar laporan tetap bisa dibuka.",
+            );
+        });
+        tiles.on("load", () => {
+          if (!disposed && !tileFailed) setError("");
+        });
+        const rows = filtered;
+        rows.forEach((r) => {
+          const marker = L.marker([r.latitude, r.longitude], {
+            icon: L.divIcon({
+              className: "report-map-marker",
+              html: '<span aria-hidden="true"></span>',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            }),
+            title: r.title,
+            alt: `Laporan: ${r.title}`,
+          }).addTo(instance!);
+          marker.on("click", () => setSelected(r.id));
+        });
+        if (location)
+          L.circleMarker(location, {
+            radius: 7,
+            color: "#fff",
+            fillColor: "#555",
+            fillOpacity: 1,
+          }).addTo(instance);
+        const focus = rows.find((r) => r.id === selected);
+        if (focus) instance.setView([focus.latitude, focus.longitude], 14);
+        else if (rows.length)
+          instance.fitBounds(
+            L.latLngBounds(
+              rows.map((r) => [r.latitude, r.longitude] as [number, number]),
+            ),
+            { padding: [55, 55], maxZoom: 14 },
+          );
+      })
+      .catch(() => {
+        if (!disposed) setError("Peta belum dapat dibuka. Coba lagi.");
+      });
+    return () => {
+      disposed = true;
+      resize?.disconnect();
+      instance?.stop();
+      instance?.remove();
+      map.current = null;
+    };
+  }, [active, signature, location, attempt]);
+  useEffect(() => {
+    if (chosen)
+      map.current?.panTo([chosen.latitude, chosen.longitude], {
+        animate: !matchMedia("(prefers-reduced-motion: reduce)").matches,
+      });
+  }, [chosen?.id]);
+  useEffect(
+    () => () => {
+      request.current++;
+    },
+    [],
+  );
+  function nearby() {
+    if (location) {
+      setFilter("nearby");
+      return;
+    }
+    if (!navigator.geolocation) {
+      setError("Browser ini belum mendukung lokasi. Gunakan filter status.");
+      return;
+    }
+    const id = ++request.current;
+    setLocating(true);
+    setError("");
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        if (id !== request.current) return;
+        setLocation([p.coords.latitude, p.coords.longitude]);
+        setFilter("nearby");
+        setLocating(false);
+      },
+      () => {
+        if (id !== request.current) return;
+        setLocating(false);
+        setError(
+          "Lokasi belum dapat diakses. Izinkan lokasi di browser atau gunakan filter status.",
+        );
+      },
+      { timeout: 10000, maximumAge: 60000 },
+    );
+  }
+  return (
+    <section
+      id="peta"
+      className="container section landing-map-section"
+      aria-labelledby="map-title"
+    >
+      <div className="section-heading">
+        <div>
+          <h2 id="map-title">Peta laporan Jakarta</h2>
+        </div>
+        <p>
+          Temukan laporan dan kabar perbaikan
+          <br />
+          di sekitar Jakarta.
+        </p>
+      </div>
+      <div
+        className="map-toolbar"
+        role="group"
+        aria-label="Filter peta laporan"
+      >
+        {[
+          ["all", "Semua laporan"],
+          ["active", "Dalam penanganan"],
+          ["completed", "Selesai"],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={filter === value}
+            onClick={() => {
+              setFilter(value);
+              setSelected(null);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+        <button
+          type="button"
+          aria-pressed={filter === "nearby"}
+          disabled={locating}
+          onClick={nearby}
+        >
+          <LocateFixed size={15} />
+          {locating ? "Mencari lokasi…" : "Sekitar saya"}
+        </button>
+      </div>
+      {error && (
+        <p className="map-error" role="status">
+          {error}{" "}
+          {active && (
+            <button type="button" onClick={() => setAttempt((n) => n + 1)}>
+              Coba lagi
+            </button>
+          )}
+        </p>
+      )}
+      <div className={`landing-map-panel${active ? " is-active" : ""}`}>
+        <div className="map-viewport">
+          <div
+            ref={canvas}
+            className="report-map-canvas"
+            aria-label="Peta lokasi laporan Jakarta"
+          />
+          {!active && (
+            <div className="map-cover">
+              <div className="map-grid-art" aria-hidden="true">
+                <MapPin size={44} />
+              </div>
+              <h3>Lihat lokasi laporan</h3>
+              <p>Pilih laporan pada peta untuk melihat foto dan progresnya.</p>
+              <button
+                className="button"
+                type="button"
+                onClick={() => setActive(true)}
+              >
+                Jelajahi peta <ArrowUpRight size={17} />
+              </button>
+            </div>
+          )}
+          {active && (
+            <button
+              type="button"
+              className="map-close"
+              onClick={() => {
+                setActive(false);
+                setSelected(null);
+              }}
+            >
+              Tutup peta <X size={15} />
+            </button>
+          )}{" "}
+          {chosen && (
+            <article className="map-detail">
+              <button
+                className="map-detail-close"
+                type="button"
+                aria-label="Tutup detail laporan di peta"
+                onClick={() => setSelected(null)}
+              >
+                <X size={18} />
+              </button>
+              <img
+                src={`/api/report-preview/${chosen.id}`}
+                alt={`Foto ${chosen.title}`}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+              <div>
+                <small>{statusLabels[chosen.status] || chosen.status}</small>
+                <h3>{chosen.title}</h3>
+                <p>{chosen.address}</p>
+                <progress
+                  value={chosen.progress}
+                  max={100}
+                  aria-label="Progres perbaikan"
+                />
+                <p>{chosen.progress}% progres</p>
+                <Link className="text-button" href={`/reports/${chosen.id}`}>
+                  Lihat detail laporan <ArrowUpRight size={16} />
+                </Link>
+              </div>
+            </article>
+          )}
+        </div>
+        <aside
+          className="map-report-list"
+          aria-label="Daftar laporan pada peta"
+        >
+          <div className="map-list-heading">
+            <strong>
+              {filter === "nearby" ? "Dalam radius 5 km" : "Laporan di peta"}
+            </strong>
+            <span>{filtered.length} laporan</span>
+          </div>
+          {failed ? (
+            <p>Data laporan belum dapat dimuat. Muat ulang halaman.</p>
+          ) : !filtered.length ? (
+            <p>Belum ada laporan dengan lokasi yang sesuai filter ini.</p>
+          ) : (
+            filtered.map((r) => (
+              <button
+                type="button"
+                key={r.id}
+                aria-pressed={selected === r.id}
+                onClick={() => {
+                  setActive(true);
+                  setSelected(r.id);
+                }}
+              >
+                <MapPin size={18} />
+                <span>
+                  <small>{statusLabels[r.status] || r.status}</small>
+                  <strong>{r.title}</strong>
+                  <span>{r.address}</span>
+                </span>
+                <ArrowUpRight size={16} />
+              </button>
+            ))
+          )}
+        </aside>
+      </div>
+      <p className="section-footnote">
+        Hanya laporan dengan koordinat valid yang ditampilkan. Lokasi perangkat
+        digunakan saat kamu memilih “Sekitar saya” dan tidak disimpan.
+      </p>
+    </section>
+  );
 }

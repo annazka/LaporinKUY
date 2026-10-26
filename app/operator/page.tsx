@@ -1,3 +1,88 @@
-import Link from 'next/link';import {ArrowUpRight} from 'lucide-react';import {PageTitle,Stats,Status,DailyFlag,Empty} from '@/components/ui';import {requireViewer,reports} from '@/lib/backend';import {isOverdue,missingDailyUpdate} from '@/lib/rules.mjs';import {formatDate} from '@/lib/types';
-export const dynamic='force-dynamic';
-export default async function Operator(){await requireViewer(true);const list=await reports();const sorted=[...list].sort((a,b)=>Number(missingDailyUpdate(b))-Number(missingDailyUpdate(a)));return <div className="container page"><PageTitle eyebrow="RUANG OPERATOR" title="Tindak lanjut yang bisa dipercaya." description="Verifikasi laporan, tetapkan target, dan kabarkan progres setiap hari."/><Stats items={[{label:'Menunggu verifikasi',value:list.filter(r=>r.status==='submitted').length,note:'Periksa bukti dan lokasi laporan'},{label:'Perlu pembaruan hari ini',value:list.filter(r=>missingDailyUpdate(r)).length,note:'Sejak tanggal mulai perbaikan'},{label:'Melewati target',value:list.filter(r=>isOverdue(r)).length,note:'Jelaskan kendala dan target baru'}]}/><div className="section-heading"><h2>Antrean penanganan</h2><span className="small-label">{list.length} LAPORAN</span></div>{list.length?<div className="table-wrap"><table><thead><tr><th>Laporan</th><th>Status</th><th>Target selesai</th><th>Progres</th><th>Tindakan</th></tr></thead><tbody>{sorted.map(r=><tr key={r.id}><td><strong>{r.title}</strong><small>{r.address}</small><DailyFlag report={r}/></td><td><Status report={r}/></td><td>{formatDate(r.target_date)}</td><td>{r.progress}%</td><td><Link className="text-button" href={`/reports/${r.id}`}>Kelola <ArrowUpRight size={16}/></Link></td></tr>)}</tbody></table></div>:<Empty title="Belum ada laporan masuk." text="Laporan warga akan muncul di antrean ini." action={false}/>}</div>;}
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { PageTitle, Stats, Status, DailyFlag, Empty } from "@/components/ui";
+import { requireViewer, reports } from "@/lib/backend";
+import { isOverdue, missingDailyUpdate } from "@/lib/rules.mjs";
+import { formatDate } from "@/lib/types";
+export const dynamic = "force-dynamic";
+export default async function Operator() {
+  await requireViewer(true);
+  const list = await reports();
+  const sorted = [...list].sort(
+    (a, b) => Number(missingDailyUpdate(b)) - Number(missingDailyUpdate(a)),
+  );
+  return (
+    <div className="container page">
+      <PageTitle
+        eyebrow="RUANG OPERATOR"
+        title="Tindak lanjut yang bisa dipercaya."
+        description="Verifikasi laporan, tetapkan target, dan kabarkan progres setiap hari."
+      />
+      <Stats
+        items={[
+          {
+            label: "Menunggu verifikasi",
+            value: list.filter((r) => r.status === "submitted").length,
+            note: "Periksa bukti dan lokasi laporan",
+          },
+          {
+            label: "Perlu pembaruan hari ini",
+            value: list.filter((r) => missingDailyUpdate(r)).length,
+            note: "Sejak tanggal mulai perbaikan",
+          },
+          {
+            label: "Melewati target",
+            value: list.filter((r) => isOverdue(r)).length,
+            note: "Jelaskan kendala dan target baru",
+          },
+        ]}
+      />
+      <div className="section-heading">
+        <h2>Antrean penanganan</h2>
+        <span className="small-label">{list.length} LAPORAN</span>
+      </div>
+      {list.length ? (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Laporan</th>
+                <th>Status</th>
+                <th>Target selesai</th>
+                <th>Progres</th>
+                <th>Tindakan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((r) => (
+                <tr key={r.id}>
+                  <td>
+                    <strong>{r.title}</strong>
+                    <small>{r.address}</small>
+                    <DailyFlag report={r} />
+                  </td>
+                  <td>
+                    <Status report={r} />
+                  </td>
+                  <td>{formatDate(r.target_date)}</td>
+                  <td>{r.progress}%</td>
+                  <td>
+                    <Link className="text-button" href={`/reports/${r.id}`}>
+                      Kelola <ArrowUpRight size={16} />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <Empty
+          title="Belum ada laporan masuk."
+          text="Laporan warga akan muncul di antrean ini."
+          action={false}
+        />
+      )}
+    </div>
+  );
+}
