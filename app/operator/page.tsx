@@ -18,7 +18,7 @@ export default async function Operator(){
  if(offers.status==='rejected')failures.push('Katalog voucher belum dapat dimuat.');
  const snapshot=admin.status==='fulfilled'?admin.value:null;
  const reason=admin.status==='rejected'?String(admin.reason?.message||''):'';
- const voucherNotice=/operator_admin_overview|schema cache|function.*not found|could not find.*function/i.test(reason)?'Katalog dapat dibaca. Pengelolaan stok dan riwayat penukaran menunggu aktivasi fitur admin pada database.':'Layanan pengelolaan voucher belum dapat dimuat. Muat ulang halaman untuk mencoba kembali.';
+ const voucherNotice=/operator_admin_overview|schema cache|function.*not found|could not find.*function/i.test(reason)?'Katalog tersedia. Perubahan voucher belum diaktifkan.':'Pengelolaan voucher belum dapat dimuat. Coba muat ulang.';
  const voucherReady=Boolean(snapshot&&Array.isArray(snapshot.redemptions)&&Array.isArray(snapshot.events));
  return <OperatorDashboard asOf={new Date().toISOString()} user={user} reports={list.status==='fulfilled'?list.value:[]} updates={history.status==='fulfilled'?history.value as Update[]:[]} vouchers={offers.status==='fulfilled'?offers.value as Voucher[]:[]} redemptions={voucherReady?snapshot.redemptions as Redemption[]:[]} voucherEvents={voucherReady?snapshot.events as AdminEvent[]:[]} voucherReady={voucherReady} voucherNotice={voucherNotice} failures={failures}/>;
 }
