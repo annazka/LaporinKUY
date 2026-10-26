@@ -1,6 +1,25 @@
 import {tokenNeedsRefresh} from './lib/rules.mjs';
+import {renewSession,REFRESH_COOKIE_MAX_AGE} from './lib/auth-session.mjs';
 import {NextRequest,NextResponse} from 'next/server';
 export async function proxy(request:NextRequest){
- if(!tokenNeedsRefresh(request.cookies.get('lk_access')?.value)||!request.cookies.has('lk_refresh')||!process.env.SUPABASE_URL)return NextResponse.next();
- try{const r=await fetch(`${process.env.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:process.env.SUPABASE_PUBLISHABLE_KEY!,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:request.cookies.get('lk_refresh')?.value}),cache:'no-store',signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('expired');const session=await r.json();request.cookies.set('lk_access',session.access_token);request.cookies.set('lk_refresh',session.refresh_token);const response=NextResponse.next({request});const options={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax' as const,path:'/'};response.cookies.set('lk_access',session.access_token,{...options,maxAge:session.expires_in});response.cookies.set('lk_refresh',session.refresh_token,{...options,maxAge:60*60*24*30});return response;}catch{request.cookies.delete('lk_access');request.cookies.delete('lk_refresh');const response=NextResponse.next({request});response.cookies.delete('lk_access');response.cookies.delete('lk_refresh');return response;}}
+ const refresh=request.cookies.get('lk_refresh')?.value;
+ if(!tokenNeedsRefresh(request.cookies.get('lk_access')?.value)||!refresh)return NextResponse.next();
+ const result=await renewSession(process.env.SUPABASE_URL||'',process.env.SUPABASE_PUBLISHABLE_KEY||'',refresh);
+ if(result.kind==='unavailable')return NextResponse.next();
+ if(result.kind==='refreshed'){
+  request.cookies.set('lk_access',result.session.access_token);
+  request.cookies.set('lk_refresh',result.session.refresh_token);
+ }else{
+  request.cookies.delete('lk_access');request.cookies.delete('lk_refresh');
+ }
+ // Forward renewed cookies into this render, not only the next navigation.
+ const headers=new Headers(request.headers);headers.set('cookie',request.cookies.toString());
+ const response=NextResponse.next({request:{headers}});
+ if(result.kind==='refreshed'){
+  const options={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax' as const,path:'/'};
+  response.cookies.set('lk_access',result.session.access_token,{...options,maxAge:result.session.expires_in});
+  response.cookies.set('lk_refresh',result.session.refresh_token,{...options,maxAge:REFRESH_COOKIE_MAX_AGE});
+ }else{response.cookies.delete('lk_access');response.cookies.delete('lk_refresh');}
+ return response;
+}
 export const config={matcher:['/((?!_next/static|_next/image|favicon.ico|media/|api/auth).*)']};

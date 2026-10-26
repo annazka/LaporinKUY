@@ -2,6 +2,7 @@
 
 Use this file for future interface changes. The user requested removing generic AI-template styling, starting with the tiny hero badge, on 22 October 2026.
 
+- After login, the landing hero shows only “Buat laporan”; hide its “Masuk” action. Authenticated report actions go directly to the form without reopening the login popup. Keep profile/logout available in the navbar. Remember sessions across reloads and browser restarts, refresh them automatically on activity/resume, and preserve credentials during temporary network failures. Explicit logout clears the session across tabs.
 - Keep the intentional black, white, and gray palette and Plus Jakarta Sans. Use readable text with clear contrast.
 - The user explicitly restored the original centered hero, its original title “Kota yang lebih baik, dimulai dari suaramu.” and supporting copy. Keep that hero layout and copy; keep its decorative announcement/BETA badge removed.
 - The hero supporting copy has a user-requested typewriter loop inspired by AgentEco: alternate the two existing sentences with typing/deleting, preserve layout height, pause offscreen/in hidden tabs, and show static full copy for reduced motion. This is an explicit exception to avoiding decorative animation.
