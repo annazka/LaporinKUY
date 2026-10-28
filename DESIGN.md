@@ -41,3 +41,5 @@ The Cara kerja walkthrough uses a continuous vertical scrollbar at the left of t
 The user specifically requested a thinner, softly glowing Cara kerja scrollbar: use a 1 px subdued track and 2 px white thumb with softly rounded elliptical tips (1 px horizontal / 3 px vertical radius) and a compact static glow (3 px core, 6 px halo; only 4/8 px on hover). Retain the wider pointer hit area and visible keyboard focus. This is an explicit exception to the general avoidance of decorative glows; do not add pulsing or unrelated glow effects.
 
 Pin the entire Cara kerja composition, including its heading, once it reaches the position below the floating navbar. Hold it throughout the three scroll-driven stages and release it afterward; preserve normal page scrolling and the short-screen fallback. Use compact heading spacing on shorter desktop screens so all content remains visible.
+
+Remove the helper subtitles beside Fitur, Cara kerja and Peta as requested. Keep the landing map filter toolbar transparent, without a full-width dark background; preserve each filter button and its selected state.

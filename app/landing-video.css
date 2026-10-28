@@ -65,8 +65,7 @@
 .plain-landing .hero-intro > p {
   text-shadow: 0 2px 12px #000a;
 }
-.plain-landing .landing-feature-list,
-.plain-landing .map-toolbar {
+.plain-landing .landing-feature-list {
   background: #080808b8;
 }
 .plain-landing .landing-feature-list {
