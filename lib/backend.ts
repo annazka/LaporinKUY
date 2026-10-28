@@ -79,3 +79,18 @@ export async function reports(): Promise<Report[]> {
 export function photoUrl(path: string | null) {
   return path ? `/api/photo?path=${encodeURIComponent(path)}` : null;
 }
+
+// Request-scoped cache: never share a citizen's balance across requests.
+export const pointBalance = cache(async (): Promise<number | null> => {
+  const user = await viewer();
+  if (!user) return null;
+  try {
+    const rows: { amount: number }[] = await backend(
+      `/rest/v1/point_ledger?select=amount&user_id=eq.${user.id}`,
+      {}, await accessToken(),
+    );
+    return rows.reduce((sum, row) => sum + row.amount, 0);
+  } catch {
+    return null;
+  }
+});

@@ -8,8 +8,9 @@ import {
   CheckCheck,
   ArrowRight,
   Construction,
+  Coins,
 } from "lucide-react";
-import { viewer } from "@/lib/backend";
+import { viewer, pointBalance } from "@/lib/backend";
 import {
   formatDate,
   statusLabels,
@@ -33,12 +34,17 @@ export function Brand() {
 }
 export async function Header() {
   const u = await viewer();
+  const balance = u ? await pointBalance() : null;
   return (
     <SiteHeader
       brand={<Brand />}
       actions={
         u ? (
           <>
+            <Link className="nav-point-balance" href="/profile/vouchers" aria-label={balance === null ? "Saldo poin belum dapat dimuat. Buka voucher" : `${balance.toLocaleString("id-ID")} poin. Buka voucher`} title="Poin simulasi">
+              <Coins size={17} aria-hidden="true" />
+              <span>{balance === null ? "Poin —" : `${balance.toLocaleString("id-ID")} poin`}</span>
+            </Link>
             <Link className="profile-pill" href="/profile">
               <span>{u.name.slice(0, 1).toUpperCase()}</span>
               <b>{u.name}</b>
@@ -59,6 +65,7 @@ export async function Header() {
         {u && <Link href="/dashboard">Dashboard</Link>}
         {u && <Link href="/dashboard/reports">Laporan saya</Link>}
         <Link href="/#laporan">Jelajahi laporan</Link>
+        {u && <Link href="/profile/vouchers">Voucher</Link>}
         {u?.role === "operator" && <Link href="/operator">Operator</Link>}
       </nav>
     </SiteHeader>

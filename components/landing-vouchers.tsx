@@ -19,7 +19,9 @@ export function LandingVouchers({
   failed,
   accountFailed,
   redemptions,
+  catalog = false,
 }: {
+  catalog?: boolean;
   vouchers: Voucher[];
   balance: number;
   signedIn: boolean;
@@ -27,6 +29,7 @@ export function LandingVouchers({
   accountFailed: boolean;
   redemptions: Redemption[];
 }) {
+  const [query, setQuery] = useState(""), [category, setCategory] = useState("all"), [availability, setAvailability] = useState("all");
   const [selected, setSelected] = useState<Voucher | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -93,6 +96,12 @@ export function LandingVouchers({
   }
   const available = (v: Voucher) =>
     v.stock > 0 && v.valid_until >= jakartaDate();
+  const categories = [...new Set(vouchers.map(v => v.category))].sort();
+  const filtered = catalog ? vouchers.filter(v =>
+    (category === "all" || v.category === category) &&
+    `${v.name} ${v.description}`.toLocaleLowerCase("id-ID").includes(query.trim().toLocaleLowerCase("id-ID")) &&
+    (availability === "all" || (available(v) && (availability !== "affordable" || (!accountFailed && v.cost <= balance))))
+  ) : vouchers.slice(0, 3);
   const art = (v: Voucher) =>
     v.category === "Edukasi"
       ? "museum"
@@ -102,16 +111,16 @@ export function LandingVouchers({
   return (
     <section
       id="voucher"
-      className="container section landing-vouchers"
+      className={`container section landing-vouchers${catalog ? " voucher-catalog" : ""}`}
       aria-labelledby="voucher-title"
     >
       <div className="section-heading">
         <div>
-          <h2 id="voucher-title">
+          {catalog ? <h1 id="voucher-title">Voucher</h1> : <h2 id="voucher-title">
             Tukar poin
             <br />
             <span>dengan voucher simulasi.</span>
-          </h2>
+          </h2>}
         </div>
         <div className="landing-point-balance">
           <Gift size={23} />
@@ -134,6 +143,11 @@ export function LandingVouchers({
           penawaran dari mitra.
         </p>
       </div>
+      {catalog && <div className="voucher-filters">
+        <label>Cari voucher<input aria-label="Cari voucher" type="search" placeholder="Nama atau deskripsi voucher" value={query} onChange={e => setQuery(e.target.value)}/></label>
+        <label>Kategori<select aria-label="Kategori" value={category} onChange={e => setCategory(e.target.value)}><option value="all">Semua kategori</option>{categories.map(c => <option key={c} value={c}>{c}</option>)}</select></label>
+        <label>Ketersediaan<select aria-label="Ketersediaan" value={availability} onChange={e => setAvailability(e.target.value)}><option value="all">Semua voucher</option><option value="available">Masih tersedia</option><option value="affordable" disabled={accountFailed}>Sesuai poin saya</option></select></label>
+      </div>}
       {failed ? (
         <p role="status">
           Pilihan voucher belum dapat dimuat. Muat ulang halaman untuk mencoba
@@ -141,9 +155,9 @@ export function LandingVouchers({
         </p>
       ) : !vouchers.length ? (
         <p>Belum ada pilihan voucher. Cek kembali nanti.</p>
-      ) : (
+      ) : !filtered.length ? <div className="voucher-filter-empty"><p role="status">Tidak ada voucher yang sesuai dengan filter.</p><button className="button secondary" onClick={() => {setQuery("");setCategory("all");setAvailability("all");}}>Reset filter</button></div> : (
         <div className="landing-voucher-grid">
-          {vouchers.slice(0, 3).map((v) => (
+          {filtered.map((v) => (
             <article className="landing-voucher-card" key={v.id}>
               <div className="voucher-destination">
                 <img
