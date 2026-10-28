@@ -43,5 +43,3 @@ The user specifically requested a thinner, softly glowing Cara kerja scrollbar: 
 Pin the entire Cara kerja composition, including its heading, once it reaches the position below the floating navbar. Hold it throughout the three scroll-driven stages and release it afterward; preserve normal page scrolling and accessible overflow on short screens. Use compact heading spacing on shorter desktop screens so all content remains visible.
 
 Remove the helper subtitles beside Fitur, Cara kerja and Peta as requested. Keep the landing map filter toolbar transparent, without a full-width dark background; preserve each filter button and its selected state.
-
-Cara kerja includes half a viewport of extra pinned scroll at both ends: keep step 1 with the scrollbar at zero before progression begins, and step 3 with the scrollbar at the end before releasing to the next section. Apply the same holds in reverse; scrollbar drag and keyboard controls land inside these holds. Use scroll distance, never a timer or blocked wheel/touch input.
