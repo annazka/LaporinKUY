@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   Camera,
   CalendarClock,
@@ -29,7 +29,7 @@ const steps = [
     text: "Konfirmasi hasil perbaikan. Setelah tuntas dan terverifikasi, poinmu bisa ditukar dengan voucher simulasi.",
   },
 ];
-export function ReportJourney() {
+export function ReportJourney({heading}: {heading: ReactNode}) {
   const [active, setActive] = useState(0), [progress, setProgress] = useState(0);
   const scrollbar = useRef<HTMLDivElement>(null);
   const drag = useRef<{pointer: number; offset: number} | null>(null);
@@ -102,7 +102,9 @@ export function ReportJourney() {
   }
   return (
     <div ref={track} className={`journey-scroll-track${scrollLayout.pinned ? " is-scroll-driven" : ""}`} style={{"--journey-height": `${scrollLayout.height}px`, "--journey-top": `${scrollLayout.top}px`, "--journey-distance": `${scrollLayout.distance}px`} as CSSProperties}>
-    <div ref={layout} className="journey-layout">
+    <div ref={layout} className="journey-sticky">
+    {heading}
+    <div className="journey-layout">
       <div className="journey-navigation">
       <div ref={scrollbar} className="journey-scrollbar" role="scrollbar" tabIndex={0} aria-label="Posisi Cara kerja" aria-orientation="vertical" aria-controls="journey-preview" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} aria-valuetext={`${Math.round(progress * 100)} persen, ${steps[active].title}`}
         onPointerDown={event => {
@@ -284,6 +286,6 @@ export function ReportJourney() {
           Ilustrasi penggunaan. Angka dan progres di atas adalah contoh.
         </div>
       </div>
-    </div></div>
+    </div></div></div>
   );
 }

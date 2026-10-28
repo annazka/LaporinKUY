@@ -236,7 +236,9 @@
 
 /* The reporting walkthrough follows document scroll; no wheel interception. */
 .journey-scroll-track.is-scroll-driven{height:calc(var(--journey-height) + var(--journey-distance))}
-.journey-scroll-track.is-scroll-driven>.journey-layout{position:sticky;top:var(--journey-top)}
+.journey-scroll-track.is-scroll-driven>.journey-sticky{position:sticky;top:var(--journey-top)}
+.journey-sticky{display:flow-root}
+@media(min-width:801px) and (max-height:800px){.plain-landing .journey-sticky>.section-heading{margin-bottom:20px}.plain-landing .journey-sticky>.section-heading h2{font-size:32px;line-height:1.2}}
 .journey-panels{display:grid;min-width:0}
 .journey-mobile-description{display:none}
 .journey-navigation{position:relative;min-width:0;padding-left:28px}
