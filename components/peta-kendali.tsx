@@ -37,6 +37,17 @@ const FALLBACK_REPORTS: ReportItem[] = [
 ];
 
 export function getUrgency(report: any) {
+  if (report?.status === 'completed') {
+    return {
+      key: 'completed' as const,
+      label: 'Sudah selesai',
+      color: '#64748b',
+      bg: 'rgba(100, 116, 139, 0.16)',
+      border: 'rgba(100, 116, 139, 0.45)',
+      pulse: false,
+    };
+  }
+
   const isOverdue =
     report?.target_date &&
     new Date(report.target_date) < new Date() &&
@@ -71,7 +82,7 @@ export function getUrgency(report: any) {
 
   return {
     key: 'low' as const,
-    label: 'Bisa Nanti',
+    label: 'Rendah',
     color: '#10b981',
     bg: 'rgba(16, 185, 129, 0.16)',
     border: 'rgba(16, 185, 129, 0.45)',
@@ -86,7 +97,7 @@ function formatStatusLabel(status: string) {
     scheduled: 'Terjadwal',
     in_progress: 'Dalam perbaikan',
     awaiting_confirmation: 'Menunggu konfirmasi',
-    completed: 'Selesai',
+    completed: 'Sudah selesai',
     rejected: 'Ditolak',
   };
   return map[status] || status;
@@ -113,7 +124,7 @@ export function PetaKendali({
     Array.isArray(reports) && reports.length > 0 ? reports : FALLBACK_REPORTS;
 
   const [items, setItems] = useState<ReportItem[]>(dataList);
-  const [filter, setFilter] = useState<'all' | 'urgent' | 'medium' | 'low' | 'new'>('all');
+  const [filter, setFilter] = useState<'all' | 'urgent' | 'medium' | 'low' | 'new' | 'completed'>('all');
   const [selectedId, setSelectedId] = useState<string>(dataList[0]?.id || '');
   const [mapReady, setMapReady] = useState(false);
 
@@ -130,6 +141,9 @@ export function PetaKendali({
   }, [reports]);
 
   const filteredItems = items.filter((r) => {
+    const isDone = r.status === 'completed';
+    if (filter === 'completed') return isDone;
+    if (isDone) return false;
     if (filter === 'all') return true;
     if (filter === 'new') return r.status === 'submitted';
     return getUrgency(r).key === filter;
@@ -137,12 +151,11 @@ export function PetaKendali({
 
   const selectedReport =
     filteredItems.find((r) => r.id === selectedId) ||
-    items.find((r) => r.id === selectedId) ||
     filteredItems[0] ||
-    items[0];
+    null;
 
   const handlePriorityChange = (newPriority: 'urgent' | 'medium' | 'low') => {
-    if (!selectedReport) return;
+    if (!selectedReport || selectedReport.status === 'completed') return;
     setItems((prev) =>
       prev.map((item) =>
         item.id === selectedReport.id
@@ -254,6 +267,7 @@ export function PetaKendali({
   }, [mapReady, filteredItems, selectedReport]);
 
   const activeUrgency = selectedReport ? getUrgency(selectedReport) : null;
+  const isCompletedReport = selectedReport?.status === 'completed';
 
   return (
     <div style={{ color: '#e5e5e5', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
@@ -291,10 +305,13 @@ export function PetaKendali({
         </button>
         <button className={`lk-filter-btn ${filter === 'low' ? 'active' : ''}`} onClick={() => setFilter('low')}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
-          Bisa Nanti
+          Rendah
         </button>
         <button className={`lk-filter-btn ${filter === 'new' ? 'active' : ''}`} onClick={() => setFilter('new')}>
           Verifikasi baru
+        </button>
+        <button className={`lk-filter-btn ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>
+          Sudah selesai
         </button>
       </div>
 
@@ -328,7 +345,7 @@ export function PetaKendali({
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <i style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-              Hijau: Bisa Nanti
+              Hijau: Rendah
             </span>
           </div>
         </div>
@@ -343,10 +360,12 @@ export function PetaKendali({
               <span style={{ background: '#1e293b', color: '#93c5fd', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600 }}>
                 {formatStatusLabel(selectedReport.status)}
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, background: activeUrgency.bg, color: activeUrgency.color, border: `1px solid ${activeUrgency.border}` }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: activeUrgency.color }} />
-                {activeUrgency.label}
-              </span>
+              {!isCompletedReport && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, background: activeUrgency.bg, color: activeUrgency.color, border: `1px solid ${activeUrgency.border}` }}>
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: activeUrgency.color }} />
+                  {activeUrgency.label}
+                </span>
+              )}
             </div>
 
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: '0 0 4px 0' }}>{selectedReport.title}</h3>
@@ -368,14 +387,16 @@ export function PetaKendali({
               />
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '11px', color: '#8a8a8a', marginBottom: '6px' }}>Ubah Tingkat Urgensi:</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-                <button type="button" onClick={() => handlePriorityChange('urgent')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'urgent' ? 'rgba(239,68,68,0.2)' : '#1a1a1a', color: '#f87171', border: activeUrgency.key === 'urgent' ? '1px solid #ef4444' : '1px solid #262626' }}>🔴 Darurat</button>
-                <button type="button" onClick={() => handlePriorityChange('medium')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'medium' ? 'rgba(234,179,8,0.2)' : '#1a1a1a', color: '#facc15', border: activeUrgency.key === 'medium' ? '1px solid #eab308' : '1px solid #262626' }}>🟡 Sedang</button>
-                <button type="button" onClick={() => handlePriorityChange('low')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'low' ? 'rgba(16,185,129,0.2)' : '#1a1a1a', color: '#34d399', border: activeUrgency.key === 'low' ? '1px solid #10b981' : '1px solid #262626' }}>🟢 Bisa Nanti</button>
+            {!isCompletedReport && (
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '11px', color: '#8a8a8a', marginBottom: '6px' }}>Ubah Tingkat Urgensi:</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                  <button type="button" onClick={() => handlePriorityChange('urgent')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'urgent' ? 'rgba(239,68,68,0.2)' : '#1a1a1a', color: '#f87171', border: activeUrgency.key === 'urgent' ? '1px solid #ef4444' : '1px solid #262626' }}>🔴 Darurat</button>
+                  <button type="button" onClick={() => handlePriorityChange('medium')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'medium' ? 'rgba(234,179,8,0.2)' : '#1a1a1a', color: '#facc15', border: activeUrgency.key === 'medium' ? '1px solid #eab308' : '1px solid #262626' }}>🟡 Sedang</button>
+                  <button type="button" onClick={() => handlePriorityChange('low')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'low' ? 'rgba(16,185,129,0.2)' : '#1a1a1a', color: '#34d399', border: activeUrgency.key === 'low' ? '1px solid #10b981' : '1px solid #262626' }}>🟢 Rendah</button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={{ borderTop: '1px solid #262626', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
