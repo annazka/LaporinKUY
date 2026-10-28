@@ -147,7 +147,7 @@
  .admin-app .sidebar-card{top:24px;padding:20px 12px}
  .admin-app .bento-2col,.admin-app .map-workspace{grid-template-columns:1fr}
  .admin-app .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- 
+
  .admin-app .filter-toolbar{flex-wrap:wrap}
 }
 @media(max-width:760px){
