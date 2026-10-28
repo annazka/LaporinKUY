@@ -90,7 +90,6 @@
 .admin-app .admin-map-marker{display:grid;place-items:center;background:none;border:0}
 .admin-app .admin-map-marker span{display:block;width:18px;height:18px;border-radius:50%;border:3px solid #111;box-shadow:0 0 0 2px #fff}
 .admin-app .admin-map .admin-map-osm{filter:grayscale(1) invert(.92) contrast(.88)}
-.admin-app .admin-map .admin-map-carto{filter:grayscale(1)}
 .admin-app .leaflet-control-attribution{background:#181818e8;color:#ddd;font-size:12px;line-height:1.5;padding:3px 6px;white-space:normal}
 .admin-app .leaflet-control-attribution a{color:#fff;text-decoration:underline}
 .admin-app .admin-map-message{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px;font-size:14px;color:var(--muted)}

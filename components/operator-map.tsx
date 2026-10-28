@@ -3,10 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import type {Map as LeafletMap,TileLayer} from 'leaflet';
 import type {Report} from '@/lib/types';
 import {isOverdue,missingDailyUpdate,validCoordinates} from '@/lib/rules.mjs';
-const sources=[
- {url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',className:'admin-map-carto',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'},
- {url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',className:'admin-map-osm',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'},
-];
+const source={url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',className:'admin-map-osm',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'};
 export function OperatorMap(props:{reports:Report[];onSelect:(id:string)=>void}){
  const [attempt,setAttempt]=useState(0);
  return <MapCanvas key={attempt} {...props} onRetry={()=>setAttempt(value=>value+1)}/>;
@@ -39,21 +36,17 @@ function MapCanvas({reports,onSelect,onRetry}:{reports:Report[];onSelect:(id:str
  },[reports,library,onSelect]);
  useEffect(()=>{
   if(!library||!map.current)return;
-  let disposed=false,layer:TileLayer|undefined,deadline:ReturnType<typeof setTimeout>|undefined,switchTimer:ReturnType<typeof setTimeout>|undefined;
-  const clearTimers=()=>{clearTimeout(deadline);clearTimeout(switchTimer);switchTimer=undefined;};
-  const start=(index:number)=>{
+  let disposed=false,layer:TileLayer|undefined,deadline:ReturnType<typeof setTimeout>|undefined;
+  const clearTimers=()=>{clearTimeout(deadline);};
+  const start=()=>{
    if(disposed||!map.current)return;
    clearTimers();const previous=layer;layer=undefined;previous?.remove();previous?.off();setError('');setLoading(true);
-   const current=library.tileLayer(sources[index].url,{...sources[index],maxZoom:19});layer=current;
+   const current=library.tileLayer(source.url,{...source,maxZoom:19});layer=current;
    let successes=0,failures=0;
    const active=()=>!disposed&&layer===current;
    const fail=()=>{
     if(!active())return;
-    if(index===0){
-     // Leaflet continues using its map after firing `load`; switch on the next
-     // turn so removing the old layer cannot break its pending callbacks.
-     if(switchTimer===undefined)switchTimer=setTimeout(()=>start(1),0);
-    }else{setLoading(false);setError(successes?'Sebagian peta belum termuat. Coba lagi.':'Peta belum dapat dimuat. Daftar laporan tetap tersedia.');}
+    setLoading(false);setError(successes?'Sebagian peta belum termuat. Coba lagi.':'Peta belum dapat dimuat. Daftar laporan tetap tersedia.');
    };
    const watch=()=>{clearTimeout(deadline);deadline=setTimeout(fail,12000);};
    current.on('loading',()=>{if(active()){successes=0;failures=0;setLoading(true);watch();}});
@@ -65,7 +58,7 @@ function MapCanvas({reports,onSelect,onRetry}:{reports:Report[];onSelect:(id:str
    });
    watch();current.addTo(map.current);
   };
-  start(0);
+  start();
   return()=>{disposed=true;clearTimers();layer?.remove();layer?.off();};
  },[library]);
  const center=map.current?.getCenter();
