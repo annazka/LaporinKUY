@@ -31,3 +31,5 @@ References consulted:
 - Adrian Krebs, via Developers Digest, “AI Design Slop: 16 Patterns That Mark a Site as Vibe-Coded”: https://www.developersdigest.tech/blog/ai-design-slop-and-how-to-spot-it
 - 925Studios, “AI Slop Web Design: Complete Guide to Spotting and Fixing Generic Websites”: https://www.925studios.co/blog/ai-slop-web-design-guide
 - Nielsen Norman Group, “Aesthetic and Minimalist Design”: https://www.nngroup.com/articles/aesthetic-minimalist-design/
+
+The signed-in user navbar includes Voucher (`/profile/vouchers`) and the real point-ledger balance immediately before the profile link. The account catalog reuses the existing voucher details/redemption flow and adds search, category, availability and affordability filters. Keep the landing voucher preview limited to three offers. Unknown balances must show an unavailable state, never a fabricated zero.

@@ -91,6 +91,7 @@ export function SiteHeader({
             <nav aria-label="Navigasi utama">
               <Link href="/dashboard">Dashboard</Link>
               <Link href="/profile/reports">Jelajahi Laporan</Link>
+              <Link href="/profile/vouchers" aria-current={pathname === "/profile/vouchers" ? "page" : undefined}>Voucher</Link>
             </nav>
           ) : (
             children
