@@ -108,11 +108,11 @@ export function EmailConfirmation() {
               ? "Akunmu siap digunakan. Terima kasih sudah ikut menjaga Jakarta. Masuk untuk mulai mengirim laporan dan memantau perbaikannya."
               : error
                 ? message
-                : "Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporKUY."}
+                : "Buka tautan konfirmasi yang kami kirim saat kamu mendaftar. Setelah verifikasi berhasil, kamu bisa masuk ke akun LaporKUY!"}
         </p>
         {state !== "loading" && (
           <AuthLink className="button full">
-            {success ? "Masuk ke LaporKUY" : "Coba masuk ke akun"}
+            {success ? "Masuk ke LaporKUY!" : "Coba masuk ke akun"}
             <ArrowUpRight size={17} />
           </AuthLink>
         )}

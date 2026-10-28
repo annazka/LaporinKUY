@@ -44,4 +44,8 @@ Pin the entire Cara kerja composition, including its heading, once it reaches th
 
 Remove the helper subtitles beside Fitur, Cara kerja and Peta as requested. Keep the landing map filter toolbar transparent, without a full-width dark background; preserve each filter button and its selected state.
 
-Cara kerja includes half a viewport of extra pinned scroll at both ends: keep step 1 with the scrollbar at zero before progression begins, and step 3 with the scrollbar at the end before releasing to the next section. Apply the same holds in reverse; scrollbar drag and keyboard controls land inside these holds. Use scroll distance, never a timer or blocked wheel/touch input.
+Use the current `public/media/brand/obelisk.png` brand asset for browser and Apple icons, preserving its proportions and transparency. Next.js file-based icons are `app/favicon.ico`, `app/icon.png`, and `app/apple-icon.png`.
+
+The displayed brand is now `LaporKUY!` everywhere, including navbar/footer, operator workspace/login, auth dialogs, page titles, accessibility labels and explanatory copy. Use an exclamation mark instead of the decorative dot; keep technical URLs, account emails, asset paths and repository identifiers unchanged.
+
+The signup confirmation email uses the same monochrome styling and current logo as the website, with a white confirmation button, readable text and no slogan/uppercase eyebrow. Preserve the Supabase TokenHash callback and single-use-link guidance. The email body lives in `supabase/templates/confirmation.html` and must be installed separately in Supabase Auth email settings.
