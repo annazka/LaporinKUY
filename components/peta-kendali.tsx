@@ -83,11 +83,23 @@ function formatStatusLabel(status: string) {
   const map: Record<string, string> = {
     submitted: 'Verifikasi baru',
     verified: 'Terverifikasi',
+    scheduled: 'Terjadwal',
     in_progress: 'Dalam perbaikan',
     awaiting_confirmation: 'Menunggu konfirmasi',
     completed: 'Selesai',
+    rejected: 'Ditolak',
   };
   return map[status] || status;
+}
+
+function resolvePhotoUrl(photoPath?: string | null) {
+  if (!photoPath) {
+    return 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=900&q=80';
+  }
+  if (/^https?:\/\//i.test(photoPath) || photoPath.startsWith('/')) {
+    return photoPath;
+  }
+  return '/api/photo?path=' + encodeURIComponent(photoPath);
 }
 
 export function PetaKendali({
@@ -103,15 +115,17 @@ export function PetaKendali({
   const [items, setItems] = useState<ReportItem[]>(dataList);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'medium' | 'low' | 'new'>('all');
   const [selectedId, setSelectedId] = useState<string>(dataList[0]?.id || '');
+  const [mapReady, setMapReady] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersLayerRef = useRef<any>(null);
+  const leafletRef = useRef<any>(null);
 
   useEffect(() => {
     if (Array.isArray(reports) && reports.length > 0) {
       setItems(reports);
-      if (!selectedId) setSelectedId(reports[0].id);
+      setSelectedId((prev) => (reports.some((r) => r.id === prev) ? prev : reports[0].id));
     }
   }, [reports]);
 
@@ -122,7 +136,10 @@ export function PetaKendali({
   });
 
   const selectedReport =
-    items.find((r) => r.id === selectedId) || filteredItems[0] || items[0];
+    filteredItems.find((r) => r.id === selectedId) ||
+    items.find((r) => r.id === selectedId) ||
+    filteredItems[0] ||
+    items[0];
 
   const handlePriorityChange = (newPriority: 'urgent' | 'medium' | 'low') => {
     if (!selectedReport) return;
@@ -142,64 +159,99 @@ export function PetaKendali({
 
   useEffect(() => {
     let isMounted = true;
+    let observer: ResizeObserver | undefined;
 
-    async function renderMap() {
-      const L: any = (await import('leaflet')).default;
+    import('leaflet').then((mod) => {
+      const L: any = mod.default || mod;
       if (!isMounted || !mapContainerRef.current) return;
 
-      if (!mapInstanceRef.current) {
-        mapInstanceRef.current = L.map(mapContainerRef.current, {
-          center: [
-            selectedReport?.latitude || -6.3125,
-            selectedReport?.longitude || 106.7942,
-          ],
-          zoom: 14,
-          zoomControl: true,
-        });
-
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; OpenStreetMap contributors',
-        }).addTo(mapInstanceRef.current);
-
-        markersLayerRef.current = L.layerGroup().addTo(mapInstanceRef.current);
-      }
-
-      const layer = markersLayerRef.current;
-      if (!layer) return;
-      layer.clearLayers();
-
-      filteredItems.forEach((rep) => {
-        const u = getUrgency(rep);
-        const isSelected = selectedReport?.id === rep.id;
-
-        const icon = L.divIcon({
-          className: '',
-          html: `
-            <div class="lk-pin ${u.pulse ? 'lk-pin-pulse' : ''}" style="
-              width: ${isSelected ? '24px' : '18px'};
-              height: ${isSelected ? '24px' : '18px'};
-              background: ${u.color};
-              border: 3px solid #ffffff;
-              box-shadow: 0 0 0 3px #0a0a0a, 0 0 14px ${u.color};
-            "></div>
-          `,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12],
-        });
-
-        const marker = L.marker([rep.latitude, rep.longitude], { icon });
-        marker.on('click', () => {
-          setSelectedId(rep.id);
-        });
-        marker.addTo(layer);
+      leafletRef.current = L;
+      const instance = L.map(mapContainerRef.current, {
+        center: [
+          Number(selectedReport?.latitude) || -6.3125,
+          Number(selectedReport?.longitude) || 106.7942,
+        ],
+        zoom: 13,
+        zoomControl: true,
       });
-    }
 
-    renderMap();
+      mapInstanceRef.current = instance;
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        className: 'lk-map-tiles',
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+      }).addTo(instance);
+
+      markersLayerRef.current = L.layerGroup().addTo(instance);
+
+      observer = new ResizeObserver(() => {
+        if (isMounted) instance.invalidateSize({ animate: false });
+      });
+      observer.observe(mapContainerRef.current);
+
+      setMapReady(true);
+    });
+
     return () => {
       isMounted = false;
+      observer?.disconnect();
+      mapInstanceRef.current?.stop?.();
+      mapInstanceRef.current?.remove?.();
+      mapInstanceRef.current = null;
+      markersLayerRef.current = null;
+      setMapReady(false);
     };
-  }, [filteredItems, selectedReport]);
+  }, []);
+
+  useEffect(() => {
+    if (!mapReady || !leafletRef.current || !mapInstanceRef.current || !markersLayerRef.current) {
+      return;
+    }
+
+    const L = leafletRef.current;
+    const layer = markersLayerRef.current;
+    layer.clearLayers();
+
+    const validPoints: [number, number][] = [];
+
+    filteredItems.forEach((rep) => {
+      const lat = Number(rep.latitude);
+      const lng = Number(rep.longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+      validPoints.push([lat, lng]);
+      const u = getUrgency(rep);
+      const isSelected = selectedReport?.id === rep.id;
+
+      const icon = L.divIcon({
+        className: '',
+        html: `
+          <div class="lk-pin ${u.pulse ? 'lk-pin-pulse' : ''}" style="
+            width: ${isSelected ? '24px' : '18px'};
+            height: ${isSelected ? '24px' : '18px'};
+            background: ${u.color};
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 0 3px #0a0a0a, 0 0 14px ${u.color};
+          "></div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      });
+
+      const marker = L.marker([lat, lng], { icon, title: rep.title });
+      marker.on('click', () => {
+        setSelectedId(rep.id);
+      });
+      marker.addTo(layer);
+    });
+
+    if (selectedReport && Number.isFinite(Number(selectedReport.latitude)) && Number.isFinite(Number(selectedReport.longitude))) {
+      mapInstanceRef.current.panTo([Number(selectedReport.latitude), Number(selectedReport.longitude)]);
+    } else if (validPoints.length > 0) {
+      mapInstanceRef.current.fitBounds(L.latLngBounds(validPoints), { padding: [35, 35], maxZoom: 14 });
+    }
+  }, [mapReady, filteredItems, selectedReport]);
 
   const activeUrgency = selectedReport ? getUrgency(selectedReport) : null;
 
@@ -211,6 +263,7 @@ export function PetaKendali({
           70% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0), 0 0 0 3px #0a0a0a; }
           100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 0 3px #0a0a0a; }
         }
+        .lk-map-tiles { filter: grayscale(1) invert(0.92) contrast(0.88); }
         .lk-pin { border-radius: 50%; cursor: pointer; transition: transform 0.2s ease; }
         .lk-pin:hover { transform: scale(1.25); }
         .lk-pin-pulse { animation: lkUrgentRadar 1.4s infinite; }
@@ -248,9 +301,39 @@ export function PetaKendali({
       <div className="lk-map-grid">
         <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
           <div ref={mapContainerRef} style={{ height: '540px', width: '100%' }} />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 14,
+              left: 14,
+              zIndex: 500,
+              background: 'rgba(10, 10, 10, 0.88)',
+              backdropFilter: 'blur(6px)',
+              border: '1px solid #262626',
+              borderRadius: '10px',
+              padding: '8px 12px',
+              display: 'flex',
+              gap: '14px',
+              flexWrap: 'wrap',
+              fontSize: '11px',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <i style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+              Merah: Sangat Darurat
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <i style={{ width: 8, height: 8, borderRadius: '50%', background: '#eab308', display: 'inline-block' }} />
+              Kuning: Sedang
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <i style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+              Hijau: Bisa Nanti
+            </span>
+          </div>
         </div>
 
-        {selectedReport && activeUrgency && (
+        {selectedReport && activeUrgency ? (
           <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '16px', padding: '22px' }}>
             <div style={{ fontSize: '11px', color: '#8a8a8a', fontFamily: 'monospace', marginBottom: '10px' }}>
               #{String(selectedReport.id).slice(0, 8).toUpperCase()}
@@ -269,12 +352,28 @@ export function PetaKendali({
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#ffffff', margin: '0 0 4px 0' }}>{selectedReport.title}</h3>
             <p style={{ fontSize: '13px', color: '#a3a3a3', margin: '0 0 16px 0' }}>{selectedReport.address}</p>
 
+            <div
+              style={{
+                borderRadius: '12px',
+                overflow: 'hidden',
+                height: '190px',
+                background: '#1a1a1a',
+                marginBottom: '16px',
+              }}
+            >
+              <img
+                src={resolvePhotoUrl(selectedReport.photo_path)}
+                alt={selectedReport.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+
             <div style={{ marginBottom: '16px' }}>
               <div style={{ fontSize: '11px', color: '#8a8a8a', marginBottom: '6px' }}>Ubah Tingkat Urgensi:</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-                <button type="button" onClick={() => handlePriorityChange('urgent')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'urgent' ? 'rgba(239,68,68,0.2)' : '#1a1a1a', color: '#f87171', border: '1px solid #262626' }}>🔴 Darurat</button>
-                <button type="button" onClick={() => handlePriorityChange('medium')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'medium' ? 'rgba(234,179,8,0.2)' : '#1a1a1a', color: '#facc15', border: '1px solid #262626' }}>🟡 Sedang</button>
-                <button type="button" onClick={() => handlePriorityChange('low')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'low' ? 'rgba(16,185,129,0.2)' : '#1a1a1a', color: '#34d399', border: '1px solid #262626' }}>🟢 Bisa Nanti</button>
+                <button type="button" onClick={() => handlePriorityChange('urgent')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'urgent' ? 'rgba(239,68,68,0.2)' : '#1a1a1a', color: '#f87171', border: activeUrgency.key === 'urgent' ? '1px solid #ef4444' : '1px solid #262626' }}>🔴 Darurat</button>
+                <button type="button" onClick={() => handlePriorityChange('medium')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'medium' ? 'rgba(234,179,8,0.2)' : '#1a1a1a', color: '#facc15', border: activeUrgency.key === 'medium' ? '1px solid #eab308' : '1px solid #262626' }}>🟡 Sedang</button>
+                <button type="button" onClick={() => handlePriorityChange('low')} style={{ padding: '6px', borderRadius: '7px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', background: activeUrgency.key === 'low' ? 'rgba(16,185,129,0.2)' : '#1a1a1a', color: '#34d399', border: activeUrgency.key === 'low' ? '1px solid #10b981' : '1px solid #262626' }}>🟢 Bisa Nanti</button>
               </div>
             </div>
 
@@ -296,6 +395,10 @@ export function PetaKendali({
             >
               Kelola laporan
             </button>
+          </div>
+        ) : (
+          <div style={{ background: '#121212', border: '1px solid #262626', borderRadius: '16px', padding: '22px', color: '#a3a3a3', fontSize: '13px' }}>
+            Tidak ada titik untuk filter ini.
           </div>
         )}
       </div>
