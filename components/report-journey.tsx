@@ -12,6 +12,8 @@ import {
   Clock3,
 } from "lucide-react";
 
+// Reserve half a viewport of scroll at each end, without blocking input.
+const edgeHold = .2;
 const steps = [
   {
     icon: Camera,
@@ -44,7 +46,7 @@ export function ReportJourney({heading}: {heading: ReactNode}) {
       frame = 0;
       const {top, distance} = geometry.current;
       if (!distance) return;
-      const progress = Math.max(0, Math.min(1, (top - outer.getBoundingClientRect().top) / distance));
+      const progress = Math.max(0, Math.min(1, ((top - outer.getBoundingClientRect().top) / distance - edgeHold) / (1 - edgeHold * 2)));
       setProgress(progress);
       setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
     };
@@ -54,7 +56,7 @@ export function ReportJourney({heading}: {heading: ReactNode}) {
       const top = Math.max(96, (header?.getBoundingClientRect().bottom ?? 80) + 16);
       const height = inner.getBoundingClientRect().height;
       // The viewport constrains the content, never disables the walkthrough.
-      const next = {top, pinned: true, height, distance: Math.round(window.innerHeight * 1.5)};
+      const next = {top, pinned: true, height, distance: Math.round(window.innerHeight * 2.5)};
       geometry.current = next;
       setScrollLayout(previous => previous.height === next.height && previous.top === next.top && previous.distance === next.distance && previous.pinned === next.pinned ? previous : next);
       schedule();
@@ -75,7 +77,7 @@ export function ReportJourney({heading}: {heading: ReactNode}) {
     const {top, distance, pinned} = geometry.current;
     const bounds = outer.getBoundingClientRect();
     const start = window.scrollY + bounds.top;
-    const target = pinned ? start - top + distance * next : start + bounds.height * next - window.innerHeight * .5;
+    const target = pinned ? start - top + distance * (edgeHold + next * (1 - edgeHold * 2)) : start + bounds.height * next - window.innerHeight * .5;
     window.scrollTo({top: target, behavior: smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant'});
   }
   function dragTo(clientY: number, smooth = false) {
@@ -86,11 +88,7 @@ export function ReportJourney({heading}: {heading: ReactNode}) {
   }
   function select(index: number) {
     setActive(index);
-    const {top, distance, pinned} = geometry.current;
-    if (pinned && track.current) {
-      const start = window.scrollY + track.current.getBoundingClientRect().top - top;
-      window.scrollTo({top: start + distance * ((index + .5) / steps.length), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
-    }
+    seek((index + .5) / steps.length);
   }
   return (
     <div ref={track} className={`journey-scroll-track${scrollLayout.pinned ? " is-scroll-driven" : ""}`} style={{"--journey-height": `${scrollLayout.height}px`, "--journey-top": `${scrollLayout.top}px`, "--journey-distance": `${scrollLayout.distance}px`} as CSSProperties}>
