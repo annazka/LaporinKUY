@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowUpRight,
   MapPin,
@@ -24,9 +25,7 @@ import { AuthLink } from "./auth-modal";
 export function Brand() {
   return (
     <a href="/" className="brand">
-      <span className="brand-symbol">
-        <MapPin size={21} strokeWidth={2.5} />
-      </span>
+      <Image className="brand-mark" src="/media/brand/obelisk.png" alt="" width={36} height={38} priority />
       Lapor<span>KUY</span>
       <i />
     </a>
