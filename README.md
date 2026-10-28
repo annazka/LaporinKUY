@@ -125,3 +125,5 @@ Peta Leaflet memakai tile standar OpenStreetMap secara langsung tanpa API key, d
 ### Voucher akun dan saldo navbar
 
 Pengguna yang sudah masuk dapat membuka `/profile/vouchers` melalui menu Voucher di navbar. Katalog memakai voucher dan alur penukaran yang sudah ada, dengan pencarian nama/deskripsi, kategori, ketersediaan (stok dan masa berlaku), serta filter sesuai saldo. Pratinjau landing page tetap menampilkan tiga voucher. Saldo di kiri profil dibaca dari ledger pemilik akun dengan cookie server dan RLS, memakai cache hanya selama satu render request. Penukaran menyegarkan saldo melalui `router.refresh()`; kegagalan pembacaan ditampilkan sebagai saldo belum tersedia dan menonaktifkan penukaran.
+
+Bagian Cara kerja mengikuti scroll dokumen untuk maju/mundur di tiga tahap. Panel menetap di bawah navbar jika seluruh isinya muat di viewport; layar pendek menggunakan alur dokumen normal. Tab tetap mendukung klik dan keyboard. Konten contoh mempertahankan pengungkapan ilustrasi, tinggi panel stabil, dan transisi menghormati reduced motion.

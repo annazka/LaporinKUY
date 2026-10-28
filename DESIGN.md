@@ -33,3 +33,11 @@ References consulted:
 - Nielsen Norman Group, “Aesthetic and Minimalist Design”: https://www.nngroup.com/articles/aesthetic-minimalist-design/
 
 The signed-in user navbar includes Voucher (`/profile/vouchers`) and the real point-ledger balance immediately before the profile link. The account catalog reuses the existing voucher details/redemption flow and adds search, category, availability and affordability filters. Keep the landing voucher preview limited to three offers. Unknown balances must show an unavailable state, never a fabricated zero.
+
+Cara kerja advances and reverses its three stages with document scroll. Keep the walkthrough sticky only when its entire layout fits below the navbar; otherwise retain normal document flow. Preserve manual tabs and keyboard navigation, stable preview height, restored scroll position and reduced-motion preferences. Never trap wheel/touch scrolling or move keyboard focus automatically.
+
+The Cara kerja walkthrough uses a continuous vertical scrollbar at the left of the steps, synchronized with page scroll and operable by pointer drag and keyboard. Crossfade stage previews with a restrained vertical transition; let outgoing content fade before hiding it visually, while immediately removing it from accessibility/focus. Disable decorative transitions under reduced motion, but preserve the scrollbar position.
+
+The user specifically requested a thinner, softly glowing Cara kerja scrollbar: use a 1 px subdued track and 2 px white thumb with softly rounded elliptical tips (1 px horizontal / 3 px vertical radius) and a compact static glow (3 px core, 6 px halo; only 4/8 px on hover). Retain the wider pointer hit area and visible keyboard focus. This is an explicit exception to the general avoidance of decorative glows; do not add pulsing or unrelated glow effects.
+
+Pin the entire Cara kerja composition, including its heading, once it reaches the position below the floating navbar. Hold it throughout the three scroll-driven stages and release it afterward; preserve normal page scrolling and the short-screen fallback. Use compact heading spacing on shorter desktop screens so all content remains visible.
