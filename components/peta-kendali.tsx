@@ -1,3 +1,5 @@
+export function PetaKendali({
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -550,3 +552,5 @@ export default function PetaKendali({
     </div>
   );
 }
+
+export default PetaKendali;
