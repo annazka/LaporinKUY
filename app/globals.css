@@ -1949,3 +1949,5 @@ td > .badge.warning {
     transition: none !important;
   }
 }
+
+.brand-mark { display: block; width: 36px; height: 38px; flex: 0 0 auto; object-fit: contain; margin-right: 9px; }

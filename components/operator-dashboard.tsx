@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import {useEffect,useMemo,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {useRouter} from 'next/navigation';
 import {MapPin,ArrowUpRight,X,RefreshCw,LayoutDashboard,ClipboardList,Ticket,History} from 'lucide-react';
@@ -45,7 +46,7 @@ export function OperatorDashboard({user,reports,updates,vouchers,redemptions,vou
  const navIcons={ringkasan:LayoutDashboard,antrean:ClipboardList,peta:MapPin,voucher:Ticket,audit:History};
  const nav=()=>operatorViews.map(([id,label])=>{const Icon=navIcons[id as keyof typeof navIcons];return <button key={id} className={`side-nav-btn ${view===id?'active':''}`} aria-current={view===id?'page':undefined} onClick={()=>{setView(id);setNotice('');}}><Icon size={18} aria-hidden="true"/>{label}</button>;});
  return <div className="admin-app"><div className="shell"><aside className="sidebar-card" aria-label="Menu operator">
- <Link className="brand" href="/operator" onClick={()=>setView('ringkasan')}><span className="brand-icon"><MapPin size={23} aria-hidden="true"/></span>LaporKUY.</Link>
+ <Link className="brand" href="/operator" onClick={()=>setView('ringkasan')}><Image className="brand-mark" src="/media/brand/obelisk.png" alt="" width={36} height={38}/>LaporKUY.</Link>
  <nav aria-label="Navigasi admin">{nav()}</nav>
  <div className="admin-sidebar-footer"><button className="sidebar-link" aria-label="Muat ulang data" onClick={()=>router.refresh()}><RefreshCw size={16}/><span>Muat ulang</span></button><Link className="sidebar-link" href="https://laporkuy.online/">Lihat website <ArrowUpRight size={16}/></Link><div className="admin-account"><span title={user.name}>{user.name}</span><Logout/></div></div>
  </aside><div className="admin-workspace">

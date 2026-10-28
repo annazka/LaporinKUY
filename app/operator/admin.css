@@ -179,3 +179,5 @@
  .admin-app .drawer-header .btn-secondary svg{width:18px;height:18px}
  .admin-app .form-grid-2{grid-template-columns:1fr}
 }
+
+.admin-app .brand-mark{width:36px;height:38px;object-fit:contain;flex:0 0 auto}
