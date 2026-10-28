@@ -30,7 +30,7 @@ async function verify(body: unknown) {
 }
 export function EmailConfirmation() {
  const [recovery,setRecovery]=useState<boolean|null>(null);
- useEffect(()=>{const hash=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);setRecovery((hash.get('type')||query.get('type'))==='recovery');},[]);
+ useEffect(()=>{const read=()=>{const hash=new URLSearchParams(location.hash.slice(1)),query=new URLSearchParams(location.search);setRecovery(location.pathname==='/auth/reset'||(hash.get('type')||query.get('type'))==='recovery');};read();window.addEventListener('hashchange',read);window.addEventListener('popstate',read);return()=>{window.removeEventListener('hashchange',read);window.removeEventListener('popstate',read);};},[]);
  if(recovery===null)return <section className="account-recovery" role="status">Memeriksa tautan…</section>;
  return recovery?<PasswordRecovery/>:<SignupConfirmation/>;
 }
