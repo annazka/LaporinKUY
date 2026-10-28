@@ -45,3 +45,5 @@ Pin the entire Cara kerja composition, including its heading, once it reaches th
 Remove the helper subtitles beside Fitur, Cara kerja and Peta as requested. Keep the landing map filter toolbar transparent, without a full-width dark background; preserve each filter button and its selected state.
 
 Use the current `public/media/brand/obelisk.png` brand asset for browser and Apple icons, preserving its proportions and transparency. Next.js file-based icons are `app/favicon.ico`, `app/icon.png`, and `app/apple-icon.png`.
+
+The displayed brand is now `LaporKUY!` everywhere, including navbar/footer, operator workspace/login, auth dialogs, page titles, accessibility labels and explanatory copy. Use an exclamation mark instead of the decorative dot; keep technical URLs, account emails, asset paths and repository identifiers unchanged.

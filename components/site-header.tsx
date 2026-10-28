@@ -78,7 +78,7 @@ export function SiteHeader({
       <div className="nav-wrap">
         {brand}
         {landing ? (
-          <nav id="landing-navigation" aria-label="Informasi LaporKUY">
+          <nav id="landing-navigation" aria-label="Informasi LaporKUY!">
             {sections.map(({ id, label, icon: Icon }) => (
               <a key={id} href={`#${id}`} onClick={() => setOpen(false)}>
                 <Icon size={15} />

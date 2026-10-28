@@ -26,8 +26,7 @@ export function Brand() {
   return (
     <a href="/" className="brand">
       <Image className="brand-mark" src="/media/brand/obelisk.png" alt="" width={36} height={38} priority />
-      Lapor<span>KUY</span>
-      <i />
+      Lapor<span>KUY!</span>
     </a>
   );
 }
