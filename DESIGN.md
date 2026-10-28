@@ -47,3 +47,5 @@ Remove the helper subtitles beside Fitur, Cara kerja and Peta as requested. Keep
 Use the current `public/media/brand/obelisk.png` brand asset for browser and Apple icons, preserving its proportions and transparency. Next.js file-based icons are `app/favicon.ico`, `app/icon.png`, and `app/apple-icon.png`.
 
 The displayed brand is now `LaporKUY!` everywhere, including navbar/footer, operator workspace/login, auth dialogs, page titles, accessibility labels and explanatory copy. Use an exclamation mark instead of the decorative dot; keep technical URLs, account emails, asset paths and repository identifiers unchanged.
+
+The signup confirmation email uses the same monochrome styling and current logo as the website, with a white confirmation button, readable text and no slogan/uppercase eyebrow. Preserve the Supabase TokenHash callback and single-use-link guidance. The email body lives in `supabase/templates/confirmation.html` and must be installed separately in Supabase Auth email settings.
