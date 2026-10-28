@@ -33,3 +33,5 @@ References consulted:
 - Nielsen Norman Group, “Aesthetic and Minimalist Design”: https://www.nngroup.com/articles/aesthetic-minimalist-design/
 
 The signed-in user navbar includes Voucher (`/profile/vouchers`) and the real point-ledger balance immediately before the profile link. The account catalog reuses the existing voucher details/redemption flow and adds search, category, availability and affordability filters. Keep the landing voucher preview limited to three offers. Unknown balances must show an unavailable state, never a fabricated zero.
+
+Cara kerja advances and reverses its three stages with document scroll. Keep the walkthrough sticky only when its entire layout fits below the navbar; otherwise retain normal document flow. Preserve manual tabs and keyboard navigation, stable preview height, restored scroll position and reduced-motion preferences. Never trap wheel/touch scrolling or move keyboard focus automatically.

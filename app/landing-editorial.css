@@ -233,3 +233,19 @@
     visibility: visible;
   }
 }
+
+/* The reporting walkthrough follows document scroll; no wheel interception. */
+.journey-scroll-track.is-scroll-driven{height:calc(var(--journey-height) + var(--journey-distance))}
+.journey-scroll-track.is-scroll-driven>.journey-layout{position:sticky;top:var(--journey-top)}
+.journey-panels{display:grid;min-width:0}
+.journey-mobile-description{display:none}
+.journey-panel{grid-area:1/1;min-width:0;align-self:start;opacity:1;transition:opacity .18s ease}
+.journey-panel[aria-hidden="true"]{opacity:0}
+@media(prefers-reduced-motion:reduce){.journey-panel{transition:none}}
+@media(max-width:800px){
+ .journey-mobile-description{display:block;min-height:84px;font-size:14px;line-height:1.8;color:#bdbdbd;margin:16px 0 0}
+ .journey-scroll-track .journey-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+ .plain-landing .journey-scroll-track .step-choice{padding-block:12px;min-width:0;height:100%}
+ .plain-landing .journey-scroll-track .step-choice h3{font-size:14px;line-height:1.6;min-height:45px}
+ .journey-scroll-track .step-choice p,.journey-scroll-track .step-choice>svg{display:none}
+}

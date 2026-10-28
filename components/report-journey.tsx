@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   Camera,
   CalendarClock,
@@ -31,9 +31,59 @@ const steps = [
 ];
 export function ReportJourney() {
   const [active, setActive] = useState(0);
+  const track = useRef<HTMLDivElement>(null), layout = useRef<HTMLDivElement>(null);
+  const geometry = useRef({top: 112, distance: 0, pinned: false});
+  const [scrollLayout, setScrollLayout] = useState({top: 112, distance: 0, pinned: false, height: 0});
+  useEffect(() => {
+    const outer = track.current, inner = layout.current;
+    if (!outer || !inner) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const {top, distance, pinned} = geometry.current;
+      if (pinned) {
+        const progress = Math.max(0, Math.min(1, (top - outer.getBoundingClientRect().top) / distance));
+        setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
+      } else {
+        // Small/short screens keep their natural document flow.
+        const bounds = outer.getBoundingClientRect();
+        if (bounds.bottom < 0 || bounds.top > window.innerHeight) return;
+        const progress = Math.max(0, Math.min(1, (window.innerHeight * .5 - bounds.top) / bounds.height));
+        setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
+      }
+    };
+    const schedule = () => {if (!frame) frame = requestAnimationFrame(update);};
+    const measure = () => {
+      const header = document.querySelector<HTMLElement>('.landing-header');
+      const top = Math.max(96, (header?.getBoundingClientRect().bottom ?? 80) + 16);
+      const height = inner.getBoundingClientRect().height;
+      const pinned = height + top + 24 <= window.innerHeight;
+      const next = {top, pinned, height, distance: pinned ? Math.round(window.innerHeight * 1.5) : 0};
+      geometry.current = next;
+      setScrollLayout(previous => previous.height === next.height && previous.top === next.top && previous.distance === next.distance && previous.pinned === next.pinned ? previous : next);
+      schedule();
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(inner);
+    window.addEventListener('scroll', schedule, {passive: true});
+    window.addEventListener('resize', measure);
+    window.addEventListener('pageshow', measure);
+    document.addEventListener('visibilitychange', schedule);
+    measure();
+    return () => {cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('scroll', schedule);window.removeEventListener('resize', measure);window.removeEventListener('pageshow', measure);document.removeEventListener('visibilitychange', schedule);};
+  }, []);
+  function select(index: number) {
+    setActive(index);
+    const {top, distance, pinned} = geometry.current;
+    if (pinned && track.current) {
+      const start = window.scrollY + track.current.getBoundingClientRect().top - top;
+      window.scrollTo({top: start + distance * ((index + .5) / steps.length), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+    }
+  }
   return (
-    <div className="journey-layout">
-      <div
+    <div ref={track} className={`journey-scroll-track${scrollLayout.pinned ? " is-scroll-driven" : ""}`} style={{"--journey-height": `${scrollLayout.height}px`, "--journey-top": `${scrollLayout.top}px`, "--journey-distance": `${scrollLayout.distance}px`} as CSSProperties}>
+    <div ref={layout} className="journey-layout">
+      <div className="journey-navigation"><div
         className="journey-choices"
         role="tablist"
         aria-label="Tahap pelaporan"
@@ -47,7 +97,7 @@ export function ReportJourney() {
             tabIndex={active === i ? 0 : -1}
             key={step.title}
             className={`step-choice ${active === i ? "active" : ""}`}
-            onClick={() => setActive(i)}
+            onClick={() => select(i)}
             onKeyDown={(e) => {
               if (
                 [
@@ -70,7 +120,7 @@ export function ReportJourney() {
                             ? 1
                             : 2)) %
                         3;
-                setActive(next);
+                select(next);
                 document.getElementById(`journey-tab-${next}`)?.focus();
               }
             }}
@@ -82,7 +132,7 @@ export function ReportJourney() {
             <step.icon size={21} />
           </button>
         ))}
-      </div>
+      </div><p className="journey-mobile-description">{steps[active].text}</p></div>
       <div
         id="journey-preview"
         role="tabpanel"
@@ -92,8 +142,8 @@ export function ReportJourney() {
         <div className="demo-top">
           <span>Contoh alur laporan</span>
         </div>
-        <div className="demo-content" key={active}>
-          {active === 0 ? (
+        <div className="journey-panels">{steps.map((_, index) => <div className="demo-content journey-panel" key={index} aria-hidden={active !== index} inert={active !== index} style={{visibility: active === index ? "visible" : "hidden"}}>
+          {index === 0 ? (
             <>
               <div className="demo-photo">
                 <div className="demo-road">
@@ -115,7 +165,7 @@ export function ReportJourney() {
                 <ArrowRight size={16} />
               </div>
             </>
-          ) : active === 1 ? (
+          ) : index === 1 ? (
             <>
               <div className="demo-progress-heading">
                 <div>
@@ -190,11 +240,11 @@ export function ReportJourney() {
               </div>
             </>
           )}
-        </div>
+        </div>)}</div>
         <div className="demo-footnote">
           Ilustrasi penggunaan. Angka dan progres di atas adalah contoh.
         </div>
       </div>
-    </div>
+    </div></div>
   );
 }
