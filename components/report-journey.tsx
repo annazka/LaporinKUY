@@ -30,7 +30,9 @@ const steps = [
   },
 ];
 export function ReportJourney() {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(0), [progress, setProgress] = useState(0);
+  const scrollbar = useRef<HTMLDivElement>(null);
+  const drag = useRef<{pointer: number; offset: number} | null>(null);
   const track = useRef<HTMLDivElement>(null), layout = useRef<HTMLDivElement>(null);
   const geometry = useRef({top: 112, distance: 0, pinned: false});
   const [scrollLayout, setScrollLayout] = useState({top: 112, distance: 0, pinned: false, height: 0});
@@ -43,12 +45,14 @@ export function ReportJourney() {
       const {top, distance, pinned} = geometry.current;
       if (pinned) {
         const progress = Math.max(0, Math.min(1, (top - outer.getBoundingClientRect().top) / distance));
+        setProgress(progress);
         setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
       } else {
         // Small/short screens keep their natural document flow.
         const bounds = outer.getBoundingClientRect();
         if (bounds.bottom < 0 || bounds.top > window.innerHeight) return;
         const progress = Math.max(0, Math.min(1, (window.innerHeight * .5 - bounds.top) / bounds.height));
+        setProgress(progress);
         setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
       }
     };
@@ -72,6 +76,22 @@ export function ReportJourney() {
     measure();
     return () => {cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('scroll', schedule);window.removeEventListener('resize', measure);window.removeEventListener('pageshow', measure);document.removeEventListener('visibilitychange', schedule);};
   }, []);
+  function seek(value: number, smooth = true) {
+    const outer = track.current;
+    if (!outer) return;
+    const next = Math.max(0, Math.min(1, value));
+    const {top, distance, pinned} = geometry.current;
+    const bounds = outer.getBoundingClientRect();
+    const start = window.scrollY + bounds.top;
+    const target = pinned ? start - top + distance * next : start + bounds.height * next - window.innerHeight * .5;
+    window.scrollTo({top: target, behavior: smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant'});
+  }
+  function dragTo(clientY: number, smooth = false) {
+    const rail = scrollbar.current?.getBoundingClientRect();
+    if (!rail) return;
+    const thumbHeight = rail.height / steps.length;
+    seek((clientY - rail.top - (drag.current?.offset ?? thumbHeight / 2)) / (rail.height - thumbHeight), smooth);
+  }
   function select(index: number) {
     setActive(index);
     const {top, distance, pinned} = geometry.current;
@@ -83,7 +103,26 @@ export function ReportJourney() {
   return (
     <div ref={track} className={`journey-scroll-track${scrollLayout.pinned ? " is-scroll-driven" : ""}`} style={{"--journey-height": `${scrollLayout.height}px`, "--journey-top": `${scrollLayout.top}px`, "--journey-distance": `${scrollLayout.distance}px`} as CSSProperties}>
     <div ref={layout} className="journey-layout">
-      <div className="journey-navigation"><div
+      <div className="journey-navigation">
+      <div ref={scrollbar} className="journey-scrollbar" role="scrollbar" tabIndex={0} aria-label="Posisi Cara kerja" aria-orientation="vertical" aria-controls="journey-preview" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} aria-valuetext={`${Math.round(progress * 100)} persen, ${steps[active].title}`}
+        onPointerDown={event => {
+          if (!event.isPrimary || event.button !== 0) return;
+          event.preventDefault();event.currentTarget.focus({preventScroll:true});
+          const thumb = event.currentTarget.querySelector<HTMLElement>('.journey-scroll-thumb');
+          const offset = event.target === thumb ? event.clientY - thumb.getBoundingClientRect().top : event.currentTarget.clientHeight / steps.length / 2;
+          drag.current = {pointer: event.pointerId, offset};
+          event.currentTarget.setPointerCapture(event.pointerId);dragTo(event.clientY, true);
+        }}
+        onPointerMove={event => {if (drag.current?.pointer === event.pointerId) dragTo(event.clientY);}}
+        onPointerUp={event => {if (drag.current?.pointer === event.pointerId) {drag.current = null;event.currentTarget.releasePointerCapture(event.pointerId);}}}
+        onPointerCancel={() => {drag.current = null;}}
+        onLostPointerCapture={() => {drag.current = null;}}
+        onKeyDown={event => {
+          const values: Record<string, number> = {ArrowDown: progress + .05, ArrowRight: progress + .05, ArrowUp: progress - .05, ArrowLeft: progress - .05, PageDown: progress + 1/3, PageUp: progress - 1/3, Home: 0, End: 1};
+          if (event.key in values) {event.preventDefault();seek(values[event.key]);}
+        }}>
+        <span className="journey-scroll-thumb" style={{transform:`translateY(${progress * (steps.length - 1) * 100}%)`}}/>
+      </div><div
         className="journey-choices"
         role="tablist"
         aria-label="Tahap pelaporan"
@@ -142,7 +181,7 @@ export function ReportJourney() {
         <div className="demo-top">
           <span>Contoh alur laporan</span>
         </div>
-        <div className="journey-panels">{steps.map((_, index) => <div className="demo-content journey-panel" key={index} aria-hidden={active !== index} inert={active !== index} style={{visibility: active === index ? "visible" : "hidden"}}>
+        <div className="journey-panels">{steps.map((_, index) => <div className="demo-content journey-panel" key={index} aria-hidden={active !== index} inert={active !== index}>
           {index === 0 ? (
             <>
               <div className="demo-photo">

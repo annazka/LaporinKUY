@@ -239,9 +239,19 @@
 .journey-scroll-track.is-scroll-driven>.journey-layout{position:sticky;top:var(--journey-top)}
 .journey-panels{display:grid;min-width:0}
 .journey-mobile-description{display:none}
-.journey-panel{grid-area:1/1;min-width:0;align-self:start;opacity:1;transition:opacity .18s ease}
-.journey-panel[aria-hidden="true"]{opacity:0}
-@media(prefers-reduced-motion:reduce){.journey-panel{transition:none}}
+.journey-navigation{position:relative;min-width:0;padding-left:28px}
+.journey-scrollbar{position:absolute;inset:0 auto 0 0;width:20px;cursor:pointer;touch-action:none;border-radius:10px}
+.journey-scrollbar::before{content:"";position:absolute;inset:0 8px;background:#424242;border-radius:4px}
+.journey-scrollbar:focus-visible{outline:2px solid #f5f5f5;outline-offset:3px}
+.journey-scroll-thumb{position:absolute;top:0;left:7px;width:6px;height:33.333333%;background:#eee;border-radius:4px;transition:transform .16s ease-out;pointer-events:auto}
+.journey-scrollbar:hover .journey-scroll-thumb{background:#fff}
+.plain-landing .journey-scroll-track .step-choice h3,.plain-landing .journey-scroll-track .step-choice>svg{transition:color .4s ease}
+.plain-landing .journey-scroll-track .step-choice h3{opacity:.65;text-decoration:none;transition:color .4s ease,opacity .4s ease}
+.plain-landing .journey-scroll-track .step-choice.active h3{opacity:1}
+.journey-panel{grid-area:1/1;min-width:0;align-self:start;opacity:1;visibility:visible;transform:translateY(0);z-index:1;transition:opacity .48s cubic-bezier(.22,1,.36,1),transform .48s cubic-bezier(.22,1,.36,1),visibility 0s}
+.journey-panel[aria-hidden="true"]{opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;z-index:0;transition:opacity .48s cubic-bezier(.22,1,.36,1),transform .48s cubic-bezier(.22,1,.36,1),visibility 0s .48s}
+@media(prefers-reduced-motion:reduce){.journey-panel,.journey-panel[aria-hidden="true"],.journey-scroll-thumb,.plain-landing .journey-scroll-track .step-choice h3,.plain-landing .journey-scroll-track .step-choice>svg{transition:none}.journey-panel,.journey-panel[aria-hidden="true"]{transform:none}}
+
 @media(max-width:800px){
  .journey-mobile-description{display:block;min-height:84px;font-size:14px;line-height:1.8;color:#bdbdbd;margin:16px 0 0}
  .journey-scroll-track .journey-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
