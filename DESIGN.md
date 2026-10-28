@@ -49,3 +49,9 @@ Use the current `public/media/brand/obelisk.png` brand asset for browser and App
 The displayed brand is now `LaporKUY!` everywhere, including navbar/footer, operator workspace/login, auth dialogs, page titles, accessibility labels and explanatory copy. Use an exclamation mark instead of the decorative dot; keep technical URLs, account emails, asset paths and repository identifiers unchanged.
 
 The signup confirmation email uses the same monochrome styling and current logo as the website, with a white confirmation button, readable text and no slogan/uppercase eyebrow. Preserve the Supabase TokenHash callback and single-use-link guidance. The email body lives in `supabase/templates/confirmation.html` and must be installed separately in Supabase Auth email settings.
+
+Authentication forms include a forgot-password link and accessible eye toggles; password inputs are concealed by default. Recovery uses Supabase email links through the existing `/auth/confirm` callback with type=recovery and a short-lived HttpOnly cookie scoped to the password endpoint. Do not replace the current signed-in account or store recovery tokens in localStorage. Keep reset pages monochrome and show real provider failures without claiming an email or password change succeeded.
+
+Password reset has its own `/auth/reset` page and monochrome recovery email (`supabase/templates/recovery.html`). Keep signup and recovery callbacks distinct, preserve support for old recovery links, and route expired reset links to recovery-specific guidance instead of signup confirmation errors. Production requires promoting the route and installing the reset template/Redirect URL in Supabase.
+
+Bind recovery submissions to the server-issued flow identifier in their scoped HttpOnly cookie, so opening a second reset link cannot make an older form change the wrong account.
