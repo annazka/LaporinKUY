@@ -42,27 +42,19 @@ export function ReportJourney({heading}: {heading: ReactNode}) {
     let frame = 0;
     const update = () => {
       frame = 0;
-      const {top, distance, pinned} = geometry.current;
-      if (pinned) {
-        const progress = Math.max(0, Math.min(1, (top - outer.getBoundingClientRect().top) / distance));
-        setProgress(progress);
-        setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
-      } else {
-        // Small/short screens keep their natural document flow.
-        const bounds = outer.getBoundingClientRect();
-        if (bounds.bottom < 0 || bounds.top > window.innerHeight) return;
-        const progress = Math.max(0, Math.min(1, (window.innerHeight * .5 - bounds.top) / bounds.height));
-        setProgress(progress);
-        setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
-      }
+      const {top, distance} = geometry.current;
+      if (!distance) return;
+      const progress = Math.max(0, Math.min(1, (top - outer.getBoundingClientRect().top) / distance));
+      setProgress(progress);
+      setActive(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
     };
     const schedule = () => {if (!frame) frame = requestAnimationFrame(update);};
     const measure = () => {
       const header = document.querySelector<HTMLElement>('.landing-header');
       const top = Math.max(96, (header?.getBoundingClientRect().bottom ?? 80) + 16);
       const height = inner.getBoundingClientRect().height;
-      const pinned = height + top + 24 <= window.innerHeight;
-      const next = {top, pinned, height, distance: pinned ? Math.round(window.innerHeight * 1.5) : 0};
+      // The viewport constrains the content, never disables the walkthrough.
+      const next = {top, pinned: true, height, distance: Math.round(window.innerHeight * 1.5)};
       geometry.current = next;
       setScrollLayout(previous => previous.height === next.height && previous.top === next.top && previous.distance === next.distance && previous.pinned === next.pinned ? previous : next);
       schedule();
