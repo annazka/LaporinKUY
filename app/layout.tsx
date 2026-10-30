@@ -4,6 +4,7 @@ import {SiteFrame} from '@/components/site-frame';
 import type {Metadata} from 'next';import './globals.css';import './night-theme.css';import './refresh.css';import './landing-header.css';import './auth-modal.css';import {AuthProvider} from '@/components/auth-modal';import {Header,Footer} from '@/components/ui';import {SessionRefresh} from '@/components/session-refresh';import {VisualEffects} from '@/components/visual-effects';
 import './time-palette.css';
 import './photo-analysis.css';
+import './report-location.css';
 import './landing-reports.css';
 import 'leaflet/dist/leaflet.css';
 import './landing-explore.css';
