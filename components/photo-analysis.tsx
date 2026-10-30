@@ -8,7 +8,7 @@ import {
   validatePhoto,
 } from "@/lib/photo-analysis-client.mjs";
 
-type Analysis = {
+export type Analysis = {
   relevant: boolean;
   category: string;
   severity: string;
@@ -25,7 +25,7 @@ type State = {
   retryAt?: number;
   invalid?: boolean;
 };
-export function PhotoAnalysis({ file }: { file: File | null }) {
+export function PhotoAnalysis({ file, onResult, onBusyChange }: { file: File | null; onResult?: (result: Analysis, file: File) => void; onBusyChange?: (busy: boolean) => void }) {
   const [state, setState] = useState<State>({ file: null, stage: "idle" }),
     [attempt, setAttempt] = useState(0),
     [preview, setPreview] = useState<{ file: File; url: string } | null>(null),
@@ -110,6 +110,13 @@ export function PhotoAnalysis({ file }: { file: File | null }) {
     const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, [state.retryAt]);
+  useEffect(() => {
+    if (file && state.file === file && state.stage === "success" && state.result)
+      onResult?.(state.result, file);
+  }, [file, state, onResult]);
+  useEffect(() => {
+    onBusyChange?.(Boolean(file && (state.file !== file || state.stage === "uploading" || state.stage === "analyzing")));
+  }, [file, state, onBusyChange]);
   if (!file) return null;
   const active: State =
     state.file === file ? state : { file, stage: "uploading" };
