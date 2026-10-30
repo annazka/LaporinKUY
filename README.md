@@ -6,7 +6,7 @@ Website pelaporan jalan berlubang Jakarta, dengan akun warga dan operator. Diban
 
 - Beranda dengan slider foto laporan, pencarian dan filter status, pendaftaran, login, dashboard warga, detail dan riwayat progres. Halaman daftar laporan dipusatkan di `/#laporan`; halaman peta dan katalog rewards ditunda.
 - Pratinjau foto awal laporan publik, foto bukti tambahan privat, alamat, koordinat GPS atau manual. Cakupan awal Jakarta daratan.
-- Penggabungan otomatis sementara berdasarkan kategori dan radius 25 meter, tanpa AI. Laporan tambahan dari akun berbeda menjadi upvote. Akun yang sama memperbarui bukti tanpa tambahan upvote.
+- Penggabungan memerlukan kategori sama, jarak maksimal 25 meter (Haversine), dan perbandingan foto AI yang meyakinkan bahwa kerusakan fisiknya sama. Jarak yang lebih dekat menaikkan bobot kecocokan; tidak menggantikan kecocokan visual. Laporan tambahan dari akun berbeda menjadi upvote. Akun yang sama memperbarui bukti tanpa tambahan upvote.
 - Maksimal 10 laporan aktif per akun. Tidak menerapkan pembagian 7 diproses dan 3 pending.
 - Operator memverifikasi laporan, menentukan prioritas, tanggal mulai, dan target selesai.
 - Operator mengisi progres harian, kendala, dan bukti. Penanda harian menggunakan zona waktu Asia/Jakarta, termasuk sesudah target terlewati.
@@ -64,7 +64,7 @@ Perubahan laporan, progres, poin, dan voucher dilakukan lewat RPC dengan pemerik
 - Atur GEMINI_API_KEY pada environment server. GEMINI_MODEL sebaiknya ditetapkan pada model yang sudah diuji. Produksi menggunakan gemini-3.6-flash setelah permintaan gambar ke 3.8 dan 3.7 melewati timeout. Jika kosong sistem memilih model Flash stabil tertinggi dari models.list; daftar model tidak menjamin latensi analisis gambar. Preview memerlukan key tersendiri jika ingin menguji analisis di Preview.
 - scripts/gemini-smoke.mjs merupakan perintah pengujian nyata sekali jalan, bukan bagian build default. Memakai foto instrumen publik dari dokumentasi Google sebagai kasus negatif, serta gagal jika foto tersebut dianggap kerusakan infrastruktur. Perintah ini memerlukan akses internet dan API key pada environment.
 - Pembatasan AI (6 analisis baru per menit per pengguna), deduplikasi permintaan, dan cache hasil 10 menit hanya per instance server. Gambar dan cache tidak dibagikan antar pengguna. Kuota lintas instance perlu ditambahkan sebelum peluncuran luas. Batas waktu keseluruhan endpoint 55 detik, di bawah durasi fungsi 60 detik; pembatalan klien diteruskan ke penyedia jika tidak ada peminta lain.
-- Pengelompokan radius 25 meter masih perlu peninjauan operator. Belum ada pemisahan atau penggabungan ulang lewat dashboard.
+- Alur baru memakai RPC `submit_report_ai` melalui migrasi `202610300002_ai_report_matching.sql`. AI membandingkan maksimal lima kasus aktif terdekat yang kategorinya sama; keraguan menghasilkan kasus baru, kegagalan layanan bisa dicoba ulang tanpa mengunggah kembali. Foto hilang tidak dianggap bukti cocok. RPC lama dipertahankan untuk kompatibilitas main sampai promosi; tidak dipakai formulir baru. Belum ada pemisahan atau penggabungan ulang lewat dashboard.
 - Peta memakai embed OpenStreetMap untuk satu laporan terpilih, bukan layer multi-marker Leaflet.
 - Konfirmasi akhir saat ini oleh pelapor utama. Mekanisme verifikator pengganti setelah 3 hari belum diaktifkan.
 - Belum ada notifikasi email/push harian, SLA per jenis kerusakan, moderasi multiakun, atau pencairan voucher nyata.
