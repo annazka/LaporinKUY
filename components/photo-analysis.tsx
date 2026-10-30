@@ -152,11 +152,6 @@ export function PhotoAnalysis({ file, onResult, onBusyChange }: { file: File | n
           </span>
         </div>
       )}
-      <p className="help-text">
-        Foto dianalisis otomatis oleh Google Gemini. Hasil berupa saran;
-        keputusan penanganan tetap diverifikasi operator. Foto dan hasil belum
-        menjadi laporan sampai kamu menekan Kirim laporan.
-      </p>
       {active.error && (
         <div className="form-error" role="alert">
           <p>{active.error}</p>
@@ -193,7 +188,7 @@ export function PhotoAnalysis({ file, onResult, onBusyChange }: { file: File | n
               </div>
               <div>
                 <span>Tingkat kerusakan</span>
-                <b>{result.severity.replaceAll("_", " ")}</b>
+                <b>{result.severity.replaceAll("_", " ").replace(/^./, letter => letter.toUpperCase())}</b>
               </div>
               <div>
                 <span>Prioritas penanganan</span>
@@ -210,11 +205,6 @@ export function PhotoAnalysis({ file, onResult, onBusyChange }: { file: File | n
                 </b>
               </div>
             </div>
-            <p style={{ marginTop: 12 }}>{result.reason}</p>
-            <small className="help-text">
-              Model {result.model}. Lokasi dan estimasi durasi tetap
-              diverifikasi operator.
-            </small>
           </div>
         </div>
       )}
