@@ -16,7 +16,7 @@ import {LandingVideo} from '@/components/landing-video';
 export const dynamic='force-dynamic';
 const faqs=[
  ['Siapa yang bisa mengirim laporan?','Warga yang memiliki akun LaporKUY! dapat mengirim foto, deskripsi, dan lokasi kerusakan. Cakupan awal berfokus pada jalan berlubang di Jakarta daratan.'],
- ['Kalau kerusakannya sudah dilaporkan orang lain?','Laporan serupa digabung ke satu kasus dan dihitung sebagai upvote. Satu akun dihitung satu kali untuk kasus yang sama. Bukti tambahan dari akun yang sama tidak menambah upvote.'],
+ ['Kalau kerusakannya sudah dilaporkan orang lain?','Laporan digabung sebagai upvote jika kategorinya sama, lokasinya dalam 25 meter, dan AI menilai foto menunjukkan kerusakan fisik yang sama. Satu akun dihitung satu kali untuk kasus yang sama. Bukti tambahan dari akun yang sama tidak menambah upvote.'],
  ['Apakah AI menentukan kapan perbaikan selesai?','AI membantu menilai foto dan merekomendasikan prioritas. Operator tetap memverifikasi laporan serta menentukan tanggal mulai dan target selesai.'],
  ['Bagaimana jika perbaikan melewati target?','Laporan mendapat penanda terlambat. Operator perlu menjelaskan kendala dan target baru. Jadwal sebelumnya tetap tersedia dalam riwayat progres.'],
 ];

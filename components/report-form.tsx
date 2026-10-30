@@ -11,7 +11,7 @@ import {validCoordinates} from '@/lib/rules.mjs';
 import {REPORT_CATEGORIES} from '@/lib/report-categories.mjs';
 type Draft={category:string;description:string;reportToken:string};
 export function ReportForm(){
- const router=useRouter(),pending=useRef(false),activePhoto=useRef<File|null>(null),locationRequest=useRef(0);
+ const router=useRouter(),pending=useRef(false),activePhoto=useRef<File|null>(null),locationRequest=useRef(0),uploaded=useRef<{photo:File;token:string;path:string;receipt:string}|null>(null);
  const [analysisVersion,setAnalysisVersion]=useState(0),[busy,setBusy]=useState(false),[analysisBusy,setAnalysisBusy]=useState(false),[error,setError]=useState(''),[file,setFile]=useState<File|null>(null),[location,setLocation]=useState<ReportLocation|null>(null),[locationMessage,setLocationMessage]=useState(''),[stage,setStage]=useState('');
  const [draft,setDraft]=useState<Draft>({category:'',description:'',reportToken:''});
  function pick(next:File|null){
@@ -42,9 +42,13 @@ export function ReportForm(){
   if(!location||!validCoordinates(location.latitude,location.longitude)){setError('Pilih titik lokasi laporan pada peta terlebih dahulu.');return;}
   const data=Object.fromEntries(new FormData(event.currentTarget).entries());pending.current=true;setBusy(true);setError('');
   try{
-   setStage('Mengunggah foto...');const form=new FormData();form.set('file',file);form.set('report_token',draft.reportToken);
-   const upload=await fetch('/api/upload',{method:'POST',body:form});const photo=await upload.json();if(!upload.ok)throw Error(photo.error||'Foto belum dapat diunggah.');
-   setStage('Menyimpan laporan...');const response=await fetch('/api/reports',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,photo_path:photo.path,report_receipt:photo.report_receipt})});
+   let photo=uploaded.current;
+   if(!photo||photo.photo!==file||photo.token!==draft.reportToken){
+    setStage('Mengunggah foto...');const form=new FormData();form.set('file',file);form.set('report_token',draft.reportToken);
+    const upload=await fetch('/api/upload',{method:'POST',body:form});const result=await upload.json();if(!upload.ok)throw Error(result.error||'Foto belum dapat diunggah.');
+    photo={photo:file,token:draft.reportToken,path:result.path,receipt:result.report_receipt};uploaded.current=photo;
+   }
+   setStage('Memeriksa kecocokan foto dengan laporan terdekat...');const response=await fetch('/api/reports',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,photo_path:photo.path,report_receipt:photo.receipt})});
    const result=await response.json();if(!response.ok)throw Error(result.error||'Laporan belum dapat disimpan.');
    router.push(`/reports/${result.id}?submitted=${result.duplicate?'duplicate':'new'}`);router.refresh();
   }catch(cause){setError((cause as Error).message);setStage('');}finally{pending.current=false;setBusy(false);}
@@ -65,7 +69,7 @@ export function ReportForm(){
    {locationMessage&&<p role="status" className="help-text">{locationMessage}</p>}
    <label>Alamat dan patokan<input name="address" minLength={8} maxLength={300} required disabled={busy} placeholder="Nama jalan, kelurahan, dan patokan terdekat"/></label>
    <div className="notice"><ShieldCheck size={20}/><p>Identitasmu disembunyikan dari publik. Hindari foto yang memperlihatkan wajah atau data pribadi.</p></div>
-   <p className="help-text">Laporan kategori sama dalam radius 25 meter digabung sementara sebagai upvote. Operator akan memeriksa kesesuaiannya.</p>
+   <p className="help-text">Upvote hanya diberikan jika kategori sama, jarak maksimal 25 meter, dan AI menilai dengan keyakinan tinggi bahwa foto menunjukkan kerusakan yang sama. Jarak yang lebih dekat menambah bobot keyakinan.</p>
    {error&&<div className="form-error" role="alert"><p>{error}</p>{file&&draft.reportToken&&<button type="button" className="button secondary" disabled={busy} onClick={()=>{setDraft({category:'',description:'',reportToken:''});setError('');setAnalysisBusy(true);setAnalysisVersion(value=>value+1);}}>Coba analisis lagi</button>}</div>}{stage&&<p role="status">{stage}</p>}
    <button className="button full" disabled={busy||analysisBusy||!draft.reportToken}>{busy?'Mengirim...':analysisBusy?'Menunggu analisis foto...':'Kirim laporan'}<ArrowUpRight size={18}/></button>
   </div>
