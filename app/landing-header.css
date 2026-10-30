@@ -204,7 +204,7 @@
     animation: none;
   }
 }
-/* Keep the seven landing anchors clear of the account controls. */
+/* Keep landing navigation clear of the account controls. */
 @media (min-width: 901px) {
   .landing-header nav {
     gap: 15px;
