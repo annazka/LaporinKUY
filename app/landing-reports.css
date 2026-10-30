@@ -1,13 +1,6 @@
 #laporan {
   scroll-margin-top: 110px;
 }
-/* Reports, map and impact form one continuous area below the Laporan link. */
-.plain-landing #laporan {
-  padding-bottom: 0;
-}
-.plain-landing #laporan + .landing-map-section {
-  padding-top: clamp(42px, 6vw, 72px);
-}
 .landing-report-filters {
   margin-top: 30px;
   margin-bottom: 14px;
