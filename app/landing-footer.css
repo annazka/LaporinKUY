@@ -11,8 +11,19 @@ footer.landing-footer {
   color: #ededed;
 }
 .landing-footer-art {
-  height: max(280px, 40vw);
-  background: linear-gradient(#030405, transparent 35%), url('/media/landing-footer-monas.webp') center bottom / cover no-repeat;
+  --footer-sky-bleed: clamp(80px, 8vw, 160px);
+  position: relative;
+  height: max(254px, calc(29vw + 64px));
+}
+.landing-footer-art::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--footer-sky-bleed)) 0 0;
+  z-index: -1;
+  background-image: linear-gradient(to bottom, #030405 0%, #030405ed 18%, #030405b3 38%, #03040559 64%, #03040514 84%, transparent 100%), url('/media/landing-footer-monas.webp');
+  background-position: center top, center bottom;
+  background-size: 100% calc(var(--footer-sky-bleed) + 64px), auto max(370px, 55.8vw);
+  background-repeat: no-repeat;
 }
 .landing-footer-content {padding-bottom: 0;}
 .landing-footer-top {display: grid; grid-template-columns: 1fr 1fr; gap: 80px;}
