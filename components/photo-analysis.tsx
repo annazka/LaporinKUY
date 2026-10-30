@@ -9,6 +9,7 @@ import {
 } from "@/lib/photo-analysis-client.mjs";
 
 export type Analysis = {
+  report_token?: string | null;
   relevant: boolean;
   category: string;
   severity: string;

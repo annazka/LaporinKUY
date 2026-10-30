@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { authorize, failure } from "@/lib/http";
 import { rpc } from "@/lib/backend";
 import { validCoordinates } from "@/lib/rules.mjs";
+import {verifyReportReceipt} from "@/lib/report-draft.mjs";
 export async function POST(request: Request) {
   try {
     const user = await authorize(request);
@@ -20,10 +21,11 @@ export async function POST(request: Request) {
       throw new Error("Lokasi harus berada di wilayah Jakarta daratan.");
     if (!String(b.photo_path || "").startsWith(user.id + "/"))
       throw new Error("Unggah foto bukti terlebih dahulu.");
+    const draft = verifyReportReceipt(b.report_receipt,user.id,b.photo_path);
     const data = await rpc("submit_report", {
       p_title: String(b.title || ""),
-      p_description: String(b.description || ""),
-      p_category: String(b.category || "Jalan berlubang"),
+      p_description: draft.description,
+      p_category: draft.category,
       p_address: String(b.address || ""),
       p_latitude: lat,
       p_longitude: lng,
