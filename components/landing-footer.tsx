@@ -21,5 +21,6 @@ export function LandingFooter() {
       </div>
       <div className="landing-footer-bottom"><p>Pelaporan infrastruktur Jakarta.</p><p>© {new Date().getFullYear()} LaporKUY!</p></div>
     </div>
+    <div className="landing-footer-art" aria-hidden="true"/>
   </footer>;
 }

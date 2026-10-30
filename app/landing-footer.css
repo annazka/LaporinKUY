@@ -10,14 +10,11 @@ footer.landing-footer {
   background: #030405;
   color: #ededed;
 }
-.landing-footer::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(#030405 0%, #030405f2 20%, #03040580 50%, transparent 74%), url('/media/landing-footer-monas.webp') center bottom / cover no-repeat;
+.landing-footer-art {
+  height: max(280px, 40vw);
+  background: linear-gradient(#030405, transparent 35%), url('/media/landing-footer-monas.webp') center bottom / cover no-repeat;
 }
-.landing-footer-content {padding-bottom: clamp(280px, 32vw, 490px);}
+.landing-footer-content {padding-bottom: 0;}
 .landing-footer-top {display: grid; grid-template-columns: 1fr 1fr; gap: 80px;}
 .landing-footer .brand {font-size: 28px; width: fit-content;}
 .landing-footer .brand-mark {width: 40px; height: 42px;}
@@ -39,5 +36,4 @@ footer.landing-footer {
   .landing-footer-nav {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px;}
   .landing-footer-nav h2 {margin-bottom: 10px;}
   .landing-footer-bottom {margin-top: 32px; flex-direction: column;}
-  .landing-footer::before {background-size: auto, auto 470px;}
 }
