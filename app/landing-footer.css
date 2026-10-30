@@ -11,8 +11,8 @@ footer.landing-footer {
   color: #ededed;
 }
 .landing-footer-art {
-  height: max(230px, calc(29vw + 40px));
-  background: linear-gradient(#030405, transparent 22%), url('/media/landing-footer-monas.webp') center bottom no-repeat;
+  height: max(254px, calc(29vw + 64px));
+  background: linear-gradient(#030405, transparent 48px), url('/media/landing-footer-monas.webp') center bottom no-repeat;
   background-size: auto, auto max(370px, 55.8vw);
 }
 .landing-footer-content {padding-bottom: 0;}
