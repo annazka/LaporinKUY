@@ -59,3 +59,5 @@ Bind recovery submissions to the server-issued flow identifier in their scoped H
 The first landing section is now “Tentang kita” (`#tentang-kita`), with the heading “Tentang LaporKUY!”. Explain the platform briefly and highlight automatic AI photo analysis and points redeemable for vouchers. Keep operator verification and the current simulation status of points/vouchers explicit. Preserve the restrained editorial layout without extra helper subtitles.
 
 Use one shared responsive 42–72 px content gap between landing sections: Tentang kita, Cara kerja, reports, map, impact, vouchers, FAQ and the final report action. Each section contributes half that gap as top/bottom padding, without extra vertical margins. Preserve the hero composition, the walkthrough’s scroll distance and sticky behavior, and the carousel geometry with equal card gaps.
+
+For the bordered impact panel (“Laporan masuk”), measure the surrounding gap from its visible border, not its heading. Add half the shared gap as external top/bottom margin so the preceding map content and following voucher heading each sit a full 42–72 px from the border. Preserve the panel’s internal padding.

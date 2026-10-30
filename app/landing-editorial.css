@@ -7,6 +7,10 @@
   padding-block: calc(var(--landing-section-gap) / 2);
   margin-block: 0;
 }
+/* Measure the surrounding gap from the impact panel's visible borders. */
+.plain-landing > .community-section {
+  margin-block: calc(var(--landing-section-gap) / 2);
+}
 .plain-landing .hero-intro h1 > span {
   background: none;
   color: var(--time-text);
