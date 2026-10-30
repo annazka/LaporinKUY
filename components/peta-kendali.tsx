@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
+import {ReportImage} from './report-image';
 
 export interface ReportItem {
   id: string;
@@ -101,16 +102,6 @@ function formatStatusLabel(status: string) {
     rejected: 'Ditolak',
   };
   return map[status] || status;
-}
-
-function resolvePhotoUrl(photoPath?: string | null) {
-  if (!photoPath) {
-    return 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=900&q=80';
-  }
-  if (/^https?:\/\//i.test(photoPath) || photoPath.startsWith('/')) {
-    return photoPath;
-  }
-  return '/api/photo?path=' + encodeURIComponent(photoPath);
 }
 
 export function PetaKendali({
@@ -380,11 +371,7 @@ export function PetaKendali({
                 marginBottom: '16px',
               }}
             >
-              <img
-                src={resolvePhotoUrl(selectedReport.photo_path)}
-                alt={selectedReport.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+              <ReportImage report={selectedReport} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
             </div>
 
             {!isCompletedReport && (

@@ -1,3 +1,5 @@
+import {ReportImage} from '@/components/report-image';
+import {usesRepairPhoto} from '@/lib/report-photo.mjs';
 import { AuthLink } from "@/components/auth-modal";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -67,10 +69,7 @@ export default async function Detail({
           <section className="panel">
             <div className="report-photo">
               {u ? (
-                <img
-                  src={photoUrl(r.photo_path)!}
-                  alt="Bukti kondisi kerusakan yang dilaporkan warga"
-                />
+                <ReportImage report={r} loading="eager"/>
               ) : (
                 <div className="empty compact">
                   <Camera size={30} />
@@ -80,7 +79,7 @@ export default async function Detail({
                   </AuthLink>
                 </div>
               )}
-              <span className="photo-label">FOTO LAPORAN AWAL</span>
+              <span className="photo-label">{usesRepairPhoto(r.status)?'FOTO HASIL PERBAIKAN':'FOTO LAPORAN AWAL'}</span>
             </div>
             <h2>Tentang laporan ini</h2>
             <p className="description">{r.description}</p>

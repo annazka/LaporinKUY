@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
+import {ReportImage} from './report-image';
 import {useEffect,useMemo,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {useRouter} from 'next/navigation';
 import {MapPin,ArrowUpRight,X,RefreshCw,LayoutDashboard,ClipboardList,Ticket,History,ClipboardCheck,Clock3,TriangleAlert,CheckCircle2} from 'lucide-react';
@@ -20,7 +21,7 @@ const COMPLETION_TARGET=85;
 const short=(id:string)=>'#'+id.slice(0,8).toUpperCase();
 const eventLabels:Record<string,string>={submitted:'Laporan masuk',verify:'Verifikasi',progress:'Progres',reschedule:'Jadwal diubah',finish:'Pekerjaan selesai',completed:'Dikonfirmasi',reopened:'Dibuka kembali',reject:'Laporan ditolak',voucher_create:'Voucher dibuat',voucher_stock:'Stok diubah'};
 function Badge({report}:{report:Report}){return <span className={`badge ${isOverdue(report)?'badge-danger':report.status==='completed'?'badge-success':report.status==='submitted'?'badge-warning':'badge-info'}`}>{statusLabels[report.status]||report.status}</span>;}
-function Photo({report}:{report:Report}){const [failed,setFailed]=useState(false);return <div className="evidence-box">{report.photo_path&&!failed?<img src={'/api/photo?path='+encodeURIComponent(report.photo_path)} alt={'Bukti kerusakan: '+report.title} onError={()=>setFailed(true)}/>:<p>Foto belum dapat ditampilkan.</p>}</div>;}
+function Photo({report}:{report:Report}){return <div className="evidence-box"><ReportImage report={report} style={{width:'100%',height:'100%',objectFit:'cover'}}/></div>;}
 function Empty({children}:{children:ReactNode}){return <p className="admin-empty">{children}</p>;}
 function Drawer({report,updates,onClose,onSaved}:{report:Report;updates:AdminEvent[];onClose:()=>void;onSaved:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null);
