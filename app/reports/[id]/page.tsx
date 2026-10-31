@@ -39,7 +39,7 @@ export default async function Detail({
     : [];
   return (
     <div className="container page">
-      <Link className="back-link" href="/#laporan">
+      <Link className="back-link" href="/dashboard/reports">
         <ArrowLeft size={16} />
         Semua laporan
       </Link>
